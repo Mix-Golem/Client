@@ -2,7 +2,7 @@
 
 # Skills 🔨
 
-[![My Skills](https://skillicons.dev/icons?i=ts,react,vite,figma)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=js,react,notion,discord,vscode,vite,figma)](https://skillicons.dev)
 
 ![Styled-Components](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white)
 ![React-Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
@@ -45,3 +45,16 @@
 | Event handlers    | handle                           |
 | Constants         | UPPER_SNAKE_CASE                 |
 | Utility functions | camelCase                        |
+
+### 패키지 : yarn 사용
+
+- Install dependencies : `yarn`
+- build start : `yarn start`
+- Install package : `yarn add [ package ]`
+- Install dev package : `yarn add —dev [package]`
+- Uninstall package : `yarn remove[ package ]`
+- Update : `yarn upgrade`
+
+### 웹 배포 : Netlify 사용
+
+[https://app.netlify.com](https://app.netlify.com/)
