@@ -1,13 +1,17 @@
 import React from 'react';
+import { ThemeProvider } from 'styled-components';
+import GlobalStyle from '../src/styles/GlobalStyle.js';
+import { Theme } from '../src/styles/Theme.js';
 import './App.css';
 import Login from './pages/Login';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
+    <ThemeProvider theme={Theme}>
+      <GlobalStyle />
       <Login />
-    </div>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
