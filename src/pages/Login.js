@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { FieldWrapper, Input } from '../components/Common.js';
 import GoogleLogo from '../img/GoogleLogo.svg';
 import KakaoLogo from '../img/KakaoLogo.svg';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
@@ -10,59 +12,69 @@ import { Theme } from '../styles/Theme.js';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log('Submitted:', { email, password });
+        navigate('/Join');
     };
 
     return (
         <>
             <GlobalStyle />
             <LoginContainer>
-                <BackgroundImg src={LoginBackgroundImg} alt="Login Background" />
-                <StyledLogo src={Logo} alt="Logo" />
+                <StyledLogo src={Logo} alt='Logo' />
                 <LoginForm onSubmit={handleSubmit}>
                     <FormGroup>
-                        <SocialLoginButton bgColor={Theme.colors.white} color={Theme.colors.black}>
-                            <img src={GoogleLogo} alt="Google Logo" />
+                        <SocialLoginButton
+                            bgColor={Theme.colors.white}
+                            color={Theme.colors.black}
+                        >
+                            <img src={GoogleLogo} alt='Google Logo' />
                             Sign With Google
                         </SocialLoginButton>
-                        <SocialLoginButton bgColor="#FEE500" color={Theme.colors.black}>
-                            <img src={KakaoLogo} alt="Kakao Logo" />
+                        <SocialLoginButton
+                            bgColor='#FEE500'
+                            color={Theme.colors.black}
+                        >
+                            <img src={KakaoLogo} alt='Kakao Logo' />
                             Sign With Kakao
                         </SocialLoginButton>
                         <BlankContainer>OR</BlankContainer>
                         <FieldWrapper>
-                            <Label htmlFor="email">E-mail</Label>
+                            <Label htmlFor='email'>E-mail</Label>
                             <Input
-                                type="email"
-                                id="email"
+                                type='email'
+                                id='email'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                             />
                         </FieldWrapper>
                         <FieldWrapper>
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor='password'>Password</Label>
                             <Input
-                                type="password"
-                                id="password"
+                                type='password'
+                                id='password'
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                         </FieldWrapper>
-                        <SubmitButton type="submit">로그인</SubmitButton>
+                        <BigButton type='submit'>로그인</BigButton>
                         <FooterText>
                             <div>
-                                이메일을 잊어버렸나요?<FooterLink href="#">이메일 찾기</FooterLink>
+                                이메일을 잊어버렸나요?
+                                <FooterLink href='#'>이메일 찾기</FooterLink>
                             </div>
                             <div>
-                                비밀번호를 잊어버렸나요?<FooterLink href="#">비밀번호 찾기</FooterLink>
+                                비밀번호를 잊어버렸나요?
+                                <FooterLink href='#'>비밀번호 찾기</FooterLink>
                             </div>
                             <div>
-                                계정이 없으신가요? <FooterLink href="#">회원가입</FooterLink>
+                                계정이 없으신가요?{' '}
+                                <FooterLink href='#'>회원가입</FooterLink>
                             </div>
                         </FooterText>
                     </FormGroup>
@@ -80,22 +92,13 @@ const LoginContainer = styled.div`
     align-items: center;
     justify-content: center;
     height: 100vh;
-    position: relative;
-`;
-
-const BackgroundImg = styled.img`
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
+    background: url(${LoginBackgroundImg}) no-repeat center center/cover;
 `;
 
 const StyledLogo = styled.img`
-    position: absolute;
-    top: 99px;
     width: 360px;
     height: 234.58px;
+    margin-bottom: 20px;
 `;
 
 const SocialLoginButton = styled.button`
@@ -103,8 +106,8 @@ const SocialLoginButton = styled.button`
     margin: 10px 0;
     border: none;
     ${Theme.fonts.button}
-    background-color: ${props => props.bgColor};
-    color: ${props => props.color};
+    background-color: ${(props) => props.bgColor};
+    color: ${(props) => props.color};
     width: 373.22px;
     height: 48.26px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -123,17 +126,13 @@ const SocialLoginButton = styled.button`
 
 const LoginForm = styled.form`
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     border-radius: 30px;
     background-color: ${Theme.colors.black};
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 1;
-    position: absolute;
     width: 546px;
-    height: 506px;
-    left: calc(50% - 546px/2);
-    top: 366px;
 `;
 
 const FormGroup = styled.div`
@@ -146,35 +145,16 @@ const FormGroup = styled.div`
     width: 100%;
 `;
 
-const FieldWrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 20px;
-`;
-
 const Label = styled.label`
     display: block;
     margin-right: 40px;
-    width: 47.39px;
-    height: 24.72px;
+    width: 80px;
     ${Theme.fonts.label}
     color: ${Theme.colors.white};
+    text-align: center;
 `;
 
-const Input = styled.input`
-    box-sizing: border-box;
-    width: calc(100% - 145px);
-    background: ${Theme.colors.white};
-    border: 1px solid ${Theme.colors.borderGray};
-    border-radius: 20px;
-    padding: 0 20px;
-    width: 359px;
-    margin: 0 90px 0 0;
-    height: 41px;
-`;
-
-const SubmitButton = styled.button`
+const BigButton = styled.button`
     width: 362.56px;
     height: 49.44px;
     ${Theme.fonts.button}
@@ -199,14 +179,15 @@ const BlankContainer = styled.div`
     text-align: center;
     z-index: 2;
     margin: 10px 0;
-    
-    &::before, &::after {
+
+    &::before,
+    &::after {
         content: '';
         flex: 1;
-        border-top: 1px solid #CDCDCD;
+        border-top: 1px solid #cdcdcd;
         margin: 0 10px;
     }
-    
+
     color: ${Theme.colors.white};
     ${Theme.fonts.subTitle}
 `;
@@ -244,7 +225,7 @@ const FooterLink = styled.a`
     ${Theme.fonts.footerText}
     color: ${Theme.colors.white};
     text-decoration: none;
-    
+
     &:hover {
         text-decoration: underline;
     }
