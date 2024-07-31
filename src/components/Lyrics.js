@@ -13,7 +13,9 @@ const Lyrics = ({ lyrics }) => {
   return (
     <LyricsWrapper>
       <LyricsTitle>Lyrics</LyricsTitle>
-      <LyricsContents>{lyricsText}</LyricsContents>
+      <LyricsContentsWrapper>
+        <LyricsContents>{lyricsText}</LyricsContents>
+      </LyricsContentsWrapper>
     </LyricsWrapper>
   );
 };
@@ -32,6 +34,8 @@ const LyricsWrapper = styled(GradientBox)`
   height: 796px;
   left: 855px;
   top: 23px;
+  padding-right: 20px;
+  box-sizing: border-box;
 `;
 
 const LyricsTitle = styled.p`
@@ -48,26 +52,25 @@ const LyricsTitle = styled.p`
   text-align: center;
 `;
 
-// 예시처럼 만드려면 커스텀 해야할지도..?
-const LyricsContents = styled.div`
-  display: flex;
-  margin-left: auto;
-  margin-right: auto;
-  width: 301px;
-  height: 674px;
-  justify-content: center;
+const LyricsContentsWrapper = styled.div`
+  width: 100%;
+  height: calc(100% - 84px);
   overflow-y: scroll;
-
-  ${Theme.fonts.lyrics}
-  color: ${Theme.colors.white};
-  white-space: pre-wrap;
+  padding-left: 15px;
 
   &::-webkit-scrollbar {
     width: 5px;
-    height: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
     background: ${Theme.colors.white};
   }
+`;
+
+const LyricsContents = styled.div`
+  padding: 0 40px; // 양쪽 공백
+  box-sizing: border-box;
+  ${Theme.fonts.lyrics}
+  color: ${Theme.colors.white};
+  white-space: pre-wrap;
 `;
