@@ -25,17 +25,17 @@ function App() {
     //     </a>
     //   </header>
     // </div>
-    <Router>
-      <div className="App">
-        <SideMenu />
+    <div>
+      <Router>
+        {/* <SideMenu /> */}
         <Routes>
-          <Route exact path="/" component={Home} /> */
-          <Route exact path="/create" component={Create} />
-          <Route exact path="/library" element={Library} />
-          <Route exact path="/social" component={Social} />
+          <Route exact path="/" component={<Home />} />
+          <Route exact path="/create" component={<Create />} />
+          <Route exact path="/library" element={<Library />} />
+          <Route exact path="/social" composnent={<Social />} />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
 }
 

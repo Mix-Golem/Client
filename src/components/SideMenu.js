@@ -5,12 +5,36 @@ import { Theme } from "../styles/Theme";
 import img_Logo from "../img/Logo.svg";
 import img_Ad from "../img/Ad.png";
 
+// Navbar component
+const SideMenu = () => {
+  return (
+    <Sidebar>
+      <Logo src={img_Logo} alt="Logo" />
+      <NavLinks>
+        <NavLink>
+          <Link to="/">Home</Link>
+        </NavLink>
+        <NavLink>
+          <Link to="/create">Create</Link>
+        </NavLink>
+        <NavLink>
+          <Link to="/library">Library</Link>
+        </NavLink>
+        <NavLink>
+          <Link to="/social">Social</Link>
+        </NavLink>
+      </NavLinks>
+      <AdImage src={img_Ad} alt="Ad" />
+    </Sidebar>
+  );
+};
+
+export default SideMenu;
+
 const Sidebar = styled.div`
-  position: absolute;
+  position: relative;
   width: 249px;
   height: 894px;
-  left: 18px;
-  top: 38px;
 
   background: ${Theme.colors.black};
   border-radius: 70px;
@@ -55,29 +79,3 @@ const AdImage = styled.img`
   top: 712px;
   border-radius: 40px;
 `;
-
-// Navbar component
-const SideMenu = () => {
-  return (
-    <Sidebar>
-      <Logo src={img_Logo} alt="Logo" />
-      <NavLinks>
-        <NavLink>
-          <Link to="/">Home</Link>
-        </NavLink>
-        <NavLink>
-          <Link to="/create">Create</Link>
-        </NavLink>
-        <NavLink>
-          <Link to="/library">Library</Link>
-        </NavLink>
-        <NavLink>
-          <Link to="/social">Social</Link>
-        </NavLink>
-      </NavLinks>
-      <AdImage src={img_Ad} alt="Ad" />
-    </Sidebar>
-  );
-};
-
-export default SideMenu;

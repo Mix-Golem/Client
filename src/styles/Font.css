@@ -3,7 +3,11 @@
 @font-face {
   font-family: "FTLAB-HOON";
   font-style: normal;
-  font-weight: 500;
-  font-size: 35px;
   src: url("./Fonts/FTLAB-HOONY\ TOON.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "NanumSquare_ac";
+  font-style: normal;
+  src: url("./Fonts/NanumSquare_ac\ ExtraBold.otf");
 }
