@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, FieldWrapper, Input } from '../components/Common.js';
+import BigButton from '../components/LoginJoin/BigButton.js';
+import Footer, { FooterLink } from '../components/LoginJoin/Footer.js';
+import InputField from '../components/LoginJoin/InputField.js';
+import Label from '../components/LoginJoin/Label.js';
+import SmallButton from '../components/LoginJoin/SmallButton.js';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
+
 const Join = () => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
@@ -44,28 +49,26 @@ const Join = () => {
                 <JoinForm onSubmit={handleSubmit}>
                     <FieldWrapper>
                         <Label htmlFor='name'>Name</Label>
-                        <Input
+                        <InputField
                             type='text'
                             id='name'
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            required
                         />
                     </FieldWrapper>
                     <FieldWrapper>
                         <Label htmlFor='phone'>Phone</Label>
-                        <Input
+                        <InputField
                             type='text'
                             id='phone'
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
-                            required
                         />
                     </FieldWrapper>
                     <FieldWrapper>
                         <Label htmlFor='birthDate'>BirthDate</Label>
                         <BirthDateWrapper>
-                            <Input
+                            <InputField
                                 type='text'
                                 placeholder='YYYY'
                                 value={birthDate.year}
@@ -75,9 +78,8 @@ const Join = () => {
                                         year: e.target.value,
                                     })
                                 }
-                                required
                             />
-                            <Input
+                            <InputField
                                 type='text'
                                 placeholder='MM'
                                 value={birthDate.month}
@@ -87,9 +89,8 @@ const Join = () => {
                                         month: e.target.value,
                                     })
                                 }
-                                required
                             />
-                            <Input
+                            <InputField
                                 type='text'
                                 placeholder='DD'
                                 value={birthDate.day}
@@ -99,7 +100,6 @@ const Join = () => {
                                         day: e.target.value,
                                     })
                                 }
-                                required
                             />
                         </BirthDateWrapper>
                     </FieldWrapper>
@@ -126,47 +126,49 @@ const Join = () => {
                     </FieldWrapper>
                     <FieldWrapper>
                         <Label htmlFor='email'>Email</Label>
-                        <Input
+                        <InputField
                             type='email'
                             id='email'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            required
                         />
-                        <Button type='button'>인증</Button>
+                        <SmallButton>인증</SmallButton>
                     </FieldWrapper>
                     <FieldWrapper>
                         <Label htmlFor='emailNumber'>Email Number</Label>
-                        <Input
+                        <InputField
                             type='text'
                             id='emailNumber'
                             value={emailNumber}
                             onChange={(e) => setEmailNumber(e.target.value)}
-                            required
                         />
-                        <Button type='button'>확인</Button>
+                        <SmallButton>확인</SmallButton>
                     </FieldWrapper>
                     <FieldWrapper>
                         <Label htmlFor='password'>Password</Label>
-                        <Input
+                        <InputField
                             type='password'
                             id='password'
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            required
                         />
                     </FieldWrapper>
                     <FieldWrapper>
                         <Label htmlFor='passwordCheck'>Password Check</Label>
-                        <Input
+                        <InputField
                             type='password'
                             id='passwordCheck'
                             value={passwordCheck}
                             onChange={(e) => setPasswordCheck(e.target.value)}
-                            required
                         />
                     </FieldWrapper>
                     <BigButton type='submit'>회원가입</BigButton>
+                    <Footer>
+                        <div>
+                            이미 계정이 있으신가요?{' '}
+                            <FooterLink href='/login'>로그인</FooterLink>
+                        </div>
+                    </Footer>
                 </JoinForm>
             </JoinContainer>
         </>
@@ -194,18 +196,21 @@ const JoinForm = styled.form`
     display: flex;
     flex-direction: column;
     padding: 40px;
-    border-radius: 10px;
+    border-radius: 20px;
     background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     color: ${Theme.colors.white};
     max-width: 500px;
     width: 100vw;
 `;
 
-const Label = styled.label`
-    width: 120px;
-    margin-right: 10px;
-    ${Theme.fonts.label}
-    text-align: center;
+const FieldWrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
 `;
 
 const BirthDateWrapper = styled.div`
@@ -242,20 +247,4 @@ const GenderBox = styled.div`
             : '2px solid' + Theme.colors.borderGray};
     cursor: pointer;
     ${Theme.fonts.label}
-`;
-
-const BigButton = styled.button`
-    width: 362.56px;
-    height: 49.44px;
-    ${Theme.fonts.button}
-    color: ${Theme.colors.black};
-    background: ${Theme.colors.lightBlue};
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 20px;
-    cursor: pointer;
-    border: none;
-
-    &:hover {
-        background-color: ${Theme.colors.darkBlue};
-    }
 `;
