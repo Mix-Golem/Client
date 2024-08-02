@@ -4,21 +4,26 @@ import { ThemeProvider } from 'styled-components';
 import GlobalStyle from '../src/styles/GlobalStyle.js';
 import { Theme } from '../src/styles/Theme.js';
 import './App.css';
-import Join from './pages/Join';
+import FindId from './pages/FindId';
+import FindPassword from './pages/FindPassword';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 const App = () => {
-    return (
-        <ThemeProvider theme={Theme}>
-            <GlobalStyle />
-            <Router>
-                <Routes>
-                    <Route path='/' element={<Login />} />
-                    <Route path='/join' element={<Join />} />
-                </Routes>
-            </Router>
-        </ThemeProvider>
-    );
+  return (
+    <ThemeProvider theme={Theme}>
+      <GlobalStyle />
+      <Router>
+        <Routes>
+          <Route path='/' element={<Login />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/findid' element={<FindId />} />
+          <Route path='/findpassword' element={<FindPassword />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
+  );
 };
 
 export default App;
