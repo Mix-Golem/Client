@@ -1,52 +1,96 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import BigButton from '../components/LoginJoin/BigButton.js';
 import Footer, { FooterLink } from '../components/LoginJoin/Footer.js';
 import InputField from '../components/LoginJoin/InputField.js';
-import Label from '../components/LoginJoin/Label.js';
+import { schemaLogin } from '../hooks/ValidationYup';
 import GoogleLogo from '../img/GoogleLogo.svg';
 import KakaoLogo from '../img/KakaoLogo.svg';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
-import GlobalStyle from '../styles/GlobalStyle.js';
+import GlobalStyle from '../styles/GlobalStyle';
 import { Theme } from '../styles/Theme.js';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('Submitted:', { email, password });
-    navigate('/');
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaLogin),
+    mode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      // Your login API call here
+      console.log('Submitted:', data);
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      setModalMessage('로그인에 실패했습니다.');
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleSignupClick = () => {
+    navigate('/auth/signup');
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleModalConfirm = () => {
+    handleModalClose();
   };
 
   return (
-    <>
+    <ThemeProvider theme={Theme}>
       <GlobalStyle />
       <LoginContainer>
         <StyledLogo src={Logo} alt='Logo' />
-        <LoginForm onSubmit={handleSubmit}>
+        <LoginForm onSubmit={handleSubmit(onSubmit)}>
           <Title>로그인</Title>
           <FormGroup>
             <FieldWrapper>
-              <Label htmlFor='email'>이메일</Label>
-              <InputField
-                type='email'
-                id='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              <Controller
+                name='email'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='이메일'
+                    placeholder='이메일을 입력하세요'
+                    error={errors.email?.message}
+                    {...field}
+                  />
+                )}
               />
             </FieldWrapper>
             <FieldWrapper>
-              <Label htmlFor='password'>비밀번호</Label>
-              <InputField
-                type='password'
-                id='password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+              <Controller
+                name='password'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='비밀번호'
+                    placeholder='비밀번호를 입력하세요'
+                    type='password'
+                    error={errors.password?.message}
+                    {...field}
+                  />
+                )}
               />
             </FieldWrapper>
             <StyledBigButton type='submit'>로그인</StyledBigButton>
@@ -79,7 +123,7 @@ const Login = () => {
           </FormGroup>
         </LoginForm>
       </LoginContainer>
-    </>
+    </ThemeProvider>
   );
 };
 
@@ -93,14 +137,66 @@ const LoginContainer = styled.div`
   height: 100vh;
   background: url(${LoginBackgroundImg}) no-repeat center center/cover;
 `;
+
+const StyledLogo = styled.img`
+  width: 300px;
+  margin-bottom: 20px;
+`;
+
+const LoginForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 40px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  width: 387px;
+`;
+
 const Title = styled.h2`
   ${Theme.fonts.button}
   color: ${Theme.colors.white};
   text-align: center;
 `;
-const StyledLogo = styled.img`
-  width: 300px;
-  margin-bottom: 20px;
+
+const FormGroup = styled.div`
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+`;
+
+const FieldWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 20px;
+  width: 100%;
+  position: relative;
+`;
+
+const BlankContainer = styled.div`
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+  margin: 20px 20px;
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid #cdcdcd;
+    margin: 0 10px;
+  }
+
+  color: ${Theme.colors.white};
+  ${Theme.fonts.subTitle}
 `;
 
 const SocialLoginButton = styled.button`
@@ -123,55 +219,6 @@ const SocialLoginButton = styled.button`
     height: 24px;
     margin-right: 10px;
   }
-`;
-
-const LoginForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 40px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  z-index: 1;
-  width: 387px;
-`;
-
-const FormGroup = styled.div`
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  flex-direction: column;
-`;
-
-const FieldWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-top: 20px;
-  width: 100%;
-`;
-
-const BlankContainer = styled.div`
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  z-index: 2;
-  margin: 20px 20px;
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    border-top: 1px solid #cdcdcd;
-    margin: 0 10px;
-  }
-
-  color: ${Theme.colors.white};
-  ${Theme.fonts.subTitle}
 `;
 
 const StyledBigButton = styled(BigButton)`

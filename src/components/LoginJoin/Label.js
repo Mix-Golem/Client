@@ -12,7 +12,5 @@ const StyledLabel = styled.label`
   width: 120px;
   margin-right: 10px;
   ${Theme.fonts.label}
-  ${Theme.fonts.label}
-    text-align: center;
-  color: ${Theme.colors.white};
+  text-align: center;
 `;

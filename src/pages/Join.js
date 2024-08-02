@@ -1,188 +1,219 @@
-import React, { useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import BigButton from '../components/LoginJoin/BigButton.js';
 import Footer, { FooterLink } from '../components/LoginJoin/Footer.js';
 import InputField from '../components/LoginJoin/InputField.js';
-import Label from '../components/LoginJoin/Label.js';
 import SmallButton from '../components/LoginJoin/SmallButton.js';
+import { schemaSignup } from '../hooks/ValidationYup.js';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
 
 const Join = () => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [birthDate, setBirthDate] = useState({
-    year: '',
-    month: '',
-    day: '',
-  });
-  const [gender, setGender] = useState('');
-  const [email, setEmail] = useState('');
-  const [emailNumber, setEmailNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordCheck, setPasswordCheck] = useState('');
   const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schemaSignup),
+  });
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('Form Submitted:', {
-      name,
-      phone,
-      birthDate,
-      gender,
-      email,
-      emailNumber,
-      password,
-      passwordCheck,
-    });
+  const onSubmit = (data) => {
+    console.log('Form Submitted:', data);
     navigate('/login');
   };
 
   return (
     <>
       <GlobalStyle />
-      <JoinContainer>
-        <StyledLogo src={Logo} alt='Logo' />
-        <JoinForm onSubmit={handleSubmit}>
-          <Title>회원가입</Title>
-          <FieldWrapper>
-            <Label htmlFor='name'>닉네임</Label>
-            <InputField
-              type='text'
-              id='name'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor='phone'>전화번호</Label>
-            <InputField
-              type='text'
-              id='phone'
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor='birthDate'>생년월일</Label>
-            <BirthDateWrapper>
-              <InputField
-                type='text'
-                placeholder='YYYY'
-                value={birthDate.year}
-                onChange={(e) =>
-                  setBirthDate({
-                    ...birthDate,
-                    year: e.target.value,
-                  })
-                }
+      <ThemeProvider theme={Theme}>
+        <JoinContainer>
+          <StyledLogo src={Logo} alt='Logo' />
+          <JoinForm onSubmit={handleSubmit(onSubmit)}>
+            <Title>회원가입</Title>
+            <FieldWrapper>
+              <Controller
+                name='nickname'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='닉네임'
+                    placeholder='닉네임을 입력하세요'
+                    {...field}
+                    error={errors.nickname?.message}
+                  />
+                )}
               />
-              <InputField
-                type='text'
-                placeholder='MM'
-                value={birthDate.month}
-                onChange={(e) =>
-                  setBirthDate({
-                    ...birthDate,
-                    month: e.target.value,
-                  })
-                }
+            </FieldWrapper>
+            <FieldWrapper>
+              <Controller
+                name='phone'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='전화번호'
+                    placeholder='전화번호를 입력하세요'
+                    {...field}
+                    error={errors.phone?.message}
+                  />
+                )}
               />
-              <InputField
-                type='text'
-                placeholder='DD'
-                value={birthDate.day}
-                onChange={(e) =>
-                  setBirthDate({
-                    ...birthDate,
-                    day: e.target.value,
-                  })
-                }
+            </FieldWrapper>
+            <FieldWrapper>
+              <BirthDateWrapper>
+                <InputLabel>생년월일</InputLabel>
+                <Controller
+                  name='birthDate.year'
+                  control={control}
+                  render={({ field }) => (
+                    <StyledInput
+                      placeholder='YYYY'
+                      {...field}
+                      error={errors.birthDate?.year?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  name='birthDate.month'
+                  control={control}
+                  render={({ field }) => (
+                    <StyledInput
+                      placeholder='MM'
+                      {...field}
+                      error={errors.birthDate?.month?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  name='birthDate.day'
+                  control={control}
+                  render={({ field }) => (
+                    <StyledInput
+                      placeholder='DD'
+                      {...field}
+                      error={errors.birthDate?.day?.message}
+                    />
+                  )}
+                />
+              </BirthDateWrapper>
+            </FieldWrapper>
+            <FieldWrapper>
+              <GenderWrapper>
+                <InputLabel>성별</InputLabel>
+                <Controller
+                  name='gender'
+                  control={control}
+                  render={({ field }) => (
+                    <GenderContainer>
+                      <GenderBox
+                        id='male'
+                        name='gender'
+                        isSelected={field.value === 'male'}
+                        onClick={() => field.onChange('male')}
+                      >
+                        남성
+                      </GenderBox>
+                      <GenderBox
+                        id='female'
+                        name='gender'
+                        isSelected={field.value === 'female'}
+                        onClick={() => field.onChange('female')}
+                      >
+                        여성
+                      </GenderBox>
+                    </GenderContainer>
+                  )}
+                />
+              </GenderWrapper>
+            </FieldWrapper>
+            <FieldWithButtonWrapper>
+              <Controller
+                name='email'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='이메일'
+                    placeholder='이메일을 입력하세요'
+                    {...field}
+                    error={errors.email?.message}
+                  />
+                )}
               />
-            </BirthDateWrapper>
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor='gender'>성별</Label>
-            <GenderWrapper>
-              <GenderBox
-                id='male'
-                name='gender'
-                isSelected={gender === 'male'}
-                onClick={() => setGender('male')}
-              >
-                남성
-              </GenderBox>
-              <GenderBox
-                id='female'
-                name='gender'
-                isSelected={gender === 'female'}
-                onClick={() => setGender('female')}
-              >
-                여성
-              </GenderBox>
-            </GenderWrapper>
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor='email'>이메일</Label>
-            <InputField
-              type='email'
-              id='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <SmallButton>인증</SmallButton>
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor='emailNumber'>이메일 인증번호</Label>
-            <InputField
-              type='text'
-              id='emailNumber'
-              value={emailNumber}
-              onChange={(e) => setEmailNumber(e.target.value)}
-            />
-            <SmallButton>확인</SmallButton>
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor='password'>비밀번호</Label>
-            <InputField
-              type='password'
-              id='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor='passwordCheck'>비밀번호 확인</Label>
-            <InputField
-              type='password'
-              id='passwordCheck'
-              value={passwordCheck}
-              onChange={(e) => setPasswordCheck(e.target.value)}
-            />
-          </FieldWrapper>
-          <BigButton type='submit'>회원가입</BigButton>
-          <Footer>
-            <div>
-              이미 계정이 있으신가요?{' '}
-              <FooterLink href='/login'>로그인</FooterLink>
-            </div>
-          </Footer>
-        </JoinForm>
-      </JoinContainer>
+              <SmallButton>인증</SmallButton>
+            </FieldWithButtonWrapper>
+            <FieldWithButtonWrapper>
+              <Controller
+                name='emailNumber'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='이메일 인증번호'
+                    placeholder='이메일 인증번호를 입력하세요'
+                    {...field}
+                    error={errors.emailNumber?.message}
+                  />
+                )}
+              />
+              <SmallButton>확인</SmallButton>
+            </FieldWithButtonWrapper>
+            <FieldWrapper>
+              <Controller
+                name='pw'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='비밀번호'
+                    placeholder='비밀번호를 입력하세요'
+                    type='password'
+                    {...field}
+                    error={errors.pw?.message}
+                  />
+                )}
+              />
+            </FieldWrapper>
+            <FieldWrapper>
+              <Controller
+                name='checkPw'
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    label='비밀번호 확인'
+                    placeholder='비밀번호를 한번 더 입력하세요'
+                    type='password'
+                    {...field}
+                    error={errors.checkPw?.message}
+                  />
+                )}
+              />
+            </FieldWrapper>
+            <StyledBigButton type='submit'>회원가입</StyledBigButton>
+            <Footer>
+              <div>
+                이미 계정이 있으신가요?{' '}
+                <FooterLink href='/login'>로그인</FooterLink>
+              </div>
+            </Footer>
+          </JoinForm>
+        </JoinContainer>
+      </ThemeProvider>
     </>
   );
 };
 
 export default Join;
+
 const Title = styled.h2`
   ${Theme.fonts.button}
   color: ${Theme.colors.white};
   text-align: center;
   margin-bottom: 40px;
 `;
+
 const StyledLogo = styled.img`
   width: 300px;
   margin-bottom: 20px;
@@ -207,40 +238,69 @@ const JoinForm = styled.form`
   background-color: rgba(0, 0, 0, 0.7);
   color: ${Theme.colors.white};
   max-width: 500px;
-  width: 100vw;
+  width: 100%;
 `;
 
 const FieldWrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
   width: 100%;
 `;
 
+const FieldWithButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+
+  button {
+    margin-left: 10px;
+    height: 41px;
+  }
+`;
+
 const BirthDateWrapper = styled.div`
   display: flex;
-  gap: 10px;
-  max-width: 350px;
+  align-items: center;
+  justify-content: center;
   width: 100%;
 
   input {
     flex: 1;
+    background: ${Theme.colors.white};
+    border: 1px solid ${Theme.colors.borderGray};
+    border-radius: 20px;
+    padding: 0 20px;
+    height: 41px;
+    margin-right: 10px;
+    &:last-child {
+      margin-right: 0;
+    }
   }
 `;
 
 const GenderWrapper = styled.div`
   display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 `;
 
-const GenderBox = styled.div`
+const GenderContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 180px;
-  width: 100vw;
-  height: 40px;
+  width: 370px;
+`;
+
+const GenderBox = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 41px;
   border-radius: 20px;
   background-color: ${({ isSelected }) =>
     isSelected ? Theme.colors.lightBlue : Theme.colors.white};
@@ -252,4 +312,37 @@ const GenderBox = styled.div`
       : '2px solid' + Theme.colors.borderGray};
   cursor: pointer;
   ${Theme.fonts.label}
+  margin-right: 10px;
+  &:last-child {
+    margin-right: 0;
+  }
+`;
+
+const InputLabel = styled.label`
+  ${Theme.fonts.label}
+  color: ${Theme.colors.white};
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  margin-right: 10px;
+  ${Theme.fonts.label}
+  text-align: center;
+  color: ${Theme.colors.white};
+`;
+
+const StyledBigButton = styled(BigButton)`
+  width: 100%;
+`;
+
+const StyledInput = styled.input`
+  box-sizing: border-box;
+  flex: 1;
+  background: ${Theme.colors.white};
+  border: 1px solid ${Theme.colors.borderGray};
+  border-radius: 20px;
+  padding: 0 20px;
+  height: 41px;
+  width: 100%;
 `;

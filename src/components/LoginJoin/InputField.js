@@ -2,20 +2,55 @@ import React from 'react';
 import styled from 'styled-components';
 import { Theme } from '../../styles/Theme.js';
 
-const InputField = ({ id, type, value, onChange, placeholder }) => {
+const InputField = ({
+  id,
+  label,
+  type,
+  value,
+  onChange,
+  placeholder,
+  error,
+}) => {
   return (
-    <StyledInput
-      id={id}
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      required
-    />
+    <FieldWrapper>
+      <LabelWrapper>
+        <Label htmlFor={id}>{label}</Label>
+        <StyledInput
+          id={id}
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          required
+        />
+      </LabelWrapper>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+    </FieldWrapper>
   );
 };
 
 export default InputField;
+
+const FieldWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const LabelWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+
+const Label = styled.label`
+  width: 120px;
+  margin-right: 10px;
+  ${Theme.fonts.label}
+  text-align: center;
+  color: ${Theme.colors.white};
+`;
 
 const StyledInput = styled.input`
   box-sizing: border-box;
@@ -26,4 +61,12 @@ const StyledInput = styled.input`
   padding: 0 20px;
   height: 41px;
   width: 100%;
+`;
+
+const ErrorMessage = styled.div`
+  color: ${Theme.colors.red};
+  margin-left: 150px; /* Adjusted to align with input field */
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: left;
 `;
