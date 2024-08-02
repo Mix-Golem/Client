@@ -47,6 +47,7 @@ const Join = () => {
             <JoinContainer>
                 <StyledLogo src={Logo} alt='Logo' />
                 <JoinForm onSubmit={handleSubmit}>
+                    <Title>회원가입</Title>
                     <FieldWrapper>
                         <Label htmlFor='name'>닉네임</Label>
                         <InputField
@@ -176,10 +177,14 @@ const Join = () => {
 };
 
 export default Join;
-
+const Title = styled.h2`
+    ${Theme.fonts.button}
+    color: ${Theme.colors.white};
+    text-align: center;
+    margin-bottom: 40px;
+`;
 const StyledLogo = styled.img`
-    width: 360px;
-    height: 234.58px;
+    width: 300px;
     margin-bottom: 20px;
 `;
 

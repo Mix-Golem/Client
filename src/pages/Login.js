@@ -29,7 +29,7 @@ const Login = () => {
             <LoginContainer>
                 <StyledLogo src={Logo} alt='Logo' />
                 <LoginForm onSubmit={handleSubmit}>
-                    <Title>비밀번호 찾기</Title>
+                    <Title>로그인</Title>
                     <FormGroup>
                         <FieldWrapper>
                             <Label htmlFor='email'>이메일</Label>
