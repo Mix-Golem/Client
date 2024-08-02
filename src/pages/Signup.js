@@ -13,7 +13,7 @@ import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
 
-const Join = () => {
+const Signup = () => {
   const navigate = useNavigate();
   const {
     control,
@@ -42,9 +42,11 @@ const Join = () => {
                 control={control}
                 render={({ field }) => (
                   <InputField
+                    id='nickname'
                     label='닉네임'
                     placeholder='닉네임을 입력하세요'
-                    {...field}
+                    value={field.value}
+                    onChange={field.onChange}
                     error={errors.nickname?.message}
                   />
                 )}
@@ -56,9 +58,11 @@ const Join = () => {
                 control={control}
                 render={({ field }) => (
                   <InputField
+                    id='phone'
                     label='전화번호'
                     placeholder='전화번호를 입력하세요'
-                    {...field}
+                    value={field.value}
+                    onChange={field.onChange}
                     error={errors.phone?.message}
                   />
                 )}
@@ -73,8 +77,8 @@ const Join = () => {
                   render={({ field }) => (
                     <StyledInput
                       placeholder='YYYY'
-                      {...field}
-                      error={errors.birthDate?.year?.message}
+                      value={field.value}
+                      onChange={field.onChange}
                     />
                   )}
                 />
@@ -84,8 +88,8 @@ const Join = () => {
                   render={({ field }) => (
                     <StyledInput
                       placeholder='MM'
-                      {...field}
-                      error={errors.birthDate?.month?.message}
+                      value={field.value}
+                      onChange={field.onChange}
                     />
                   )}
                 />
@@ -95,12 +99,21 @@ const Join = () => {
                   render={({ field }) => (
                     <StyledInput
                       placeholder='DD'
-                      {...field}
-                      error={errors.birthDate?.day?.message}
+                      value={field.value}
+                      onChange={field.onChange}
                     />
                   )}
                 />
               </BirthDateWrapper>
+              {(errors.birthDate?.year ||
+                errors.birthDate?.month ||
+                errors.birthDate?.day) && (
+                <ErrorMessage>
+                  {errors.birthDate?.year?.message ||
+                    errors.birthDate?.month?.message ||
+                    errors.birthDate?.day?.message}
+                </ErrorMessage>
+              )}
             </FieldWrapper>
             <FieldWrapper>
               <GenderWrapper>
@@ -130,6 +143,9 @@ const Join = () => {
                   )}
                 />
               </GenderWrapper>
+              {errors.gender && (
+                <ErrorMessage>{errors.gender.message}</ErrorMessage>
+              )}
             </FieldWrapper>
             <FieldWithButtonWrapper>
               <Controller
@@ -137,9 +153,11 @@ const Join = () => {
                 control={control}
                 render={({ field }) => (
                   <InputField
+                    id='email'
                     label='이메일'
                     placeholder='이메일을 입력하세요'
-                    {...field}
+                    value={field.value}
+                    onChange={field.onChange}
                     error={errors.email?.message}
                   />
                 )}
@@ -152,9 +170,11 @@ const Join = () => {
                 control={control}
                 render={({ field }) => (
                   <InputField
+                    id='emailNumber'
                     label='이메일 인증번호'
                     placeholder='이메일 인증번호를 입력하세요'
-                    {...field}
+                    value={field.value}
+                    onChange={field.onChange}
                     error={errors.emailNumber?.message}
                   />
                 )}
@@ -167,10 +187,12 @@ const Join = () => {
                 control={control}
                 render={({ field }) => (
                   <InputField
+                    id='pw'
                     label='비밀번호'
                     placeholder='비밀번호를 입력하세요'
                     type='password'
-                    {...field}
+                    value={field.value}
+                    onChange={field.onChange}
                     error={errors.pw?.message}
                   />
                 )}
@@ -182,10 +204,12 @@ const Join = () => {
                 control={control}
                 render={({ field }) => (
                   <InputField
+                    id='checkPw'
                     label='비밀번호 확인'
                     placeholder='비밀번호를 한번 더 입력하세요'
                     type='password'
-                    {...field}
+                    value={field.value}
+                    onChange={field.onChange}
                     error={errors.checkPw?.message}
                   />
                 )}
@@ -205,7 +229,7 @@ const Join = () => {
   );
 };
 
-export default Join;
+export default Signup;
 
 const Title = styled.h2`
   ${Theme.fonts.button}
@@ -308,8 +332,8 @@ const GenderBox = styled.div`
     isSelected ? Theme.colors.black : Theme.colors.black};
   border: ${({ isSelected }) =>
     isSelected
-      ? '2px solid' + Theme.colors.darkBlue
-      : '2px solid' + Theme.colors.borderGray};
+      ? '2px solid ' + Theme.colors.darkBlue
+      : '2px solid ' + Theme.colors.borderGray};
   cursor: pointer;
   ${Theme.fonts.label}
   margin-right: 10px;
@@ -344,5 +368,13 @@ const StyledInput = styled.input`
   border-radius: 20px;
   padding: 0 20px;
   height: 41px;
+  width: 100%;
+`;
+
+const ErrorMessage = styled.div`
+  color: ${Theme.colors.red};
+  margin-top: 5px;
+  font-size: 12px;
+  text-align: left;
   width: 100%;
 `;

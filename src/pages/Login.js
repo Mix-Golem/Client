@@ -117,7 +117,7 @@ const Login = () => {
               </div>
               <div>
                 계정이 없으신가요?{' '}
-                <FooterLink href='/join'>회원가입</FooterLink>
+                <FooterLink href='/signup'>회원가입</FooterLink>
               </div>
             </Footer>
           </FormGroup>

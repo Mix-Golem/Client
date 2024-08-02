@@ -65,8 +65,9 @@ const StyledInput = styled.input`
 
 const ErrorMessage = styled.div`
   color: ${Theme.colors.red};
-  margin-left: 150px; /* Adjusted to align with input field */
+  margin-left: 150px;
   margin-top: 10px;
   font-size: 12px;
   text-align: left;
+  width: 250px;
 `;
