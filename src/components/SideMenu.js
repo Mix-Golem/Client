@@ -1,30 +1,30 @@
-import React from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { Theme } from "../styles/Theme";
-import img_Logo from "../img/Logo.svg";
-import img_Ad from "../img/Ad.png";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import img_Ad from '../img/Ad.png';
+import img_Logo from '../img/Logo.svg';
+import { Theme } from '../styles/Theme';
 
 // Navbar component
 const SideMenu = () => {
   return (
     <Sidebar>
-      <Logo src={img_Logo} alt="Logo" />
+      <Logo src={img_Logo} alt='Logo' />
       <NavLinks>
         <NavLink>
-          <Link to="/">Home</Link>
+          <Link to='/home'>Home</Link>
         </NavLink>
         <NavLink>
-          <Link to="/create">Create</Link>
+          <Link to='/create'>Create</Link>
         </NavLink>
         <NavLink>
-          <Link to="/library">Library</Link>
+          <Link to='/library'>Library</Link>
         </NavLink>
         <NavLink>
-          <Link to="/social">Social</Link>
+          <Link to='/social'>Social</Link>
         </NavLink>
       </NavLinks>
-      <AdImage src={img_Ad} alt="Ad" />
+      <AdImage src={img_Ad} alt='Ad' />
     </Sidebar>
   );
 };
