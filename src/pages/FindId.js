@@ -32,16 +32,7 @@ const FindId = () => {
         <FindIdForm onSubmit={handleSubmit}>
           <Title>아이디 찾기</Title>
           <FormGroup>
-            <Label htmlFor='name'>닉네임</Label>
-            <InputField
-              type='text'
-              id='name'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor='email'>이메일</Label>
+            <Label htmlFor='email'>닉네임</Label>
             <InputRow>
               <InputField
                 type='email'
@@ -55,7 +46,7 @@ const FindId = () => {
             </InputRow>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor='verificationCode'>인증번호</Label>
+            <Label htmlFor='verificationCode'>생년월일</Label>
             <InputField
               type='text'
               id='verificationCode'

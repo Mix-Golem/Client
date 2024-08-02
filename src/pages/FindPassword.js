@@ -32,13 +32,18 @@ const FindPassword = () => {
         <FindPasswordForm onSubmit={handleSubmit}>
           <Title>비밀번호 찾기</Title>
           <FormGroup>
-            <Label htmlFor='id'>비밀번호</Label>
-            <InputField
-              type='text'
-              id='id'
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-            />
+            <Label htmlFor='email'>닉네임</Label>
+            <InputRow>
+              <InputField
+                type='email'
+                id='email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <SmallButton type='button' onClick={handleEmailVerification}>
+                인증
+              </SmallButton>
+            </InputRow>
           </FormGroup>
           <FormGroup>
             <Label htmlFor='email'>이메일</Label>
