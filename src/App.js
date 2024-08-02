@@ -1,42 +1,40 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-// import './App.css';
+
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import GlobalStyle from '../src/styles/GlobalStyle.js';
+import { Theme } from '../src/styles/Theme.js';
+import './App.css';
+import FindId from './pages/FindId';
 import SideMenu from "./components/SideMenu";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
 import Library from "./pages/Library";
 import Social from "./pages/Social";
+import FindPassword from './pages/FindPassword';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
-function App() {
+
+const App = () => {
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
-    <div>
+    <ThemeProvider theme={Theme}>
+      <GlobalStyle />
       <Router>
-        {/* <SideMenu /> */}
         <Routes>
-          <Route exact path="/" component={<Home />} />
+          <Route path='/' element={<Login />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/findid' element={<FindId />} />
+          <Route path='/findpassword' element={<FindPassword />} />
+                      <Route exact path="/" component={<Home />} />
           <Route exact path="/create" component={<Create />} />
           <Route exact path="/library" element={<Library />} />
           <Route exact path="/social" composnent={<Social />} />
         </Routes>
       </Router>
-    </div>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
