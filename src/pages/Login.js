@@ -32,7 +32,7 @@ const Login = () => {
                     <Title>비밀번호 찾기</Title>
                     <FormGroup>
                         <FieldWrapper>
-                            <Label htmlFor='email'>Email</Label>
+                            <Label htmlFor='email'>이메일</Label>
                             <InputField
                                 type='email'
                                 id='email'
@@ -41,7 +41,7 @@ const Login = () => {
                             />
                         </FieldWrapper>
                         <FieldWrapper>
-                            <Label htmlFor='password'>Password</Label>
+                            <Label htmlFor='password'>비밀번호</Label>
                             <InputField
                                 type='password'
                                 id='password'

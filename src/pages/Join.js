@@ -48,7 +48,7 @@ const Join = () => {
                 <StyledLogo src={Logo} alt='Logo' />
                 <JoinForm onSubmit={handleSubmit}>
                     <FieldWrapper>
-                        <Label htmlFor='name'>Name</Label>
+                        <Label htmlFor='name'>닉네임</Label>
                         <InputField
                             type='text'
                             id='name'
@@ -57,7 +57,7 @@ const Join = () => {
                         />
                     </FieldWrapper>
                     <FieldWrapper>
-                        <Label htmlFor='phone'>Phone</Label>
+                        <Label htmlFor='phone'>전화번호</Label>
                         <InputField
                             type='text'
                             id='phone'
@@ -66,7 +66,7 @@ const Join = () => {
                         />
                     </FieldWrapper>
                     <FieldWrapper>
-                        <Label htmlFor='birthDate'>BirthDate</Label>
+                        <Label htmlFor='birthDate'>생년월일</Label>
                         <BirthDateWrapper>
                             <InputField
                                 type='text'
@@ -104,7 +104,7 @@ const Join = () => {
                         </BirthDateWrapper>
                     </FieldWrapper>
                     <FieldWrapper>
-                        <Label htmlFor='gender'>Gender</Label>
+                        <Label htmlFor='gender'>성별</Label>
                         <GenderWrapper>
                             <GenderBox
                                 id='male'
@@ -125,7 +125,7 @@ const Join = () => {
                         </GenderWrapper>
                     </FieldWrapper>
                     <FieldWrapper>
-                        <Label htmlFor='email'>Email</Label>
+                        <Label htmlFor='email'>이메일</Label>
                         <InputField
                             type='email'
                             id='email'
@@ -135,7 +135,7 @@ const Join = () => {
                         <SmallButton>인증</SmallButton>
                     </FieldWrapper>
                     <FieldWrapper>
-                        <Label htmlFor='emailNumber'>Email Number</Label>
+                        <Label htmlFor='emailNumber'>이메일 인증번호</Label>
                         <InputField
                             type='text'
                             id='emailNumber'
@@ -145,7 +145,7 @@ const Join = () => {
                         <SmallButton>확인</SmallButton>
                     </FieldWrapper>
                     <FieldWrapper>
-                        <Label htmlFor='password'>Password</Label>
+                        <Label htmlFor='password'>비밀번호</Label>
                         <InputField
                             type='password'
                             id='password'
@@ -154,7 +154,7 @@ const Join = () => {
                         />
                     </FieldWrapper>
                     <FieldWrapper>
-                        <Label htmlFor='passwordCheck'>Password Check</Label>
+                        <Label htmlFor='passwordCheck'>비밀번호 확인</Label>
                         <InputField
                             type='password'
                             id='passwordCheck'
