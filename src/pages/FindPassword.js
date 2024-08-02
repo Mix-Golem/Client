@@ -3,15 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import BigButton from '../components/LoginJoin/BigButton.js';
 import InputField from '../components/LoginJoin/InputField.js';
-import Label from '../components/LoginJoin/Label.js';
 import SmallButton from '../components/LoginJoin/SmallButton.js';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
 
 const FindPassword = () => {
-  const [email, setEmail] = useState('');
-  const [id, setId] = useState('');
+  const [email, setnickname] = useState('');
+  const [name, setName] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const navigate = useNavigate();
 
@@ -21,63 +20,52 @@ const FindPassword = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert('Password reset link has been sent to your email.');
+    alert('Your ID is: example_id');
     navigate('/login');
   };
 
   return (
     <>
       <GlobalStyle />
-      <FindPasswordContainer>
-        <FindPasswordForm onSubmit={handleSubmit}>
+      <FindIdContainer>
+        <FindIdForm onSubmit={handleSubmit}>
           <Title>비밀번호 찾기</Title>
           <FormGroup>
-            <Label htmlFor='email'>닉네임</Label>
-            <InputRow>
-              <InputField
-                type='email'
-                id='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <SmallButton type='button' onClick={handleEmailVerification}>
-                인증
-              </SmallButton>
-            </InputRow>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor='email'>이메일</Label>
-            <InputRow>
-              <InputField
-                type='email'
-                id='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <SmallButton type='button' onClick={handleEmailVerification}>
-                인증
-              </SmallButton>
-            </InputRow>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor='verificationCode'>인증번호</Label>
             <InputField
-              type='text'
-              id='verificationCode'
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
+              id='nickname'
+              label='닉네임'
+              type='nickname'
+              value={email}
+              onChange={(e) => setnickname(e.target.value)}
+              placeholder='닉네임을 입력하세요'
             />
+            <SmallButton type='button' onClick={handleEmailVerification}>
+              인증
+            </SmallButton>
+          </FormGroup>
+          <FormGroup>
+            <InputField
+              id='email'
+              label='이메일'
+              type='email'
+              value={email}
+              onChange={(e) => setnickname(e.target.value)}
+              placeholder='이메일을 입력하세요'
+            />
+            <SmallButton type='button' onClick={handleEmailVerification}>
+              인증
+            </SmallButton>
           </FormGroup>
           <BigButton type='submit'>비밀번호 찾기</BigButton>
-        </FindPasswordForm>
-      </FindPasswordContainer>
+        </FindIdForm>
+      </FindIdContainer>
     </>
   );
 };
 
 export default FindPassword;
 
-const FindPasswordContainer = styled.div`
+const FindIdContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,7 +74,7 @@ const FindPasswordContainer = styled.div`
   background: url(${LoginBackgroundImg}) no-repeat center center/cover;
 `;
 
-const FindPasswordForm = styled.form`
+const FindIdForm = styled.form`
   display: flex;
   flex-direction: column;
   border-radius: 20px;
@@ -94,7 +82,8 @@ const FindPasswordForm = styled.form`
   padding: 40px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   z-index: 1;
-  width: 400px;
+  max-width: 400px;
+  width: 100vw;
 `;
 
 const Title = styled.h2`
@@ -109,6 +98,7 @@ const FormGroup = styled.div`
   align-items: center;
   margin-bottom: 20px;
   width: 100%;
+  justify-content: space-between;
 `;
 
 const InputRow = styled.div`

@@ -3,20 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import BigButton from '../components/LoginJoin/BigButton.js';
 import InputField from '../components/LoginJoin/InputField.js';
-import Label from '../components/LoginJoin/Label.js';
 import SmallButton from '../components/LoginJoin/SmallButton.js';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
 
 const FindId = () => {
-  const [email, setEmail] = useState('');
+  const [nickname, setnickname] = useState('');
   const [name, setName] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const navigate = useNavigate();
 
   const handleEmailVerification = () => {
-    alert('Verification code sent to your email.');
+    alert('Verification code sent to your nickname.');
   };
 
   const handleSubmit = (event) => {
@@ -32,26 +31,26 @@ const FindId = () => {
         <FindIdForm onSubmit={handleSubmit}>
           <Title>아이디 찾기</Title>
           <FormGroup>
-            <Label htmlFor='email'>닉네임</Label>
-            <InputRow>
-              <InputField
-                type='email'
-                id='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <SmallButton type='button' onClick={handleEmailVerification}>
-                인증
-              </SmallButton>
-            </InputRow>
+            <InputField
+              id='nickname'
+              label='닉네임'
+              type='nickname'
+              value={nickname}
+              onChange={(e) => setnickname(e.target.value)}
+              placeholder='닉네임을 입력하세요'
+            />
+            <SmallButton type='button' onClick={handleEmailVerification}>
+              인증
+            </SmallButton>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor='verificationCode'>생년월일</Label>
             <InputField
-              type='text'
               id='verificationCode'
+              label='생년월일'
+              type='text'
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
+              placeholder='생년월일을 입력하세요'
             />
           </FormGroup>
           <BigButton type='submit'>아이디 찾기</BigButton>
@@ -96,6 +95,7 @@ const FormGroup = styled.div`
   align-items: center;
   margin-bottom: 20px;
   width: 100%;
+  justify-content: space-between;
 `;
 
 const InputRow = styled.div`
