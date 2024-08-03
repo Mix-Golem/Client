@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import styled, { ThemeProvider } from 'styled-components';
 import BigButton from '../components/LoginJoin/BigButton.js';
 import Footer, { FooterLink } from '../components/LoginJoin/Footer.js';
@@ -12,6 +13,37 @@ import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
+
+const yearOptions = Array.from({ length: 100 }, (_, i) => ({
+  value: 2023 - i,
+  label: 2023 - i,
+}));
+
+const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+  value: i + 1,
+  label: i + 1,
+}));
+
+const dayOptions = Array.from({ length: 31 }, (_, i) => ({
+  value: i + 1,
+  label: i + 1,
+}));
+
+const customStyles = {
+  control: (provided) => ({
+    ...provided,
+    borderRadius: '20px', // 추가된 부분
+    color: 'black',
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'black',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    color: 'black',
+  }),
+};
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -80,10 +112,13 @@ const Signup = () => {
                   name='birthDate.year'
                   control={control}
                   render={({ field }) => (
-                    <StyledInput
-                      placeholder='YYYY'
-                      value={field.value}
-                      onChange={field.onChange}
+                    <StyledSelect
+                      options={yearOptions}
+                      styles={customStyles}
+                      value={yearOptions.find(
+                        (option) => option.value === field.value
+                      )}
+                      onChange={(option) => field.onChange(option.value)}
                     />
                   )}
                 />
@@ -91,10 +126,13 @@ const Signup = () => {
                   name='birthDate.month'
                   control={control}
                   render={({ field }) => (
-                    <StyledInput
-                      placeholder='MM'
-                      value={field.value}
-                      onChange={field.onChange}
+                    <StyledSelect
+                      options={monthOptions}
+                      styles={customStyles}
+                      value={monthOptions.find(
+                        (option) => option.value === field.value
+                      )}
+                      onChange={(option) => field.onChange(option.value)}
                     />
                   )}
                 />
@@ -102,10 +140,13 @@ const Signup = () => {
                   name='birthDate.day'
                   control={control}
                   render={({ field }) => (
-                    <StyledInput
-                      placeholder='DD'
-                      value={field.value}
-                      onChange={field.onChange}
+                    <StyledSelect
+                      options={dayOptions}
+                      styles={customStyles}
+                      value={dayOptions.find(
+                        (option) => option.value === field.value
+                      )}
+                      onChange={(option) => field.onChange(option.value)}
                     />
                   )}
                 />
@@ -295,19 +336,7 @@ const BirthDateWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-
-  input {
-    flex: 1;
-    background: ${Theme.colors.white};
-    border: 1px solid ${Theme.colors.borderGray};
-    border-radius: 20px;
-    padding: 0 20px;
-    height: 41px;
-    margin-right: 10px;
-    &:last-child {
-      margin-right: 0;
-    }
-  }
+  border-radius: 20px;
 `;
 
 const GenderWrapper = styled.div`
@@ -365,15 +394,13 @@ const StyledBigButton = styled(BigButton)`
   width: 100%;
 `;
 
-const StyledInput = styled.input`
-  box-sizing: border-box;
+const StyledSelect = styled(Select)`
   flex: 1;
-  background: ${Theme.colors.white};
-  border: 1px solid ${Theme.colors.borderGray};
+  margin-right: 10px;
   border-radius: 20px;
-  padding: 0 20px;
-  height: 41px;
-  width: 100%;
+  &:last-child {
+    margin-right: 0;
+  }
 `;
 
 const ErrorMessage = styled.div`
