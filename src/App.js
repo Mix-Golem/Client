@@ -16,7 +16,7 @@ import Social from './pages/Social';
 const App = () => {
   return (
     <ThemeProvider theme={Theme}>
-      <GlobalStyle />
+      Æ<GlobalStyle />
       <Router>
         <Routes>
           <Route path='/' element={<Login />} />
