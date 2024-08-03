@@ -34,7 +34,6 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Your login API call here
       console.log('Submitted:', data);
       navigate('/');
     } catch (error) {

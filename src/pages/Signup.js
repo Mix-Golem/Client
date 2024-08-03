@@ -21,6 +21,11 @@ const Signup = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaSignup),
+    mode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = (data) => {
