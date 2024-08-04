@@ -15,16 +15,18 @@ const InputField = ({
     <FieldWrapper>
       <LabelWrapper>
         <Label htmlFor={id}>{label}</Label>
-        <StyledInput
-          id={id}
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          required
-        />
+        <InputWrapper>
+          <StyledInput
+            id={id}
+            type={type}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            required
+          />
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </InputWrapper>
       </LabelWrapper>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
     </FieldWrapper>
   );
 };
@@ -52,9 +54,15 @@ const Label = styled.label`
   color: ${Theme.colors.white};
 `;
 
+const InputWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
 const StyledInput = styled.input`
   box-sizing: border-box;
-  flex: 1;
   background: ${Theme.colors.white};
   border: 1px solid ${Theme.colors.borderGray};
   border-radius: 20px;
@@ -65,9 +73,9 @@ const StyledInput = styled.input`
 
 const ErrorMessage = styled.div`
   color: ${Theme.colors.red};
-  margin-left: 300px;
   margin-top: 10px;
+  margin-left: 10px;
   font-size: 12px;
-  text-align: left;
   width: 100%;
+  text-align: left;
 `;
