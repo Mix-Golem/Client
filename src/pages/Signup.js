@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
@@ -15,17 +15,32 @@ import { Theme } from '../styles/Theme.js';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schemaSignup),
+    mode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
-  const onSubmit = (data) => {
-    console.log('Form Submitted:', data);
-    navigate('/login');
+  const onSubmit = async (data) => {
+    try {
+      // Your signup API call here
+      console.log('Submitted:', data);
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      setModalMessage('회원가입에 실패했습니다.');
+      setIsModalOpen(true);
+    }
   };
 
   return (

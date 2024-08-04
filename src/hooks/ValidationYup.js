@@ -33,20 +33,7 @@ export const schemaSignup = yup.object().shape({
       /^\d{3}-\d{3,4}-\d{4}$/,
       '전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)'
     ),
-  birthDate: yup.object().shape({
-    year: yup
-      .string()
-      .required('년도를 입력해주세요.')
-      .matches(/^\d{4}$/, '올바른 년도를 입력해주세요.'),
-    month: yup
-      .string()
-      .required('월을 입력해주세요.')
-      .matches(/^\d{1,2}$/, '올바른 월을 입력해주세요.'),
-    day: yup
-      .string()
-      .required('일을 입력해주세요.')
-      .matches(/^\d{1,2}$/, '올바른 일을 입력해주세요.'),
-  }),
+
   gender: yup.string().required('성별을 선택해주세요.'),
 });
 
