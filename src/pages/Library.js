@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import SideMenu from "../components/SideMenu";
 import Lyrics from "../components/Lyrics";
@@ -7,15 +7,49 @@ import { Theme } from "../styles/Theme";
 import Frame from "../img/Frame.svg";
 import Img_Credit from "../img/Img_Credit.svg";
 import Album1 from "../img/Album1.svg";
+import Icon_CreatePlayList from "../img/playlist_new.svg";
+import Icon_MyPlayList from "../img/playlist.svg";
 
 const Library = () => {
   const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedLyrics, setSeletedLyrics] = useState(null);
+  const [selectedLyrics, setSelectedLyrics] = useState(null);
+  const [activeScreen, setActiveScreen] = useState("MySong");
+  const [dropdownIndex, setDropdownIndex] = useState(null);
+
+  const dropdownRef = useRef(null);
+
   const handleItemClick = (index) => {
     setSelectedItem(index);
-    console.log(songList[index].lyrics);
-    setSeletedLyrics(songList[index].lyrics);
+    setSelectedLyrics(songList[index].lyrics);
   };
+
+  const handleButtonClick = (screen) => {
+    setActiveScreen(screen);
+    setSelectedItem(null);
+    setSelectedLyrics(null);
+  };
+
+  const toggleDropdown = (index) => {
+    setDropdownIndex(dropdownIndex === index ? null : index);
+  };
+
+  const handleOptionClick = (option, index) => {
+    setDropdownIndex(null);
+    // Add functionality for each option here
+  };
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownIndex(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const songList = [
     {
@@ -48,12 +82,19 @@ const Library = () => {
     },
   ];
 
+  const playlist = [
+    { title: "Playlist 1", src: Icon_MyPlayList },
+    { title: "Playlist 2", src: Icon_MyPlayList },
+    { title: "Playlist 3", src: Icon_MyPlayList },
+    { title: "Playlist 4", src: Icon_MyPlayList },
+  ];
+
   return (
     <LibraryContainer>
       <SideWrapper>
         <SideMenu />
         <Credit>
-          <img src={Img_Credit} alt="" />
+          <img src={Img_Credit} alt="Credits" />
           <p>50 Credits</p>
         </Credit>
       </SideWrapper>
@@ -61,26 +102,127 @@ const Library = () => {
         <ContentsWrapper>
           <ContentsTitle>Library</ContentsTitle>
           <ContentsMenu>
-            <button>My Song</button>
-            <button>PlayList</button>
-            <button>Following</button>
-            <button>Followers</button>
+            <button onClick={() => handleButtonClick("MySong")}>My Song</button>
+            <button onClick={() => handleButtonClick("Playlist")}>
+              PlayList
+            </button>
+            <button onClick={() => handleButtonClick("Following")}>
+              Following
+            </button>
+            <button onClick={() => handleButtonClick("Followers")}>
+              Followers
+            </button>
           </ContentsMenu>
           <ContentsListWrapper>
-            {songList.map((value, index) => (
-              <ContentsList
-                as="button"
-                key={index}
-                onClick={() => handleItemClick(index)}
-                isSelected={index === selectedItem}
-              >
-                <img src={value.src} alt="Song" />
-                <SongInfo>
-                  <p>{value.title}</p>
-                  <p>{value.artist}</p>
-                </SongInfo>
-              </ContentsList>
-            ))}
+            {activeScreen === "MySong" &&
+              songList.map((value, index) => (
+                <ContentsList
+                  key={index}
+                  isSelected={index === selectedItem}
+                  onClick={() => handleItemClick(index)}
+                >
+                  <img src={value.src} alt="Song" />
+                  <SongInfo>
+                    <p>{value.title}</p>
+                    <p>{value.artist}</p>
+                  </SongInfo>
+                  <MoreButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleDropdown(index);
+                    }}
+                  >
+                    •••
+                  </MoreButton>
+                  {dropdownIndex === index && (
+                    <DropdownMenu ref={dropdownRef}>
+                      <DropdownItem
+                        onClick={() => handleOptionClick("Share", index)}
+                      >
+                        Share
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => handleOptionClick("Rename", index)}
+                      >
+                        Rename
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() =>
+                          handleOptionClick("Add to Playlist", index)
+                        }
+                      >
+                        Add to Playlist
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => handleOptionClick("Delete", index)}
+                        delete
+                      >
+                        Delete
+                      </DropdownItem>
+                    </DropdownMenu>
+                  )}
+                </ContentsList>
+              ))}
+            {activeScreen === "Playlist" && (
+              <PlaylistWrapper>
+                <PlaylistItem>
+                  <PlaylistImage
+                    src={Icon_CreatePlayList}
+                    alt="Create Playlist"
+                  />
+                  <TitleWrapper>
+                    <PlaylistTitle>Create Playlist</PlaylistTitle>
+                  </TitleWrapper>
+                </PlaylistItem>
+                {/* Map over the playlist items */}
+                {playlist.map((item, index) => (
+                  <PlaylistItem key={index}>
+                    <PlaylistImage src={item.src} alt={item.title} />
+                    <TitleWrapper>
+                      <PlaylistTitle>{item.title}</PlaylistTitle>
+                      {/* <MoreButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDropdown(index);
+                        }}
+                      >
+                        •••
+                      </MoreButton> */}
+                    </TitleWrapper>
+                    {dropdownIndex === index && (
+                      <DropdownMenu ref={dropdownRef}>
+                        <DropdownItem
+                          onClick={() => handleOptionClick("Share", index)}
+                        >
+                          Share
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => handleOptionClick("Rename", index)}
+                        >
+                          Rename
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            handleOptionClick("Add to Playlist", index)
+                          }
+                        >
+                          Add to Playlist
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => handleOptionClick("Delete", index)}
+                          delete
+                        >
+                          Delete
+                        </DropdownItem>
+                      </DropdownMenu>
+                    )}
+                  </PlaylistItem>
+                ))}
+              </PlaylistWrapper>
+            )}
+
+            {activeScreen === "Following" && <div>Following Content</div>}
+            {activeScreen === "Followers" && <div>Followers Content</div>}
           </ContentsListWrapper>
         </ContentsWrapper>
         <Lyrics lyrics={selectedLyrics} />
@@ -139,13 +281,9 @@ const LibraryWrapper = styled.div`
   left: 45px;
   top: 47px;
 
-  /* background: ${Theme.colors.lightGray};
-  border-radius: 20px; */
-
   background-image: url(${Frame});
 `;
 
-// 그라데이션 박스
 const GradientBox = styled.div`
   background: linear-gradient(180deg, #666666 1.13%, #000000 25.35%);
   border-radius: 20px;
@@ -157,9 +295,7 @@ const ContentsWrapper = styled(GradientBox)`
   top: 23px;
   width: 744px;
   height: 663px;
-
   overflow-x: hidden;
-  /* overflow-y: hidden; */
 `;
 
 const ContentsTitle = styled.p`
@@ -175,7 +311,6 @@ const ContentsTitle = styled.p`
   align-items: center;
 `;
 
-// nav menu list
 const ContentsMenu = styled.ul`
   margin: 0px;
   margin-bottom: 46px;
@@ -196,7 +331,6 @@ const ContentsMenu = styled.ul`
       color: ${Theme.colors.lightBlue};
     }
 
-    // test
     &:active {
       color: ${Theme.colors.red};
     }
@@ -217,9 +351,9 @@ const ContentsListWrapper = styled.div`
   }
 `;
 
-// 수록곡 갯수만큼 props로 albumImg, title, artist 넘겨주면 될 듯
 const ContentsList = styled.div`
   display: flex;
+  align-items: center;
   width: 744px;
   height: 163px;
   background: ${(props) =>
@@ -227,6 +361,7 @@ const ContentsList = styled.div`
       ? "linear-gradient(270deg, #D9D9D9 28.08%, #81D8F3 100%)"
       : "black"};
   border-style: none;
+  position: relative;
 
   img {
     margin-left: 42px;
@@ -260,4 +395,84 @@ const SongInfo = styled.div`
       color: ${Theme.colors.gray};
     }
   }
+`;
+
+const MoreButton = styled.button`
+  background: none;
+  border: none;
+  color: ${Theme.colors.white};
+  font-size: 24px;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: 20px;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: ${Theme.colors.black};
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1000;
+  margin-top: 10px;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px 20px;
+  cursor: pointer;
+  ${Theme.fonts.dropdownItem}
+  color: ${Theme.colors.white};
+  border-radius: 10px;
+
+  &:hover {
+    background: ${Theme.colors.gray};
+  }
+
+  ${(props) =>
+    props.delete &&
+    `
+    color: ${Theme.colors.red};
+  `}
+`;
+
+const PlaylistWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  padding: 30px;
+  gap: 30px;
+  width: 100%;
+  height: 500px;
+
+  box-sizing: border-box;
+`;
+
+const PlaylistItem = styled.div`
+  position: relative;
+  width: 185px;
+  height: 185px;
+  text-align: center;
+`;
+
+const PlaylistImage = styled.img`
+  object-fit: cover;
+`;
+
+const TitleWrapper = styled.div`
+  position: absolute;
+  padding-bottom: 5px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+`;
+
+const PlaylistTitle = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+
+  ${Theme.fonts.playlistTitle}
+  color: ${Theme.colors.white};
 `;
