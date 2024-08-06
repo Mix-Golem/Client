@@ -165,7 +165,7 @@ const Library = () => {
               ))}
             {activeScreen === "Playlist" && (
               <PlaylistWrapper>
-                <PlaylistItem>
+                <PlaylistItem as="button">
                   <PlaylistImage
                     src={Icon_CreatePlayList}
                     alt="Create Playlist"
@@ -176,7 +176,7 @@ const Library = () => {
                 </PlaylistItem>
                 {/* Map over the playlist items */}
                 {playlist.map((item, index) => (
-                  <PlaylistItem key={index}>
+                  <PlaylistItem as="button" key={index}>
                     <PlaylistImage src={item.src} alt={item.title} />
                     <TitleWrapper>
                       <PlaylistTitle>{item.title}</PlaylistTitle>
@@ -295,7 +295,7 @@ const ContentsWrapper = styled(GradientBox)`
   top: 23px;
   width: 744px;
   height: 663px;
-  overflow-x: hidden;
+  overflow: hidden;
 `;
 
 const ContentsTitle = styled.p`
@@ -451,6 +451,7 @@ const PlaylistWrapper = styled.div`
 
 const PlaylistItem = styled.div`
   position: relative;
+  padding: 0px;
   width: 185px;
   height: 185px;
   text-align: center;
