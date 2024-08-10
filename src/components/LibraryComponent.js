@@ -16,20 +16,27 @@ const LibraryComponent = ({
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeScreen, setActiveScreen] = useState("MySong");
   const [dropdownIndex, setDropdownIndex] = useState(null);
-  const [selectedLyrics, setSelectedLyrics] = useState(null); // useless?
+  // const [selectedLyrics, setSelectedLyrics] = useState(null); // useless?
+  const [SelectedPlaylist, SetSelectedPlaylist] = useState(null);
+  const [playlistTrack, setPlaylistTrack] = useState(null);
+
+  // test
+  const [username, setUserName] = useState("박스 깎는 노인");
 
   const dropdownRef = useRef(null);
 
   const handleSongClick = (index) => {
     setSelectedItem(index);
-    setSelectedLyrics(songlist[index].lyrics);
+    // setSelectedLyrics(songlist[index].lyrics);
     updateSelectedLyrics(songlist[index].lyrics);
   };
 
   const handleMenuClick = (screen) => {
     setActiveScreen(screen);
     setSelectedItem(null);
-    setSelectedLyrics(null);
+    // setSelectedLyrics(null);
+    updateSelectedLyrics(null);
+    SetSelectedPlaylist(null);
   };
 
   const toggleDropdown = (index) => {
@@ -56,25 +63,26 @@ const LibraryComponent = ({
   return (
     <ContentsWrapper>
       <ContentsTitle>Library</ContentsTitle>
+      {/* Library 메뉴 선택 */}
       <ContentsMenu>
         <button onClick={() => handleMenuClick("MySong")}>My Song</button>
         <button onClick={() => handleMenuClick("Playlist")}>PlayList</button>
         <button onClick={() => handleMenuClick("Following")}>Following</button>
         <button onClick={() => handleMenuClick("Followers")}>Followers</button>
       </ContentsMenu>
-      <ContentsListWrapper>
+      <MySongWrapper>
         {activeScreen === "MySong" &&
           songlist.map((item, index) => (
-            <ContentsList
+            <MySongList
               key={index}
               isSelected={index === selectedItem}
               onClick={() => handleSongClick(index)}
             >
               <img src={item.thumbnail} alt="Song" />
-              <SongInfo>
+              <MySongInfo>
                 <p>{item.title}</p>
                 <p>{item.artist}</p>
-              </SongInfo>
+              </MySongInfo>
               <MoreButton
                 onClick={(e) => {
                   e.stopPropagation();
@@ -108,23 +116,43 @@ const LibraryComponent = ({
                   </DropdownItem>
                 </DropdownMenu>
               )}
-            </ContentsList>
+            </MySongList>
           ))}
         {activeScreen === "Playlist" && (
-          <PlaylistWrapper>
-            <PlaylistItem as="button">
-              <PlaylistImage src={Icon_CreatePlayList} alt="Create Playlist" />
-              <TitleWrapper>
-                <PlaylistTitle>Create Playlist</PlaylistTitle>
-              </TitleWrapper>
-            </PlaylistItem>
-            {/* Map over the playlist items */}
-            {playlist.map((item, index) => (
-              <PlaylistItem as="button" key={index}>
-                <PlaylistImage src={item.thumbnail} alt={item.title} />
-                <TitleWrapper>
-                  <PlaylistTitle>{item.title}</PlaylistTitle>
-                  {/* <MoreButton
+          <>
+            {/* playlist 선택 
+                앨범 id는 0부터 정렬*/}
+            {SelectedPlaylist === null ? (
+              <PlaylistWrapper>
+                <PlaylistItem
+                  as="button"
+                  onClick={() => {
+                    SetSelectedPlaylist(-1);
+                    console.log(-1);
+                  }}
+                >
+                  <PlaylistImage
+                    src={Icon_CreatePlayList}
+                    alt="Create Playlist"
+                  />
+                  <PlaylistTitleWrapper>
+                    <PlaylistTitle>Create Playlist</PlaylistTitle>
+                  </PlaylistTitleWrapper>
+                </PlaylistItem>
+
+                {playlist.map((item, index) => (
+                  <PlaylistItem
+                    as="button"
+                    key={index}
+                    onClick={() => {
+                      SetSelectedPlaylist(index);
+                      console.log(index);
+                    }}
+                  >
+                    <PlaylistImage src={item.thumbnail} alt={item.title} />
+                    <PlaylistTitleWrapper>
+                      <PlaylistTitle>{item.title}</PlaylistTitle>
+                      {/* <MoreButton
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleDropdown(index);
@@ -132,42 +160,90 @@ const LibraryComponent = ({
                       >
                         •••
                       </MoreButton> */}
-                </TitleWrapper>
-                {dropdownIndex === index && (
-                  <DropdownMenu ref={dropdownRef}>
-                    <DropdownItem
-                      onClick={() => handleOptionClick("Share", index)}
-                    >
-                      Share
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => handleOptionClick("Rename", index)}
-                    >
-                      Rename
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() =>
-                        handleOptionClick("Add to Playlist", index)
-                      }
-                    >
-                      Add to Playlist
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => handleOptionClick("Delete", index)}
-                      delete
-                    >
-                      Delete
-                    </DropdownItem>
-                  </DropdownMenu>
-                )}
-              </PlaylistItem>
-            ))}
-          </PlaylistWrapper>
+                    </PlaylistTitleWrapper>
+                    {dropdownIndex === index && (
+                      <DropdownMenu ref={dropdownRef}>
+                        <DropdownItem
+                          onClick={() => handleOptionClick("Share", index)}
+                        >
+                          Share
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => handleOptionClick("Rename", index)}
+                        >
+                          Rename
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            handleOptionClick("Add to Playlist", index)
+                          }
+                        >
+                          Add to Playlist
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => handleOptionClick("Delete", index)}
+                          delete
+                        >
+                          Delete
+                        </DropdownItem>
+                      </DropdownMenu>
+                    )}
+                  </PlaylistItem>
+                ))}
+              </PlaylistWrapper>
+            ) : // create playlist
+            SelectedPlaylist === -1 ? (
+              <></>
+            ) : // show playlist
+            SelectedPlaylist >= 0 ? (
+              <>
+                <PlaylistInfoWrapper>
+                  <PlaylistInfo>
+                    <img
+                      src={playlist[SelectedPlaylist].thumbnail}
+                      alt="Song"
+                    />
+                    <PlaylistSongInfo>
+                      <p>{playlist[SelectedPlaylist].title}</p>
+                      <p>{username}</p>
+                    </PlaylistSongInfo>
+                  </PlaylistInfo>
+                  <hr />
+                  {/* test (PlaylistTrack) */}
+                  {songlist ? (
+                    <>
+                      {songlist.map((item, index) => (
+                        <MySongList
+                          key={index}
+                          // isSelected={index === selectedItem} // add if lyric is needed
+                          // onClick={() => handleSongClick(index)}
+                        >
+                          <img src={item.thumbnail} alt="Song" />
+                          <MySongInfo>
+                            <p>{item.title}</p>
+                            <p>{item.artist}</p>
+                          </MySongInfo>
+                        </MySongList>
+                      ))}
+                    </>
+                  ) : (
+                    <PlaylistTrackWrapper>
+                      <PlaylistNoTrack>
+                        There are no songs in your playlist.
+                        <br />
+                        Add them!
+                      </PlaylistNoTrack>
+                      <PlaylistAddBtn>add</PlaylistAddBtn>
+                    </PlaylistTrackWrapper>
+                  )}
+                </PlaylistInfoWrapper>
+              </>
+            ) : null}
+          </>
         )}
-
         {activeScreen === "Following" && <div>Following Content</div>}
         {activeScreen === "Followers" && <div>Followers Content</div>}
-      </ContentsListWrapper>
+      </MySongWrapper>
     </ContentsWrapper>
   );
 };
@@ -227,7 +303,7 @@ const ContentsMenu = styled.ul`
   }
 `;
 
-const ContentsListWrapper = styled.div`
+const MySongWrapper = styled.div`
   height: 490px;
   overflow-x: hidden;
   overflow-y: scroll;
@@ -241,7 +317,7 @@ const ContentsListWrapper = styled.div`
   }
 `;
 
-const ContentsList = styled.div`
+const MySongList = styled.div`
   display: flex;
   align-items: center;
   width: 744px;
@@ -263,7 +339,7 @@ const ContentsList = styled.div`
   }
 `;
 
-const SongInfo = styled.div`
+const MySongInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: left;
@@ -351,7 +427,7 @@ const PlaylistImage = styled.img`
   object-fit: cover;
 `;
 
-const TitleWrapper = styled.div`
+const PlaylistTitleWrapper = styled.div`
   position: absolute;
   padding-bottom: 5px;
   bottom: 0;
@@ -366,4 +442,86 @@ const PlaylistTitle = styled.div`
 
   ${Theme.fonts.playlistTitle}
   color: ${Theme.colors.white};
+`;
+
+const PlaylistInfoWrapper = styled.div`
+  height: 490px;
+  overflow-x: hidden;
+
+  hr {
+    margin-top: 44px;
+    width: 80%;
+  }
+`;
+
+const PlaylistInfo = styled.div`
+  display: flex;
+  align-items: center;
+  width: 744px;
+  height: 163px;
+  background: ${(props) =>
+    props.isSelected
+      ? "linear-gradient(270deg, #D9D9D9 28.08%, #81D8F3 100%)"
+      : "black"};
+  border-style: none;
+  position: relative;
+
+  img {
+    margin-left: 42px;
+    width: 185px;
+    height: 185px;
+    object-fit: fill;
+    align-self: center;
+  }
+`;
+
+const PlaylistSongInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  margin-left: 38px;
+
+  p {
+    justify-content: left;
+    text-align: left;
+
+    &:nth-child(1) {
+      margin-top: 31px;
+      margin-bottom: 0px;
+      ${Theme.fonts.songTitle}
+      color: ${Theme.colors.white};
+    }
+
+    &:nth-child(2) {
+      ${Theme.fonts.songArtist}
+      color: ${Theme.colors.gray};
+    }
+  }
+`;
+
+const PlaylistTrackWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const PlaylistNoTrack = styled.div`
+  margin-top: 37px;
+  font-family: "FTLAB-HOON";
+  font-weight: 500;
+  font-size: 40px;
+  text-align: center;
+  color: ${Theme.colors.white};
+`;
+
+const PlaylistAddBtn = styled.button`
+  margin-top: 20px;
+  width: 198px;
+  height: 42px;
+  /* border: none; */
+  border-radius: 21px;
+  background: ${Theme.colors.lightGray};
+  color: ${Theme.colors.white};
+  ${Theme.fonts.list};
+  text-align: center;
 `;

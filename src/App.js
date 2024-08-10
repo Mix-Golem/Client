@@ -32,7 +32,7 @@ function App() {
           <Route exact path="/" component={<Home />} />
           <Route exact path="/create" component={<Create />} />
           <Route exact path="/library" element={<Library />} />
-          <Route exact path="/social" composnent={<Social />} />
+          <Route exact path="/social" component={<Social />} />
         </Routes>
       </Router>
     </div>
