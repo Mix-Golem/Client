@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
@@ -32,6 +32,15 @@ const Login = () => {
     },
   });
 
+  useEffect(() => {
+    const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
+
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(kakaoKey); // 환경 변수에서 Kakao 키 가져오기
+      console.log('Kakao SDK 초기화 완료');
+    }
+  }, []);
+
   const onSubmit = async (data) => {
     try {
       // Your login API call here
@@ -57,7 +66,6 @@ const Login = () => {
   };
 
   const handleKakaoLogin = () => {
-    // Kakao SDK 초기화 확인
     if (!window.Kakao || !window.Kakao.Auth) {
       console.error('Kakao SDK가 초기화되지 않았습니다.');
       setModalMessage(
@@ -67,7 +75,6 @@ const Login = () => {
       return;
     }
 
-    // Kakao 로그인 시도
     window.Kakao.Auth.login({
       success: function (authObj) {
         console.log('Kakao 로그인 성공:', authObj);
