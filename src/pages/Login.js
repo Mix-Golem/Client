@@ -138,6 +138,7 @@ const Login = () => {
             <SocialLoginButton
               bgColor={Theme.colors.white}
               color={Theme.colors.black}
+              onClick={() => googleLogin()}
             >
               <img src={GoogleLogo} alt='Google Logo' />
               Sign With Google
