@@ -13,6 +13,7 @@ import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle';
 import { Theme } from '../styles/Theme.js';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -56,6 +57,45 @@ const Login = () => {
     handleModalClose();
   };
 
+  const handleKakaoLogin = () => {
+    // Kakao SDK 초기화 확인
+    if (!window.Kakao || !window.Kakao.Auth) {
+      console.error('Kakao SDK가 초기화되지 않았습니다.');
+      setModalMessage(
+        '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
+      );
+      setIsModalOpen(true);
+      return;
+    }
+
+    // Kakao 로그인 시도
+    window.Kakao.Auth.login({
+      success: function (authObj) {
+        console.log('Kakao 로그인 성공:', authObj);
+        navigate('/'); // 로그인 성공 시 이동할 경로
+      },
+      fail: function (err) {
+        console.error('Kakao 로그인 실패:', err);
+        setModalMessage(
+          '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
+        );
+        setIsModalOpen(true);
+      },
+    });
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      console.log('Google 로그인 성공:', tokenResponse);
+      navigate('/'); // 로그인 성공 시 이동할 경로
+    },
+    onError: () => {
+      console.error('Google 로그인 실패');
+      setModalMessage('구글 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      setIsModalOpen(true);
+    },
+  });
+
   return (
     <ThemeProvider theme={Theme}>
       <GlobalStyle />
@@ -98,11 +138,16 @@ const Login = () => {
             <SocialLoginButton
               bgColor={Theme.colors.white}
               color={Theme.colors.black}
+              onClick={() => googleLogin()}
             >
               <img src={GoogleLogo} alt='Google Logo' />
               Sign With Google
             </SocialLoginButton>
-            <SocialLoginButton bgColor='#FEE500' color={Theme.colors.black}>
+            <SocialLoginButton
+              bgColor='#FEE500'
+              color={Theme.colors.black}
+              onClick={handleKakaoLogin}
+            >
               <img src={KakaoLogo} alt='Kakao Logo' />
               Sign With Kakao
             </SocialLoginButton>
