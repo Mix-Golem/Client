@@ -8,6 +8,7 @@ import {
 import { ThemeProvider } from 'styled-components';
 import GlobalStyle from '../src/styles/GlobalStyle.js';
 import { Theme } from '../src/styles/Theme.js';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import './App.css';
 import Create from './pages/Create';
 import FindId from './pages/FindId';
@@ -37,50 +38,52 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={Theme}>
-      <GlobalStyle />
-      <Router>
-        <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/findid' element={<FindId />} />
-          <Route path='/findpassword' element={<FindPassword />} />
-          <Route
-            path='/home'
-            element={
-              <PrivateRoute>
-                <Home />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path='/create'
-            element={
-              <PrivateRoute>
-                <Create />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path='/library'
-            element={
-              <PrivateRoute>
-                <Library />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path='/social'
-            element={
-              <PrivateRoute>
-                <Social />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+      <ThemeProvider theme={Theme}>
+        <GlobalStyle />
+        <Router>
+          <Routes>
+            <Route path='/' element={<Login />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<Signup />} />
+            <Route path='/findid' element={<FindId />} />
+            <Route path='/findpassword' element={<FindPassword />} />
+            <Route
+              path='/home'
+              element={
+                <PrivateRoute>
+                  <Home />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path='/create'
+              element={
+                <PrivateRoute>
+                  <Create />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path='/library'
+              element={
+                <PrivateRoute>
+                  <Library />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path='/social'
+              element={
+                <PrivateRoute>
+                  <Social />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   );
 };
 

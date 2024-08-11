@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
@@ -13,6 +13,7 @@ import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle';
 import { Theme } from '../styles/Theme.js';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,15 +32,6 @@ const Login = () => {
       password: '',
     },
   });
-
-  useEffect(() => {
-    const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
-
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(kakaoKey); // 환경 변수에서 Kakao 키 가져오기
-      console.log('Kakao SDK 초기화 완료');
-    }
-  }, []);
 
   const onSubmit = async (data) => {
     try {
@@ -66,6 +58,7 @@ const Login = () => {
   };
 
   const handleKakaoLogin = () => {
+    // Kakao SDK 초기화 확인
     if (!window.Kakao || !window.Kakao.Auth) {
       console.error('Kakao SDK가 초기화되지 않았습니다.');
       setModalMessage(
@@ -75,6 +68,7 @@ const Login = () => {
       return;
     }
 
+    // Kakao 로그인 시도
     window.Kakao.Auth.login({
       success: function (authObj) {
         console.log('Kakao 로그인 성공:', authObj);
@@ -89,6 +83,18 @@ const Login = () => {
       },
     });
   };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      console.log('Google 로그인 성공:', tokenResponse);
+      navigate('/'); // 로그인 성공 시 이동할 경로
+    },
+    onError: () => {
+      console.error('Google 로그인 실패');
+      setModalMessage('구글 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      setIsModalOpen(true);
+    },
+  });
 
   return (
     <ThemeProvider theme={Theme}>
