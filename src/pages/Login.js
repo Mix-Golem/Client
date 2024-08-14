@@ -164,6 +164,10 @@ const Login = () => {
                 계정이 없으신가요?{' '}
                 <FooterLink href='/signup'>회원가입</FooterLink>
               </div>
+              <div>
+                일단 앱을 둘러보실래요?{' '}
+                <FooterLink href='/library'>로그인 없이 둘러보기</FooterLink>
+              </div>
             </Footer>
           </FormGroup>
         </LoginForm>
