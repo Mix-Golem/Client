@@ -68,11 +68,10 @@ const Login = () => {
       return;
     }
 
-    // Kakao 로그인 시도
     window.Kakao.Auth.login({
       success: function (authObj) {
         console.log('Kakao 로그인 성공:', authObj);
-        navigate('/'); // 로그인 성공 시 이동할 경로
+        navigate('/');
       },
       fail: function (err) {
         console.error('Kakao 로그인 실패:', err);
@@ -87,7 +86,7 @@ const Login = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => {
       console.log('Google 로그인 성공:', tokenResponse);
-      navigate('/'); // 로그인 성공 시 이동할 경로
+      navigate('/');
     },
     onError: () => {
       console.error('Google 로그인 실패');
@@ -127,6 +126,7 @@ const Login = () => {
                     label='비밀번호'
                     placeholder='비밀번호를 입력하세요'
                     type='password'
+                    autoComplete='current-password'
                     error={errors.password?.message}
                     {...field}
                   />
@@ -136,15 +136,15 @@ const Login = () => {
             <StyledBigButton type='submit'>로그인</StyledBigButton>
             <BlankContainer>OR</BlankContainer>
             <SocialLoginButton
-              bgColor={Theme.colors.white}
-              color={Theme.colors.black}
+              $bgColor={Theme.colors.white}
+              $color={Theme.colors.black}
               onClick={() => googleLogin()}
             >
               <img src={GoogleLogo} alt='Google Logo' />
               Sign With Google
             </SocialLoginButton>
             <SocialLoginButton
-              bgColor='#FEE500'
+              $bgColor='#FEE500'
               color={Theme.colors.black}
               onClick={handleKakaoLogin}
             >
@@ -166,7 +166,7 @@ const Login = () => {
               </div>
               <div>
                 일단 앱을 둘러보실래요?{' '}
-                <FooterLink href='/library'>로그인 없이 둘러보기</FooterLink>
+                <FooterLink href='/library'>로그인 s없이 둘러보기</FooterLink>
               </div>
             </Footer>
           </FormGroup>
@@ -253,8 +253,6 @@ const SocialLoginButton = styled.button`
   margin: 10px 0;
   border: none;
   ${Theme.fonts.button}
-  background-color: ${(props) => props.bgColor};
-  color: ${(props) => props.color};
   width: 100%;
   height: 48.26px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -262,6 +260,8 @@ const SocialLoginButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: ${(props) => props.$bgColor};
+  color: ${(props) => props.$color};
 
   img {
     width: 24px;
