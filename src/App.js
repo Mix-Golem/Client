@@ -18,21 +18,13 @@ import Library from './pages/Library';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Social from './pages/Social';
-
-// 로그인 상태를 관리하기 위한 예시 상태
-const isAuthenticated = false; // 실제 로그인 상태에 따라 변경
-
-// 로그인된 사용자를 위한 경로 보호
-const PrivateRoute = ({ children }) => {
-  return isAuthenticated ? children : <Navigate to='/login' />;
-};
-
+import NotFound from './pages/NotFound';
 const App = () => {
   useEffect(() => {
     const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
 
     if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(kakaoKey); // 환경 변수에서 Kakao 키 가져오기
+      window.Kakao.init(kakaoKey);
       console.log('Kakao SDK 초기화 완료');
     }
   }, []);
@@ -48,38 +40,11 @@ const App = () => {
             <Route path='/signup' element={<Signup />} />
             <Route path='/findid' element={<FindId />} />
             <Route path='/findpassword' element={<FindPassword />} />
-            <Route
-              path='/home'
-              element={
-                <PrivateRoute>
-                  <Home />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path='/create'
-              element={
-                <PrivateRoute>
-                  <Create />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path='/library'
-              element={
-                <PrivateRoute>
-                  <Library />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path='/social'
-              element={
-                <PrivateRoute>
-                  <Social />
-                </PrivateRoute>
-              }
-            />
+            <Route path='/home' element={<Home />} />
+            <Route path='/create' element={<Create />} />
+            <Route path='/library' element={<Library />} />
+            <Route path='/social' element={<Social />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </Router>
       </ThemeProvider>
