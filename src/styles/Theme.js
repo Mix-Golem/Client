@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import '../styles/Fonts.css';
+import '../styles/Fonts.css';
 
 export const Theme = {
   fonts: {

@@ -18,7 +18,7 @@ import Library from './pages/Library';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Social from './pages/Social';
-import NotFound from './pages/NotFound.js';
+import NotFound from './pages/NotFound';
 const App = () => {
   useEffect(() => {
     const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
