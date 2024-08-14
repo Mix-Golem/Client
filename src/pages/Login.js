@@ -166,7 +166,7 @@ const Login = () => {
               </div>
               <div>
                 일단 앱을 둘러보실래요?{' '}
-                <FooterLink href='/library'>로그인 s없이 둘러보기</FooterLink>
+                <FooterLink href='/library'>로그인 없이 둘러보기</FooterLink>
               </div>
             </Footer>
           </FormGroup>
