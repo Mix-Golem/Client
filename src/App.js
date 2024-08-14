@@ -18,7 +18,7 @@ import Library from './pages/Library';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Social from './pages/Social';
-
+import NotFound from './pages/NotFound.js';
 const App = () => {
   useEffect(() => {
     const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
@@ -44,6 +44,7 @@ const App = () => {
             <Route path='/create' element={<Create />} />
             <Route path='/library' element={<Library />} />
             <Route path='/social' element={<Social />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </Router>
       </ThemeProvider>
