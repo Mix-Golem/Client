@@ -57,43 +57,42 @@ const Login = () => {
     handleModalClose();
   };
 
-  const handleKakaoLogin = () => {
-    // Kakao SDK 초기화 확인
-    if (!window.Kakao || !window.Kakao.Auth) {
-      console.error('Kakao SDK가 초기화되지 않았습니다.');
-      setModalMessage(
-        '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
-      );
-      setIsModalOpen(true);
-      return;
-    }
+  // const handleKakaoLogin = () => {
+  //   if (!window.Kakao || !window.Kakao.Auth) {
+  //     console.error('Kakao SDK가 초기화되지 않았습니다.');
+  //     setModalMessage(
+  //       '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
+  //     );
+  //     setIsModalOpen(true);
+  //     return;
+  //   }
 
-    window.Kakao.Auth.login({
-      success: function (authObj) {
-        console.log('Kakao 로그인 성공:', authObj);
-        navigate('/');
-      },
-      fail: function (err) {
-        console.error('Kakao 로그인 실패:', err);
-        setModalMessage(
-          '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
-        );
-        setIsModalOpen(true);
-      },
-    });
-  };
+  //   window.Kakao.Auth.login({
+  //     success: function (authObj) {
+  //       console.log('Kakao 로그인 성공:', authObj);
+  //       navigate('/');
+  //     },
+  //     fail: function (err) {
+  //       console.error('Kakao 로그인 실패:', err);
+  //       setModalMessage(
+  //         '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
+  //       );
+  //       setIsModalOpen(true);
+  //     },
+  //   });
+  // };
 
-  const googleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      console.log('Google 로그인 성공:', tokenResponse);
-      navigate('/');
-    },
-    onError: () => {
-      console.error('Google 로그인 실패');
-      setModalMessage('구글 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.');
-      setIsModalOpen(true);
-    },
-  });
+  // const googleLogin = useGoogleLogin({
+  //   onSuccess: (tokenResponse) => {
+  //     console.log('Google 로그인 성공:', tokenResponse);
+  //     navigate('/');
+  //   },
+  //   onError: () => {
+  //     console.error('Google 로그인 실패');
+  //     setModalMessage('구글 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  //     setIsModalOpen(true);
+  //   },
+  // });
 
   return (
     <ThemeProvider theme={Theme}>
@@ -138,7 +137,7 @@ const Login = () => {
             <SocialLoginButton
               $bgColor={Theme.colors.white}
               $color={Theme.colors.black}
-              onClick={() => googleLogin()}
+              // onClick={() => googleLogin()}
             >
               <img src={GoogleLogo} alt='Google Logo' />
               Sign With Google
@@ -146,7 +145,7 @@ const Login = () => {
             <SocialLoginButton
               $bgColor='#FEE500'
               color={Theme.colors.black}
-              onClick={handleKakaoLogin}
+              // onClick={handleKakaoLogin}
             >
               <img src={KakaoLogo} alt='Kakao Logo' />
               Sign With Kakao
