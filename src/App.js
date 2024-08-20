@@ -12,14 +12,14 @@ import Signup from './pages/Signup';
 import NotFound from './pages/NotFound';
 
 const App = () => {
-  useEffect(() => {
-    const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
+  // useEffect(() => {
+  //   const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
 
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(kakaoKey);
-      console.log('Kakao SDK 초기화 완료');
-    }
-  }, []);
+  //   if (window.Kakao && !window.Kakao.isInitialized()) {
+  //     window.Kakao.init(kakaoKey);
+  //     console.log('Kakao SDK 초기화 완료');
+  //   }
+  // }, []);
 
   return (
     <ThemeProvider theme={Theme}>
