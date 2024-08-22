@@ -1,4 +1,3 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -12,16 +11,22 @@ import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
+import { sendEmailVerificationCode } from '../api/user/signup/EmailGetCode.js';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const Signup = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailVerificationCode, setEmailVerificationCode] = useState('');
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
+    getValues,
   } = useForm({
     resolver: yupResolver(schemaSignup),
     mode: 'onChange',
@@ -31,9 +36,41 @@ const Signup = () => {
     },
   });
 
-  const onSubmit = async (data) => {
+  const handleEmailVerification = async (email) => {
     try {
-      // Your signup API call here
+      const result = await sendEmailVerificationCode(email);
+      if (result.isSuccess) {
+        setModalMessage('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
+        setEmailVerificationCode(result.result);
+        setIsModalOpen(true);
+      } else {
+        setModalMessage(result.message || '이메일 인증에 실패했습니다.');
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      setModalMessage('이메일 인증에 실패했습니다.');
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleEmailVerificationConfirm = (inputCode) => {
+    if (inputCode === emailVerificationCode) {
+      setEmailVerified(true);
+      setModalMessage('이메일 인증이 완료되었습니다.');
+    } else {
+      setModalMessage('인증번호가 일치하지 않습니다.');
+    }
+    setIsModalOpen(true);
+  };
+
+  const onSubmit = async (data) => {
+    if (!emailVerified) {
+      setModalMessage('이메일 인증을 완료해주세요.');
+      setIsModalOpen(true);
+      return;
+    }
+
+    try {
       console.log('Submitted:', data);
       navigate('/');
     } catch (error) {
@@ -172,12 +209,20 @@ const Signup = () => {
                     label='이메일'
                     placeholder='이메일을 입력하세요'
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setEmailVerified(false);
+                    }}
                     error={errors.email?.message}
                   />
                 )}
               />
-              <SmallButton>인증</SmallButton>
+              <SmallButton
+                type='button'
+                onClick={() => handleEmailVerification(getValues('email'))}
+              >
+                인증
+              </SmallButton>
             </FieldWithButtonWrapper>
             <FieldWithButtonWrapper>
               <Controller
@@ -194,7 +239,14 @@ const Signup = () => {
                   />
                 )}
               />
-              <SmallButton>확인</SmallButton>
+              <SmallButton
+                type='button'
+                onClick={() =>
+                  handleEmailVerificationConfirm(getValues('emailNumber'))
+                }
+              >
+                확인
+              </SmallButton>
             </FieldWithButtonWrapper>
             <FieldWrapper>
               <Controller
