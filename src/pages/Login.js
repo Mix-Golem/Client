@@ -46,7 +46,7 @@ const Login = () => {
   };
 
   const handleSignupClick = () => {
-    navigate('/auth/signup');
+    navigate('/users/signup');
   };
 
   const handleModalClose = () => {
@@ -153,15 +153,17 @@ const Login = () => {
             <Footer>
               <div>
                 이메일을 잊어버렸나요?
-                <FooterLink href='/findid'>이메일 찾기</FooterLink>
+                <FooterLink href='/users/findid'>이메일 찾기</FooterLink>
               </div>
               <div>
                 비밀번호를 잊어버렸나요?
-                <FooterLink href='/findpassword'>비밀번호 찾기</FooterLink>
+                <FooterLink href='/users/findpassword'>
+                  비밀번호 찾기
+                </FooterLink>
               </div>
               <div>
                 계정이 없으신가요?{' '}
-                <FooterLink href='/signup'>회원가입</FooterLink>
+                <FooterLink href='/users/signup'>회원가입</FooterLink>
               </div>
               <div>
                 일단 앱을 둘러보실래요?{' '}

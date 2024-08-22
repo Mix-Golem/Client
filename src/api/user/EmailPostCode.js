@@ -1,4 +1,4 @@
-import { Axios } from '../../Axios';
+import { Axios } from '../Axios';
 
 export const checkEmailVerificationCode = async (cipherCode, code) => {
   try {
