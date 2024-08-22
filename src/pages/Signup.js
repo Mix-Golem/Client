@@ -12,6 +12,7 @@ import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
 import { sendEmailVerificationCode } from '../api/user/signup/EmailGetCode.js';
+import { checkEmailVerificationCode } from '../api/user/signup/EmailPostCode.js';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 const Signup = () => {
@@ -19,7 +20,7 @@ const Signup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [emailVerified, setEmailVerified] = useState(false);
-  const [emailVerificationCode, setEmailVerificationCode] = useState('');
+  const [cipherCode, setCipherCode] = useState('');
 
   const {
     control,
@@ -41,7 +42,7 @@ const Signup = () => {
       const result = await sendEmailVerificationCode(email);
       if (result.isSuccess) {
         setModalMessage('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
-        setEmailVerificationCode(result.result);
+        setCipherCode(result.result);
         setIsModalOpen(true);
       } else {
         setModalMessage(result.message || '이메일 인증에 실패했습니다.');
@@ -53,12 +54,17 @@ const Signup = () => {
     }
   };
 
-  const handleEmailVerificationConfirm = (inputCode) => {
-    if (inputCode === emailVerificationCode) {
-      setEmailVerified(true);
-      setModalMessage('이메일 인증이 완료되었습니다.');
-    } else {
-      setModalMessage('인증번호가 일치하지 않습니다.');
+  const handleEmailVerificationConfirm = async (inputCode) => {
+    try {
+      const result = await checkEmailVerificationCode(cipherCode, inputCode);
+      if (result.isSuccess) {
+        setEmailVerified(true);
+        setModalMessage('이메일 인증이 완료되었습니다.');
+      } else {
+        setModalMessage(result.message || '인증번호가 일치하지 않습니다.');
+      }
+    } catch (error) {
+      setModalMessage('이메일 인증 확인 중 오류가 발생했습니다.');
     }
     setIsModalOpen(true);
   };
@@ -248,6 +254,7 @@ const Signup = () => {
                 확인
               </SmallButton>
             </FieldWithButtonWrapper>
+
             <FieldWrapper>
               <Controller
                 name='pw'
