@@ -27,10 +27,10 @@ const App = () => {
       <Router>
         <Routes>
           <Route path='/' element={<Login />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/findid' element={<FindId />} />
-          <Route path='/findpassword' element={<FindPassword />} />
+          <Route path='/users/login' element={<Login />} />
+          <Route path='/users/signup' element={<Signup />} />
+          <Route path='/users/findid' element={<FindId />} />
+          <Route path='/users/findpassword' element={<FindPassword />} />
           {/* <Route path='/home' element={<Home />} /> */}
           {/* <Route path='/create' element={<Create />} /> */}
           <Route path='/library' element={<Library />} />

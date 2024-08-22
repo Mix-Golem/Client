@@ -11,9 +11,10 @@ import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
-import { sendEmailVerificationCode } from '../api/user/signup/EmailGetCode.js';
-import { checkEmailVerificationCode } from '../api/user/signup/EmailPostCode.js';
+import { sendEmailVerificationCode } from '../api/user/EmailGetCode.js';
+import { checkEmailVerificationCode } from '../api/user/EmailPostCode.js';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { postSignup } from '../api/user/Postsignup.js';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -77,13 +78,32 @@ const Signup = () => {
     }
 
     try {
-      console.log('Submitted:', data);
-      navigate('/');
+      const signupData = {
+        email: data.email,
+        password: data.pw,
+        passwordCheck: data.checkPw,
+        name: data.nickname,
+        phonenumber: data.phone,
+        gender: data.gender === 'male' ? 'M' : 'F',
+        birth: new Date(
+          `${data.birthDate.year}-${data.birthDate.month}-${data.birthDate.day}`
+        ),
+      };
+
+      const result = await postSignup(signupData);
+
+      if (result.isSuccess) {
+        setModalMessage('회원가입이 성공적으로 완료되었습니다.');
+        navigate('/uesrs/login');
+      } else {
+        setModalMessage(result.message || '회원가입에 실패했습니다.');
+      }
     } catch (error) {
       console.error(error);
       setModalMessage('회원가입에 실패했습니다.');
-      setIsModalOpen(true);
     }
+
+    setIsModalOpen(true);
   };
 
   return (
@@ -293,7 +313,7 @@ const Signup = () => {
             <Footer>
               <div>
                 이미 계정이 있으신가요?{' '}
-                <FooterLink href='/login'>로그인</FooterLink>
+                <FooterLink href='/users/login'>로그인</FooterLink>
               </div>
             </Footer>
           </JoinForm>
