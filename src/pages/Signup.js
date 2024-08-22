@@ -94,7 +94,7 @@ const Signup = () => {
 
       if (result.isSuccess) {
         setModalMessage('회원가입이 성공적으로 완료되었습니다.');
-        navigate('/uesrs/login');
+        navigate('/users/login');
       } else {
         setModalMessage(result.message || '회원가입에 실패했습니다.');
       }
