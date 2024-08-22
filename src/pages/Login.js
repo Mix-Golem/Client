@@ -14,6 +14,7 @@ import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle';
 import { Theme } from '../styles/Theme.js';
 import { useGoogleLogin } from '@react-oauth/google';
+import { postLogin } from '../api/user/PostLogin';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,16 +36,23 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Your login API call here
-      console.log('Submitted:', data);
-      navigate('/');
+      const { email, password } = data;
+      const loginResponse = await postLogin(email, password);
+
+      if (loginResponse.success) {
+        console.log('로그인 성공:', loginResponse.token);
+        navigate('/');
+      } else {
+        console.error('로그인 실패:', loginResponse.message);
+        setModalMessage(loginResponse.message || '로그인에 실패했습니다.');
+        setIsModalOpen(true);
+      }
     } catch (error) {
-      console.error(error);
+      console.error('로그인 요청 중 오류 발생:', error);
       setModalMessage('로그인에 실패했습니다.');
       setIsModalOpen(true);
     }
   };
-
   const handleSignupClick = () => {
     navigate('/users/signup');
   };
