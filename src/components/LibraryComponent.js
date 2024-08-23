@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
+import AddSongModal from './modals/AddSong';
 
 import Album1 from '../img/Album1.svg';
 import Icon_CreatePlayList from '../img/playlist_new.svg';
@@ -21,6 +22,7 @@ const LibraryComponent = ({
   // const [selectedLyrics, setSelectedLyrics] = useState(null); // useless?
   const [SelectedPlaylist, SetSelectedPlaylist] = useState(null);
   const [playlistTrack, setPlaylistTrack] = useState(null); // 실제 받아올 playlist
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // test
   const [username, setUserName] = useState('박스 깎는 노인');
@@ -59,6 +61,20 @@ const LibraryComponent = ({
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownIndex(null);
     }
+  };
+
+  // playlist에 노래 추가 관련 로직
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleAddSongToPlaylist = (songIndex) => {
+    // Logic to add song to playlist
+    closeModal();
   };
 
   useEffect(() => {
@@ -257,8 +273,8 @@ const LibraryComponent = ({
                     )}
                   </PlaylistInfo>
                   <hr />
-                  {/* test (PlaylistTrack -> songlist) */}
-                  {songlist ? (
+                  {/* test (playlistTrack -> songlist) */}
+                  {playlistTrack ? (
                     <>
                       {songlist.map((item, index) => (
                         <MySongList
@@ -284,7 +300,7 @@ const LibraryComponent = ({
                         <br />
                         Add them!
                       </PlaylistNoTrack>
-                      <PlaylistAddBtn>add</PlaylistAddBtn>
+                      <PlaylistAddBtn onClick={openModal}>add</PlaylistAddBtn>
                     </PlaylistTrackWrapper>
                   )}
                 </PlaylistInfoWrapper>
@@ -295,6 +311,13 @@ const LibraryComponent = ({
         {activeScreen === 'Following' && <div>Following Content</div>}
         {activeScreen === 'Followers' && <div>Followers Content</div>}
       </MySongWrapper>
+      {isModalOpen && (
+        <AddSongModal
+          songlist={songlist}
+          onClose={closeModal}
+          onAddSong={handleAddSongToPlaylist}
+        />
+      )}
     </ContentsWrapper>
   );
 };
