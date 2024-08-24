@@ -12,9 +12,11 @@ import DeleteBtn from '../img/DeleteBtn.svg';
 const LibraryComponent = ({
   songlist,
   playlist,
+  followerlist,
   updateSelectedLyrics,
   updateSonglist,
   updatePlaylist,
+  updateFollowlist,
 }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeScreen, setActiveScreen] = useState('MySong');
@@ -75,6 +77,10 @@ const LibraryComponent = ({
   const handleAddSongToPlaylist = (songIndex) => {
     // Logic to add song to playlist
     closeModal();
+  };
+
+  const handleFollowClick = (index) => {
+    // Logic to follow/unfollow user
   };
 
   useEffect(() => {
@@ -308,8 +314,49 @@ const LibraryComponent = ({
             ) : null}
           </>
         )}
-        {activeScreen === 'Following' && <div>Following Content</div>}
-        {activeScreen === 'Followers' && <div>Followers Content</div>}
+        {activeScreen === 'Following' && (
+          <>
+            {followerlist[0].result.followingList && (
+              <>
+                {followerlist[0].result.followingList.map((item, index) => (
+                  <FollowList key={index}>
+                    <img src={item.profile} alt='Song' />
+                    <FollowInfo>
+                      {/* 한글은 이 폰트로 이쁘게 안나옴; */}
+                      <p>{item.name}</p>
+                      <p>코딩 좋아</p>
+                    </FollowInfo>
+                    <FollowBtn
+                      onClick={() => {
+                        handleDeleteSong(index);
+                        console.log('unfollow');
+                      }}
+                    >
+                      following
+                    </FollowBtn>
+                  </FollowList>
+                ))}
+              </>
+            )}
+          </>
+        )}
+        {activeScreen === 'Followers' && (
+          <>
+            {followerlist[0].result.followerList && (
+              <>
+                {followerlist[0].result.followerList.map((item, index) => (
+                  <MySongList key={index}>
+                    <img src={item.profile} alt='Song' />
+                    <MySongInfo>
+                      <p>{item.name}</p>
+                      <p>코딩 만세</p>
+                    </MySongInfo>
+                  </MySongList>
+                ))}
+              </>
+            )}
+          </>
+        )}
       </MySongWrapper>
       {isModalOpen && (
         <AddSongModal
@@ -647,4 +694,42 @@ const DeleteButton = styled.button`
     width: 35px;
     height: 35px;
   }
+`;
+
+const FollowList = styled(MySongList)`
+  img {
+    border-radius: 50%;
+  }
+`;
+
+const FollowInfo = styled(MySongInfo)`
+  p {
+    text-align: left;
+
+    &:nth-child(1) {
+      margin-bottom: 15px;
+      //${Theme.fonts.list}
+      ${Theme.fonts.songTitle};
+      color: ${Theme.colors.white};
+    }
+
+    &:nth-child(2) {
+      ${Theme.fonts.songArtist}
+      color: ${Theme.colors.gray};
+    }
+  }
+`;
+
+const FollowBtn = styled.button`
+  border: none;
+  cursor: pointer;
+  width: 139px;
+  height: 45px;
+  background: ${Theme.colors.lightBlue};
+  border-radius: 20px;
+  position: absolute;
+  right: 90px;
+
+  ${Theme.fonts.list}
+  color: ${Theme.colors.white};
 `;
