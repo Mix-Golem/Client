@@ -154,6 +154,7 @@ const LibraryComponent = ({
                 앨범 id는 0부터 정렬*/}
             {SelectedPlaylist === null ? (
               <PlaylistWrapper>
+                {/* create playlist */}
                 <PlaylistItem
                   as='button'
                   onClick={() => {
@@ -170,6 +171,7 @@ const LibraryComponent = ({
                   </PlaylistTitleWrapper>
                 </PlaylistItem>
 
+                {/* display playlist */}
                 {playlist.map((item, index) => (
                   <PlaylistItem
                     as='button'

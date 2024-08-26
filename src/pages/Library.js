@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import SideMenu from '../components/SideMenu';
 import LibraryComponent from '../components/LibraryComponent';
 import Lyrics from '../components/Lyrics';
+import Follow from '../components/Follow';
 import { Theme } from '../styles/Theme';
 
 import Frame from '../img/Frame.svg';
@@ -124,6 +125,7 @@ const Library = () => {
           updateFollowlist={updateFollowlist}
         />
         <Lyrics lyrics={selectedLyrics} />
+        <Follow followlist={followlist} />
       </LibraryWrapper>
     </LibraryContainer>
   );
@@ -132,7 +134,7 @@ const Library = () => {
 export default Library;
 
 const LibraryContainer = styled.div`
-  position: fixed;
+  /* position: fixed; */
   position: absolute;
   display: flex;
   width: 100vw;
