@@ -32,6 +32,8 @@ const SideMenu = () => {
 export default SideMenu;
 
 const Sidebar = styled.div`
+  margin-top: 38px;
+  margin-left: 18px;
   position: relative;
   width: 249px;
   height: 894px;
