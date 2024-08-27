@@ -9,6 +9,31 @@ import Frame from '../img/Frame.svg';
 import Img_Credit from '../img/Img_Credit.svg';
 
 function Create() {
+  const [selectedSong, setSelectedSong] = React.useState(null);
+  const [history, setHistory] = React.useState([
+    {
+      status: 'OK',
+      code: 200,
+      message: '히스토리 호출 완료',
+      result: [
+        {
+          id: 1,
+          userId: 1,
+          userName: '곡 작성자',
+          title: '수정한 제목',
+          thumbnail: '저장된 url',
+        },
+      ],
+      // 등 여러개
+      // 곡 id 기반으로 곡 정보 클릭시 해당 곡 정보 불러와야 함
+      isSuccess: true,
+    },
+  ]);
+
+  const updateSelectedSong = (newSong) => {
+    setSelectedSong(newSong);
+  };
+
   return (
     <CreateContainer>
       <SideWrapper>
@@ -20,7 +45,7 @@ function Create() {
       </SideWrapper>
       <CreateWrapper>
         <CreateComponent />
-        <History />
+        <History history={history[0].result} />
       </CreateWrapper>
     </CreateContainer>
   );
