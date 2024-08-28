@@ -156,9 +156,11 @@ const PublicBtn = styled.button`
   width: 87px;
   height: 25px;
   background: ${Theme.colors.gray};
+  border: none;
   border-radius: 20px;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 
   ${Theme.fonts.playlistTitle};
   color: ${Theme.colors.white};
@@ -174,8 +176,6 @@ const ContentContainer = styled.div`
 
   white-space: pre-wrap;
   gap: 30px;
-
-  ${Theme.fonts.title};
 `;
 
 const LeftColumn = styled.div`
@@ -217,6 +217,7 @@ const RightColumn = styled.div`
 `;
 
 const SectionTitle = styled.h2`
+  ${Theme.fonts.title};
   color: ${Theme.colors.white};
   text-align: center;
 `;
