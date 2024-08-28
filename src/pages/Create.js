@@ -44,7 +44,7 @@ function Create() {
         </Credit>
       </SideWrapper>
       <CreateWrapper>
-        <CreateComponent />
+        <CreateComponent songInfo={selectedSong} />
         <History history={history[0].result} />
       </CreateWrapper>
     </CreateContainer>

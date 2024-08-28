@@ -14,6 +14,7 @@ const History = ({ history, updateSelectedSong }) => {
     setSelectedSong(index);
     // updateSelectedSong(history[index].result);
     // api 호출함수 하나 만들고 updateSelectedSong()에 response 넣기
+    // 전달하는 props는 곡 정보 전체
   };
 
   return (
@@ -28,7 +29,7 @@ const History = ({ history, updateSelectedSong }) => {
                 isSelected={index === selectedSong}
                 onClick={() => handleSongClick(index)}
               >
-                {/* 예시 api는 이미지 없음 아래 이미지는 예시 */}
+                {/* 예시 api는 이미지 없음 아래 이미지는 견본 */}
                 {/* <img src={item.thumbnail} alt='Song' /> */}
                 <img src={Album} alt='Song' />
                 <HistoryInfo>
