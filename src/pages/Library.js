@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import Mypage from '../components/modals/Mypage.js';
 import SideMenu from '../components/SideMenu';
 import LibraryComponent from '../components/LibraryComponent';
 import Lyrics from '../components/Lyrics';
@@ -105,11 +106,18 @@ const Library = () => {
     setFollowlist(newFollowlist);
   };
 
+  const [showModal, setShowModal] = useState(false);
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+
   return (
     <LibraryContainer>
       <SideWrapper>
         <SideMenu />
-        <Credit>
+        <Credit onClick={toggleModal}>
+          {' '}
           <img src={Img_Credit} alt='Credits' />
           <p>50 Credits</p>
         </Credit>
@@ -127,6 +135,7 @@ const Library = () => {
         <Lyrics lyrics={selectedLyrics} />
         <Follow followlist={followlist} />
       </LibraryWrapper>
+      <Mypage show={showModal} onClose={toggleModal} />{' '}
     </LibraryContainer>
   );
 };

@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
+@font-face {
+  font-family: 'FTLAB-HOON';
+  font-style: normal;
+  src: url('./Fonts/FTLAB-Hoony\ Hoon.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumSquare_ac';
+  font-style: normal;
+  src: url('./Fonts/NanumSquare_ac\ ExtraBold.otf');
+}
