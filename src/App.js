@@ -5,16 +5,14 @@ import GlobalStyle from '../src/styles/GlobalStyle.js';
 import { Theme } from '../src/styles/Theme.js';
 import './App.css';
 import FindId from './pages/FindId';
-import SideMenu from './components/SideMenu';
-import Home from './pages/Home';
-import Create from './pages/Create';
-import Library from './pages/Library';
-import Social from './pages/Social';
 import FindPassword from './pages/FindPassword';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import NotFound from './pages/NotFound';
-
+import Home from './pages/Home';
+import Create from './pages/Create';
+import Library from './pages/Library';
+import Social from './pages/Social';
 const App = () => {
   // useEffect(() => {
   //   const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
@@ -31,11 +29,11 @@ const App = () => {
       <Router>
         <Routes>
           <Route path='/' element={<Login />} />
-          <Route path='/users/login' element={<Login />} />
-          <Route path='/users/signup' element={<Signup />} />
-          <Route path='/users/findid' element={<FindId />} />
-          <Route path='/users/findpassword' element={<FindPassword />} />
-          {/* <Route path='/home' element={<Home />} /> */}
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/findid' element={<FindId />} />
+          <Route path='/findpassword' element={<FindPassword />} />
+          <Route path='/' element={<Home />} />
           <Route path='/create' element={<Create />} />
           <Route path='/library' element={<Library />} />
           <Route path='/social' element={<Social />} />
