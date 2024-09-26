@@ -5,6 +5,7 @@ import SideMenu from '../components/SideMenu';
 import CreateComponent from '../components/CreateComponent';
 import History from '../components/History';
 import CreateButton from '../components/CreateButton';
+import CreateSong from '../api/music/CreateSong';
 
 import Frame from '../img/Frame.svg';
 import Img_Credit from '../img/Img_Credit.svg';
@@ -35,22 +36,22 @@ function Create() {
     setSelectedSong(newSong);
   };
 
-  const handlePromptSubmit = (inputValue) => {
-    // Replace with your server API call
-    fetch('your-server-endpoint', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt: inputValue }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Success:', data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+  const handlePromptSubmit = (token, inputValue) => {
+    CreateSong(token, inputValue);
+    // fetch('your-server-endpoint', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ prompt: inputValue }),
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log('Success:', data);
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error:', error);
+    //   });
   };
 
   return (
