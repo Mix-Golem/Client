@@ -6,6 +6,8 @@ import LibraryComponent from '../components/LibraryComponent';
 import Lyrics from '../components/Lyrics';
 import Follow from '../components/Follow';
 import { Theme } from '../styles/Theme';
+import GetMySong from '../api/music/GetMySong.js';
+import GetAllPlaylist from '../api/music/GetAllPlaylist.js';
 
 import Frame from '../img/Frame.svg';
 import Img_Credit from '../img/Img_Credit.svg';
@@ -91,7 +93,11 @@ const Library = () => {
   ]);
 
   const updateSonglist = (newSonglist) => {
-    setSonglist(newSonglist);
+    GetMySong().then((response) => {
+      if (response.isSuccess) {
+        setSonglist(response.result);
+      }
+    });
   };
 
   const updatePlaylist = (newPlaylist) => {
@@ -111,6 +117,25 @@ const Library = () => {
   const toggleModal = () => {
     setShowModal(!showModal);
   };
+
+  useEffect(() => {
+    GetMySong().then((response) => {
+      // console.log(response.isSuccess);
+      if (response.isSuccess) {
+        // console.log(response.result);
+        setSonglist(response.result);
+      }
+    });
+
+    // @@민혁이가 수정하는대로 재테스트
+    // GetAllPlaylist().then((response) => {
+    //   console.log(response.isSuccess);
+    //   if (response.isSuccess) {
+    //     console.log(response.result);
+    //     setPlaylist(response.result);
+    //   }
+    // });
+  }, []);
 
   return (
     <LibraryContainer>

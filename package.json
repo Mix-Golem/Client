@@ -2,6 +2,7 @@
   "name": "mix-golem",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://backend.mixgolem.site/",
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@react-oauth/google": "^0.12.1",
@@ -15,6 +16,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.52.1",
+    "react-https-redirect": "^1.1.0",
     "react-kakao-login": "^2.1.1",
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",

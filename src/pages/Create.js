@@ -6,6 +6,7 @@ import CreateComponent from '../components/CreateComponent';
 import History from '../components/History';
 import CreateButton from '../components/CreateButton';
 import CreateSong from '../api/music/CreateSong';
+import SaveSong from '../api/music/SaveSong';
 
 import Frame from '../img/Frame.svg';
 import Img_Credit from '../img/Img_Credit.svg';
@@ -36,22 +37,38 @@ function Create() {
     setSelectedSong(newSong);
   };
 
-  const handlePromptSubmit = (token, inputValue) => {
-    CreateSong(token, inputValue);
-    // fetch('your-server-endpoint', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({ prompt: inputValue }),
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log('Success:', data);
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error:', error);
-    //   });
+  // backend 측에서 response 양식 맞춰줘야 됨
+  const handlePromptSubmit = (inputValue) => {
+    CreateSong(inputValue)
+      .then((response) => {
+        console.log(response);
+        if (response.isSuccess) {
+          console.log('Song created successfully:', response.result);
+          const songInfo = {
+            title: response.result.title,
+            about: '곡 소개',
+            prompt: response.result.prompt,
+            media: response.result.audio,
+            genre: response.result.tags,
+            thumbnail: response.result.image,
+            lyrics: [
+              {
+                startTime: '시작시간',
+                endTime: '종료시간',
+                content: response.result.lyric,
+              },
+            ],
+          };
+          SaveSong(songInfo).then((response) => {
+            console.log(response.isSuccess);
+          });
+        } else {
+          console.error('Song creation failed:', response.message);
+        }
+      })
+      .catch((error) => {
+        console.error('An error occurred:', error);
+      });
   };
 
   return (

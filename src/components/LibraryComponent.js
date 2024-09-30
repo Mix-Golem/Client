@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
 import AddSongModal from './modals/AddSong';
+import RenameMySongModal from './modals/RenameMySong';
+import RenameMySong from '../api/music/RenameMySong';
+import DeleteMySong from '../api/music/DeleteMySong';
 
 import Album1 from '../img/Album1.svg';
 import Icon_CreatePlayList from '../img/playlist_new.svg';
@@ -24,7 +27,9 @@ const LibraryComponent = ({
   // const [selectedLyrics, setSelectedLyrics] = useState(null); // useless?
   const [SelectedPlaylist, SetSelectedPlaylist] = useState(null);
   const [playlistTrack, setPlaylistTrack] = useState(null); // 실제 받아올 playlist
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentSong, setCurrentSong] = useState('');
+  const [isAddSongModalOpen, setIsAddSongModalOpen] = useState(false);
+  const [isRenameMySongModalOpen, setIsRenameMySongModalOpen] = useState(false);
 
   // test
   const [username, setUserName] = useState('박스 깎는 노인');
@@ -34,7 +39,8 @@ const LibraryComponent = ({
   const handleSongClick = (index) => {
     setSelectedItem(index);
     // setSelectedLyrics(songlist[index].lyrics);
-    updateSelectedLyrics(songlist[index].lyrics);
+    // 차후 api 수정에 따라 변경 가능
+    updateSelectedLyrics(songlist[index].lyrics[0].content);
   };
 
   const handleMenuClick = (screen) => {
@@ -49,15 +55,37 @@ const LibraryComponent = ({
     setDropdownIndex(dropdownIndex === index ? null : index);
   };
 
-  const handleOptionClick = (option, index) => {
+  const handleMySongOptionClick = (option, index) => {
     setDropdownIndex(null);
-    // Add functionality for each option here
+    if (option === 'Share') {
+      //
+    }
+    if (option === 'Rename') {
+      openRenameMySongModal();
+    }
+    if (option === 'Add to Playlist') {
+      //
+    }
     if (option === 'Delete') {
-      handleDeleteSong(index);
+      handleDeleteSong(currentSong);
     }
   };
 
-  const handleDeleteSong = (index) => {};
+  const handlePlaylistOptionClick = (option, index) => {
+    setDropdownIndex(null);
+    if (option === 'Share') {
+      // handleSharePlaylist(index);
+    }
+    if (option === 'Rename') {
+      // handleRenamePlaylist(index);
+    }
+    if (option === 'Add to Playlist') {
+      //
+    }
+    if (option === 'Delete') {
+      // handleDeletePlaylist(index);
+    }
+  };
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -65,18 +93,38 @@ const LibraryComponent = ({
     }
   };
 
+  // MySong rename
+  const openRenameMySongModal = () => {
+    setIsRenameMySongModalOpen(true);
+  };
+  const closeRenameMySongModal = () => {
+    setIsRenameMySongModalOpen(false);
+  };
+  const handleRenameMySong = (songData, newName) => {
+    let newSongData = {
+      id: songData.id,
+      title: newName,
+      public: songData.public, // true or false
+    };
+
+    RenameMySong(newSongData, newName).then(updateSonglist());
+  };
+
+  // MySong Delete
+  const handleDeleteSong = (currentSong) => {
+    DeleteMySong(currentSong).then(updateSonglist());
+  };
+
   // playlist에 노래 추가 관련 로직
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openAddSongModal = () => {
+    setIsAddSongModalOpen(true);
   };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeAddSongModal = () => {
+    setIsAddSongModalOpen(false);
   };
-
   const handleAddSongToPlaylist = (songIndex) => {
     // Logic to add song to playlist
-    closeModal();
+    closeAddSongModal();
   };
 
   const handleFollowClick = (index) => {
@@ -89,6 +137,10 @@ const LibraryComponent = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    console.log('current Song: ' + currentSong.title);
+  }, [currentSong]);
 
   return (
     <ContentsWrapper>
@@ -115,6 +167,8 @@ const LibraryComponent = ({
               </MySongInfo>
               <MoreButton
                 onClick={(e) => {
+                  handleSongClick(index);
+                  setCurrentSong(songlist[index]);
                   e.stopPropagation();
                   toggleDropdown(index);
                 }}
@@ -124,27 +178,43 @@ const LibraryComponent = ({
               {dropdownIndex === index && (
                 <DropdownMenu ref={dropdownRef}>
                   <DropdownItem
-                    onClick={() => handleOptionClick('Share', index)}
+                    onClick={
+                      () => {
+                        handleMySongOptionClick('Share', index);
+                      }
+                      // 모달 추가
+                    }
                   >
                     Share
                   </DropdownItem>
                   <DropdownItem
-                    onClick={() => handleOptionClick('Rename', index)}
+                    onClick={() => {
+                      handleMySongOptionClick('Rename', index);
+                    }}
                   >
                     Rename
                   </DropdownItem>
+
                   <DropdownItem
-                    onClick={() => handleOptionClick('Add to Playlist', index)}
+                    onClick={() =>
+                      handleMySongOptionClick('Add to Playlist', index)
+                    }
                   >
                     Add to Playlist
                   </DropdownItem>
                   <DropdownItem
-                    onClick={() => handleOptionClick('Delete', index)}
-                    delete
+                    onClick={() => handleMySongOptionClick('Delete', index)}
                   >
                     Delete
                   </DropdownItem>
                 </DropdownMenu>
+              )}
+              {isRenameMySongModalOpen && (
+                <RenameMySongModal
+                  onClose={closeRenameMySongModal}
+                  onRename={handleRenameMySong}
+                  songData={currentSong}
+                />
               )}
             </MySongList>
           ))}
@@ -257,21 +327,27 @@ const LibraryComponent = ({
                       <DropdownMenu ref={dropdownRef}>
                         <DropdownItem
                           onClick={() =>
-                            handleOptionClick('Share', SelectedPlaylist)
+                            handlePlaylistOptionClick('Share', SelectedPlaylist)
                           }
                         >
                           Share
                         </DropdownItem>
                         <DropdownItem
                           onClick={() =>
-                            handleOptionClick('Rename', SelectedPlaylist)
+                            handlePlaylistOptionClick(
+                              'Rename',
+                              SelectedPlaylist
+                            )
                           }
                         >
                           Rename
                         </DropdownItem>
                         <DropdownItem
                           onClick={() =>
-                            handleOptionClick('Delete', SelectedPlaylist)
+                            handlePlaylistOptionClick(
+                              'Delete',
+                              SelectedPlaylist
+                            )
                           }
                           delete
                         >
@@ -295,7 +371,11 @@ const LibraryComponent = ({
                             <p>{item.title}</p>
                             <p>{item.artist}</p>
                           </MySongInfo>
-                          <DeleteButton onClick={() => handleDeleteSong(index)}>
+                          <DeleteButton
+                            onClick={() => {
+                              //handleDeleteSong(index) 나중에 이름 바꾸기
+                            }}
+                          >
                             <img src={DeleteBtn} alt='' />
                           </DeleteButton>
                         </MySongList>
@@ -308,7 +388,9 @@ const LibraryComponent = ({
                         <br />
                         Add them!
                       </PlaylistNoTrack>
-                      <PlaylistAddBtn onClick={openModal}>add</PlaylistAddBtn>
+                      <PlaylistAddBtn onClick={openAddSongModal}>
+                        add
+                      </PlaylistAddBtn>
                     </PlaylistTrackWrapper>
                   )}
                 </PlaylistInfoWrapper>
@@ -330,7 +412,7 @@ const LibraryComponent = ({
                     </FollowInfo>
                     <FollowBtn
                       onClick={() => {
-                        handleDeleteSong(index);
+                        // handleDeleteSong(index); // 나중에 이름 바꾸기
                         console.log('unfollow');
                       }}
                     >
@@ -360,10 +442,10 @@ const LibraryComponent = ({
           </>
         )}
       </MySongWrapper>
-      {isModalOpen && (
+      {isAddSongModalOpen && (
         <AddSongModal
           songlist={songlist}
-          onClose={closeModal}
+          onClose={closeAddSongModal}
           onAddSong={handleAddSongToPlaylist}
         />
       )}
