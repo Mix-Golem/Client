@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
 import SideMenu from '../components/SideMenu';
@@ -7,12 +7,13 @@ import History from '../components/History';
 import CreateButton from '../components/CreateButton';
 import CreateSong from '../api/music/CreateSong';
 import SaveSong from '../api/music/SaveSong';
+import GetHistory from '../api/music/GetHistory';
 
 import Frame from '../img/Frame.svg';
 import Img_Credit from '../img/Img_Credit.svg';
 
 function Create() {
-  const [selectedSong, setSelectedSong] = React.useState(null);
+  const [selectedSong, setSelectedSong] = React.useState(null); // index
   const [history, setHistory] = React.useState([
     {
       status: 'OK',
@@ -33,11 +34,7 @@ function Create() {
     },
   ]);
 
-  const updateSelectedSong = (newSong) => {
-    setSelectedSong(newSong);
-  };
-
-  // backend 측에서 response 양식 맞춰줘야 됨
+  // 곡 생성
   const handlePromptSubmit = (inputValue) => {
     CreateSong(inputValue)
       .then((response) => {
@@ -60,7 +57,7 @@ function Create() {
             ],
           };
           SaveSong(songInfo).then((response) => {
-            console.log(response.isSuccess);
+            console.log('Song creation success');
           });
         } else {
           console.error('Song creation failed:', response.message);
@@ -70,6 +67,15 @@ function Create() {
         console.error('An error occurred:', error);
       });
   };
+
+  useEffect(() => {
+    GetHistory().then((response) => {
+      // console.log(response.result);
+      if (response.isSuccess) {
+        setHistory(response.result);
+      }
+    });
+  }, []);
 
   return (
     <CreateContainer>
@@ -81,8 +87,8 @@ function Create() {
         </Credit>
       </SideWrapper>
       <CreateWrapper>
-        <CreateComponent songInfo={selectedSong} />
-        <History history={history[0].result} />
+        <CreateComponent history={history} selectedSong={selectedSong} />
+        <History history={history} updateSelectedSong={setSelectedSong} />
         <CreateButton onSubmit={handlePromptSubmit} />
       </CreateWrapper>
     </CreateContainer>

@@ -1,81 +1,92 @@
-import React from 'react';
+import { React, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
+import GetMySongByID from '../api/music/GetMySongByID';
+import TogglePublic from '../api/music/TogglePublic';
 
-import Album from '../img/Album1.svg';
-
-const CreateComponent = (songInfo) => {
-  const SongInfoDemo = {
-    isSuccess: true,
-    code: 200,
-    message: 'success!',
-    result: {
-      id: 16,
-      userId: 1,
-      title: '제목',
-      about: '곡 소개',
-      prompt: '사용자가 입력한 프롬프트',
-      media: 'base64기반 코드',
-      public: 0,
-      thumbnail: 'base64기반 코드',
-      lyrics: [
-        {
-          startTime: '00:00:00',
-          endTime: '00:00:10',
-          content: '가사 내용',
-        },
-        {
-          startTime: '00:00:11',
-          endTime: '00:00:12',
-          content: '가사 내용',
-        },
-      ],
-      like: {
-        song_id: 16,
-        song_count: 3,
+const CreateComponent = ({ history, selectedSong }) => {
+  const [selectedSongInfo, setSelectedSongInfo] = useState({
+    id: '',
+    userId: '',
+    userName: '',
+    title: '',
+    about: '',
+    prompt: '',
+    media: '',
+    public: false, // true or false
+    thumbnail: '',
+    lyrics: [
+      {
+        startTime: '',
+        endTime: '',
+        content: '',
       },
-    },
+    ],
+    artist: '',
+  });
+
+  const [isPublic, setIsPublic] = useState(selectedSongInfo.public);
+
+  // Toggle between public and private
+  const handleTogglePublic = () => {
+    setIsPublic((prevState) => !prevState); // Toggle state
+    setSelectedSongInfo((prevInfo) => ({
+      ...prevInfo,
+      public: !prevInfo.public,
+    }));
+    TogglePublic(selectedSongInfo);
   };
+
+  const updateSongInfo = (selectedSong) => {
+    if (selectedSong !== null) {
+      GetMySongByID(history[selectedSong].id).then((response) => {
+        if (response.isSuccess) {
+          setSelectedSongInfo(response.result);
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    setIsPublic(selectedSongInfo.public); // Sync isPublic with selectedSongInfo.public
+  }, [selectedSongInfo.public]);
+
+  useEffect(() => {
+    updateSongInfo(selectedSong);
+  }, [selectedSong]);
 
   return (
     <ComponentContainer>
-      <AlbumContainer onClick={() => {}}>
-        {/* <img src={SongInfoDemo.result.thumbnail} alt='Song' /> */}
-        <img src={Album} alt='Song' />
-        <AlbumInfo>
-          <p>{SongInfoDemo.result.title}</p>
-          {/* <p>{SongInfoDemo.result.userName}</p> */}
-          <p>박스깎는 노인</p>
-          <PublicBtn>Public</PublicBtn>
-        </AlbumInfo>
+      <AlbumContainer>
+        {selectedSongInfo.id !== '' && (
+          <>
+            <img src={selectedSongInfo.thumbnail} alt='Song' />
+            <AlbumInfo>
+              <p>{selectedSongInfo.title}</p>
+              <p>{selectedSongInfo.artist}</p>
+              <PublicBtn
+                isPublic={isPublic} // Pass state to control color
+                onClick={handleTogglePublic} // Handle button click
+              >
+                {isPublic ? 'Private' : 'Public'}
+                {/* Display Public or Private */}
+              </PublicBtn>
+            </AlbumInfo>
+          </>
+        )}
       </AlbumContainer>
       <hr />
       <ContentContainer>
         <LeftColumn>
           <SectionTitle>lyrics</SectionTitle>
-          <LyricsText>{SongInfoDemo.result.lyrics[0].content}</LyricsText>
+          <LyricsText>{selectedSongInfo.lyrics[0].content}</LyricsText>
         </LeftColumn>
         <MidLine />
         <RightColumn>
           <SectionTitle>Prompt</SectionTitle>
-          {/* <SectionText>{SongInfoDemo.result.prompt}</SectionText> */}
-          <SectionText>
-            다이아 랭크로 올라가고 싶은 서원우의 갈망을 발라드로 보여줬으면
-            좋겠어, 서원우는 현재 에메랄드 랭크로 다이아 바로 밑 랭크야 그는
-            다이아 랭크를 못 간지 몇년이 넘었어 다이아 랭크로 올라가고 싶은
-            서원우의 갈망을 발라드로 보여줬으면 좋겠어, 서원우는 현재 에메랄드
-            랭크로 다이아 바로 밑 랭크야 그는 다이아 랭크를 못 간지 몇년이
-            넘었어
-          </SectionText>
+          <SectionText>{selectedSongInfo.prompt}</SectionText>
           <SectionTitle>About</SectionTitle>
-          {/* <SectionText>{SongInfoDemo.result.about}</SectionText> */}
-          <SectionText>
-            다이아를 향한 갈망은 한 인간의 꿈과 열정을 노래한 곡입니다. 이 곡은
-            삶의 도전과 역경을 극복하고 더 높은 목표를 향해 나아가 는 의지를
-            담고 있습니다. 다이아를 향한 갈망은 한 인간의 꿈과 열정을 노래한
-            곡입니다. 이 곡은 삶의 도전과 역경을 극복하고 더 높은 목표를 향해
-            나아가 는 의지를 담고 있습니다.
-          </SectionText>
+          <SectionText>{selectedSongInfo.about}</SectionText>
         </RightColumn>
       </ContentContainer>
     </ComponentContainer>
@@ -155,7 +166,8 @@ const PublicBtn = styled.button`
   margin-top: 20px;
   width: 87px;
   height: 25px;
-  background: ${Theme.colors.gray};
+  background: ${({ isPublic }) =>
+    isPublic ? Theme.colors.red : Theme.colors.gray};
   border: none;
   border-radius: 20px;
   justify-content: center;

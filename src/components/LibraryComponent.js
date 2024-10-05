@@ -5,6 +5,9 @@ import AddSongModal from './modals/AddSong';
 import RenameMySongModal from './modals/RenameMySong';
 import RenameMySong from '../api/music/RenameMySong';
 import DeleteMySong from '../api/music/DeleteMySong';
+import CreatePlaylist from '../api/music/CreatePlaylist';
+import Follow from '../api/social/Follow';
+import Unfollow from '../api/social/Unfollow';
 
 import Album1 from '../img/Album1.svg';
 import Icon_CreatePlayList from '../img/playlist_new.svg';
@@ -31,9 +34,6 @@ const LibraryComponent = ({
   const [isAddSongModalOpen, setIsAddSongModalOpen] = useState(false);
   const [isRenameMySongModalOpen, setIsRenameMySongModalOpen] = useState(false);
 
-  // test
-  const [username, setUserName] = useState('박스 깎는 노인');
-
   const dropdownRef = useRef(null);
 
   const handleSongClick = (index) => {
@@ -58,7 +58,7 @@ const LibraryComponent = ({
   const handleMySongOptionClick = (option, index) => {
     setDropdownIndex(null);
     if (option === 'Share') {
-      //
+      copyToClipboard(currentSong.media);
     }
     if (option === 'Rename') {
       openRenameMySongModal();
@@ -93,7 +93,18 @@ const LibraryComponent = ({
     }
   };
 
-  // MySong rename
+  // 클립보드에 곡 주소 복사
+  const copyToClipboard = async (addr) => {
+    const link = addr;
+    try {
+      await navigator.clipboard.writeText(link);
+      console.log('copy success');
+    } catch (error) {
+      console.log('copy failed');
+    }
+  };
+
+  // MySong 이름 변경
   const openRenameMySongModal = () => {
     setIsRenameMySongModalOpen(true);
   };
@@ -110,12 +121,12 @@ const LibraryComponent = ({
     RenameMySong(newSongData, newName).then(updateSonglist());
   };
 
-  // MySong Delete
+  // MySong 삭제
   const handleDeleteSong = (currentSong) => {
     DeleteMySong(currentSong).then(updateSonglist());
   };
 
-  // playlist에 노래 추가 관련 로직
+  // playlist에 노래 추가 관련
   const openAddSongModal = () => {
     setIsAddSongModalOpen(true);
   };
@@ -127,20 +138,59 @@ const LibraryComponent = ({
     closeAddSongModal();
   };
 
-  const handleFollowClick = (index) => {
-    // Logic to follow/unfollow user
-  };
+  // follow / unfollow 관련
+  // Initialize the state for all followingList items
+  const [followStates, setFollowStates] = useState(
+    followerlist.followingList.map((item) => item.unfollowed)
+  );
 
+  // Initialize a state array to track the disabled state for each button
+  const [disabledButtons, setDisabledButtons] = useState(
+    followerlist.followingList.map(() => false)
+  );
+
+  // 팔로우 상태 토글
+  const handleFollowToggle = async (index, followingId) => {
+    if (disabledButtons[index]) return; // If the button is disabled, do nothing
+
+    // 3초 이내 추가 클릭 금지
+    const newDisabledButtons = [...disabledButtons];
+    newDisabledButtons[index] = true;
+    setDisabledButtons(newDisabledButtons);
+
+    setTimeout(() => {
+      newDisabledButtons[index] = false;
+      setDisabledButtons([...newDisabledButtons]);
+    }, 3000);
+
+    // state 따라 Follow or Unfollow
+    if (followStates[index]) {
+      const response = await Follow(followingId);
+      if (response.success) {
+        console.log(response.message);
+      } else {
+        console.error(response.message);
+      }
+    } else {
+      const response = await Unfollow(followingId);
+      if (response.success) {
+        console.log(response.message);
+      } else {
+        console.error(response.message);
+      }
+    }
+
+    // Toggle the follow state for the clicked button
+    const newFollowStates = [...followStates];
+    newFollowStates[index] = !newFollowStates[index];
+    setFollowStates(newFollowStates);
+  };
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    console.log('current Song: ' + currentSong.title);
-  }, [currentSong]);
 
   return (
     <ContentsWrapper>
@@ -178,12 +228,9 @@ const LibraryComponent = ({
               {dropdownIndex === index && (
                 <DropdownMenu ref={dropdownRef}>
                   <DropdownItem
-                    onClick={
-                      () => {
-                        handleMySongOptionClick('Share', index);
-                      }
-                      // 모달 추가
-                    }
+                    onClick={() => {
+                      handleMySongOptionClick('Share', index);
+                    }}
                   >
                     Share
                   </DropdownItem>
@@ -228,8 +275,14 @@ const LibraryComponent = ({
                 <PlaylistItem
                   as='button'
                   onClick={() => {
-                    SetSelectedPlaylist(-1);
-                    console.log(-1);
+                    // SetSelectedPlaylist(-1); 이거 필요없이 그냥 바로 생성해도 될거 같은데?
+                    console.log('playlist num: -1');
+                    // 추후 모달 추가해서 플리 이름 정할 수 있게 하는게 나을 듯 함
+                    CreatePlaylist('예시 플레이리스트').then((response) => {
+                      if (response.isSuccess) {
+                        updatePlaylist();
+                      }
+                    });
                   }}
                 >
                   <PlaylistImage
@@ -248,12 +301,15 @@ const LibraryComponent = ({
                     key={index}
                     onClick={() => {
                       SetSelectedPlaylist(index);
-                      console.log(index);
+                      console.log('playlist num: ' + index);
                     }}
                   >
-                    <PlaylistImage src={item.thumbnail} alt={item.title} />
+                    <PlaylistImage
+                      src={item.first_song_thumbnail}
+                      alt={item.playlist_title}
+                    />
                     <PlaylistTitleWrapper>
-                      <PlaylistTitle>{item.title}</PlaylistTitle>
+                      <PlaylistTitle>{item.playlist_title}</PlaylistTitle>
                       {/* <MoreButton
                         onClick={(e) => {
                           e.stopPropagation();
@@ -307,7 +363,7 @@ const LibraryComponent = ({
                     />
                     <PlaylistSongInfo>
                       <p>{playlist[SelectedPlaylist].title}</p>
-                      <p>{username}</p>
+                      <p>{playlist[SelectedPlaylist].artist}</p>
                     </PlaylistSongInfo>
                     <PlaylistPlayBtn>
                       <img src={PlayBtn} alt='' />
@@ -400,23 +456,23 @@ const LibraryComponent = ({
         )}
         {activeScreen === 'Following' && (
           <>
-            {followerlist[0].result.followingList && (
+            {followerlist.followingList && (
               <>
-                {followerlist[0].result.followingList.map((item, index) => (
+                {followerlist.followingList.map((item, index) => (
                   <FollowList key={index}>
-                    <img src={item.profile} alt='Song' />
+                    <img src={item.profile} alt='Profile' />
                     <FollowInfo>
-                      {/* 한글은 이 폰트로 이쁘게 안나옴; */}
                       <p>{item.name}</p>
-                      <p>코딩 좋아</p>
+                      <p>{item.introduce}</p>
                     </FollowInfo>
                     <FollowBtn
-                      onClick={() => {
-                        // handleDeleteSong(index); // 나중에 이름 바꾸기
-                        console.log('unfollow');
-                      }}
+                      unfollowed={followStates[index]} // Use state value from array
+                      onClick={() =>
+                        handleFollowToggle(index, item.following_id)
+                      } // Pass the index and followingId to update the correct item
+                      disabled={disabledButtons[index]} // Disable the button individually
                     >
-                      following
+                      {followStates[index] ? 'Follow' : 'Following'}
                     </FollowBtn>
                   </FollowList>
                 ))}
@@ -426,16 +482,16 @@ const LibraryComponent = ({
         )}
         {activeScreen === 'Followers' && (
           <>
-            {followerlist[0].result.followerList && (
+            {followerlist.followerList && (
               <>
-                {followerlist[0].result.followerList.map((item, index) => (
-                  <MySongList key={index}>
+                {followerlist.followerList.map((item, index) => (
+                  <FollowList key={index}>
                     <img src={item.profile} alt='Song' />
-                    <MySongInfo>
+                    <FollowInfo>
                       <p>{item.name}</p>
-                      <p>코딩 만세</p>
-                    </MySongInfo>
-                  </MySongList>
+                      <p>{item.introduce}</p>
+                    </FollowInfo>
+                  </FollowList>
                 ))}
               </>
             )}
@@ -810,6 +866,7 @@ const FollowBtn = styled.button`
   width: 139px;
   height: 45px;
   background: ${Theme.colors.lightBlue};
+  background-color: ${({ unfollowed }) => (unfollowed ? 'gray' : 'lightblue')};
   border-radius: 20px;
   position: absolute;
   right: 90px;

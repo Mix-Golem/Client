@@ -3,16 +3,27 @@ import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
 
 const Follow = ({ followlist }) => {
+  let followingCount;
+  let followerCount;
+  if (followlist) {
+    followingCount = followlist.followingList.length;
+    followerCount = followlist.followerList.length;
+  } else {
+    followingCount = followerCount = '';
+  }
+
   return (
     <FollowContainer>
       <FollowTitle>Follow</FollowTitle>
       <FollowStats>
         <StatItem>
-          <StatNumber>{followlist[0].result.followings}</StatNumber>
+          <StatNumber onClick={() => console.log(followlist)}>
+            {followingCount}
+          </StatNumber>
           <StatLabel>Following</StatLabel>
         </StatItem>
         <StatItem>
-          <StatNumber>{followlist[0].result.followers}</StatNumber>
+          <StatNumber>{followerCount}</StatNumber>
           <StatLabel>Followers</StatLabel>
         </StatItem>
       </FollowStats>

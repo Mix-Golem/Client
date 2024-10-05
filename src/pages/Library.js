@@ -8,6 +8,7 @@ import Follow from '../components/Follow';
 import { Theme } from '../styles/Theme';
 import GetMySong from '../api/music/GetMySong.js';
 import GetAllPlaylist from '../api/music/GetAllPlaylist.js';
+import GetFollowList from '../api/social/GetFollowList.js';
 
 import Frame from '../img/Frame.svg';
 import Img_Credit from '../img/Img_Credit.svg';
@@ -60,37 +61,10 @@ const Library = () => {
     { id: 4, title: 'Playlist 4', thumbnail: Icon_MyPlayList },
   ]);
   const [selectedLyrics, setSelectedLyrics] = useState(null);
-  const [followlist, setFollowlist] = useState([
-    {
-      status: 'OK',
-      code: 200,
-      message: '팔로우 리스트 호출',
-      result: {
-        followings: 1,
-        followers: 2,
-        followingList: [
-          {
-            id: 2,
-            profile: User,
-            name: '장준용',
-          },
-        ],
-        followerList: [
-          {
-            id: 2,
-            profile: User,
-            name: '장준용',
-          },
-          {
-            id: 3,
-            profile: User,
-            name: '나상준',
-          },
-        ],
-      },
-      isSuccess: true,
-    },
-  ]);
+  const [followlist, setFollowlist] = useState({
+    followingList: [],
+    followerList: [],
+  });
 
   const updateSonglist = (newSonglist) => {
     GetMySong().then((response) => {
@@ -100,8 +74,12 @@ const Library = () => {
     });
   };
 
-  const updatePlaylist = (newPlaylist) => {
-    setPlaylist(newPlaylist);
+  const updatePlaylist = () => {
+    GetAllPlaylist().then((response) => {
+      if (response.isSuccess) {
+        setPlaylist(response.result);
+      }
+    });
   };
 
   const updateSelectedLyrics = (newLyrics) => {
@@ -109,7 +87,11 @@ const Library = () => {
   };
 
   const updateFollowlist = (newFollowlist) => {
-    setFollowlist(newFollowlist);
+    setFollowlist(newFollowlist).then((response) => {
+      if (response.isSuccess) {
+        setSonglist(response);
+      }
+    });
   };
 
   const [showModal, setShowModal] = useState(false);
@@ -128,13 +110,19 @@ const Library = () => {
     });
 
     // @@민혁이가 수정하는대로 재테스트
-    // GetAllPlaylist().then((response) => {
-    //   console.log(response.isSuccess);
-    //   if (response.isSuccess) {
-    //     console.log(response.result);
-    //     setPlaylist(response.result);
-    //   }
-    // });
+    GetAllPlaylist().then((response) => {
+      console.log(response.isSuccess);
+      if (response.isSuccess) {
+        console.log(response.result);
+        setPlaylist(response.result);
+      }
+    });
+
+    GetFollowList().then((response) => {
+      if (response.isSuccess) {
+        setFollowlist(response.result);
+      }
+    });
   }, []);
 
   return (

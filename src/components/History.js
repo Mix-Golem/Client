@@ -5,17 +5,19 @@ import { Theme } from '../styles/Theme';
 import Album from '../img/Album1.svg';
 
 const History = ({ history, updateSelectedSong }) => {
-  //   useEffect(() => {
-  //     setHistory(history);
-  //   }, [history]);
-
-  const [selectedSong, setSelectedSong] = useState(null);
+  const [selectedSong, setSelectedSong] = useState(null); // index로 저장
   const handleSongClick = (index) => {
     setSelectedSong(index);
-    // updateSelectedSong(history[index].result);
-    // api 호출함수 하나 만들고 updateSelectedSong()에 response 넣기
-    // 전달하는 props는 곡 정보 전체
   };
+
+  useEffect(() => {
+    if (selectedSong !== null) {
+      // console.log(history[selectedSong].id);
+      // updateSelectedSong(history[selectedSong].id);
+      console.log(selectedSong);
+      updateSelectedSong(selectedSong);
+    }
+  }, [selectedSong]);
 
   return (
     <HistoryWrapper>
@@ -31,7 +33,7 @@ const History = ({ history, updateSelectedSong }) => {
               >
                 {/* 예시 api는 이미지 없음 아래 이미지는 견본 */}
                 {/* <img src={item.thumbnail} alt='Song' /> */}
-                <img src={Album} alt='Song' />
+                <img src={item.thumbnail} alt='Song' />
                 <HistoryInfo>
                   <p>{item.title}</p>
                   <p>{item.userName}</p>
