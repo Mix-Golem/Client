@@ -24,10 +24,9 @@ const App = () => {
           <Route path='/signup' element={<Signup />} />
           <Route path='/findid' element={<FindId />} />
           <Route path='/findpassword' element={<FindPassword />} />
-          <Route exact path='/home' component={<Home />} />
           <Route exact path='/create' component={<Create />} />
           <Route exact path='/library' element={<Library />} />
-          <Route exact path='/social' composnent={<Social />} />
+          <Route exact path='/social' element={<Social />} />
         </Routes>
       </Router>
     </ThemeProvider>

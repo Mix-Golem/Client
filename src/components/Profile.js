@@ -20,8 +20,9 @@ function Profile() {
 export default Profile
 
 const FieldWrapper = styled.div`
+    top: 47px;
     position: absolute;
-    margin-left: 1710px;
+    left: 1695px;
     z-index: 2;
     justify-content: center;
     align-items: center;
@@ -37,10 +38,12 @@ const GuideGIcon = styled.div`
     width: 50px;
     height: 50px;
     background: url(${GuideLogo}) center ;
+    cursor: pointer;
 `
 
 const NoticeIcon = styled.div`
     width: 50px;
     height: 50px;
     background: url(${noticeIcon}) center ;
+    cursor: pointer;
 `
