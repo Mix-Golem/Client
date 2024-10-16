@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { ThemeProvider, keyframes } from 'styled-components';
 import { Theme } from '../styles/Theme';
 import { Axios } from '../api/Axios';
+import { useLocation } from 'react-router-dom';
 import GlobalStyle from '../styles/GlobalStyle';
 
 import  AudioPlayer  from  'react-h5-audio-player' ;
@@ -22,6 +23,7 @@ import Wave from '../components/Wave';
 
 function Home() {
   const [track, setTrack] =useState([]);
+  const [playlist, setPlaylist] = useState(0);
 
   const [login, setLogin] = useState(false);
   const [isPlay, setisPlay] = useState(false);
@@ -34,9 +36,40 @@ function Home() {
   const [music, setMusic] =useState(null);
   const [isSongInfoVisible, setIsSongInfoVisible] = useState(false); // 곡 정보 창의 표시 여부 상태
 
+  const location = useLocation();
+  //social에서 받아오기
+  useEffect(() => {
+    if (location.state?.track) {
+      setTrack(location.state.track);  // 전달받은 track 설정
+      setMusicNumber(location.state.musicNumber);  // 전달받은 songId 설정
+      setisPlay(true);  // 자동 재생 설정
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // 새로고침 직전에 localStorage에서 track과 musicNumber를 삭제
+      localStorage.removeItem('track');
+      localStorage.removeItem('musicNumber');
+      
+    window.addEventListener('beforeunload', handleBeforeUnload);
+      setTrack([]); // 상태 초기화
+      setMusicNumber(null); // 상태 초기화
+    };
+
+    // 새로고침 또는 페이지 닫기 이벤트 감지
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 해제
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   const handleToggleSongInfo = () => {
     setIsSongInfoVisible(!isSongInfoVisible); // 클릭 시 곡 정보 표시 여부를 토글
   };
+
+  useEffect
 
   const hadleClickPre = () => {
       // 현재 musicNumber가 track 배열의 몇 번째에 있는지 찾기
@@ -104,6 +137,10 @@ function Home() {
   }
   }, [musicNumber]);
 
+  function handleCreateBtn(){
+    window.location.href = '/create';
+  }
+
   return (
     <ThemeProvider theme={Theme}>
         <GlobalStyle/>
@@ -113,7 +150,7 @@ function Home() {
           <MainField animating={animating} backimg={backimg}>
             {!isPlay && (<div>
               <Stationary>As you imagine<br/>unfold the music<br/>of your dreams!</Stationary>
-              <StartBtn>Create</StartBtn>
+              <StartBtn onClick={handleCreateBtn}>Create</StartBtn>
               </div>
             )}
           </MainField>
@@ -131,7 +168,7 @@ function Home() {
         )}
           <Wave music={music} musicTitle={musicTitle} artist={artist} />
           <Profile/>
-          <Playlist setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
+          <Playlist playlist={playlist} setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
           <TopRank setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
           <MusicPlayer>
           <AudioPlayer
@@ -168,7 +205,7 @@ margin-top: 47px;
  position: relative;
  /* overflow: visible; */
  z-index: 1;
- width: 1615px;
+ width: 1571px;
  height: 1000px;
  margin-left: 45px;
 
@@ -179,13 +216,16 @@ margin-top: 47px;
 
   background-image: url(${(props) => props.backimg});
   background-size: cover;
+  background-position: 50% 50%;
+  
   z-index: 0;
 
   animation: ${(props) => (props.animating ? fadeOut : fadeIn)} 1s ease-in-out;
   
   
-  img{
+  :img{
     background-size: none;
+    object-position: 50% 50%;
   }
 `
 
@@ -211,7 +251,7 @@ const CreditContainer = styled.div`
 
 const fadeIn = keyframes`
   from {
-    transform: translateY(100%);
+    transform: translateY(130%);
   }
   to {
     transform: translateY(0%);

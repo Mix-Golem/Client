@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
 import styled, { ThemeProvider } from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 import { Theme } from '../styles/Theme'
 import { Axios } from '../api/Axios'
 import GlobalStyle from '../styles/GlobalStyle'
@@ -20,8 +21,12 @@ function Social() {
     const [search, setSearch] = useState(''); // 검색 상태 추가
     const [searchResult, setSearchResult] = useState([]); // 검색 결과 상태
     const [dropdownIndex, setDropdownIndex] = useState(null);
+    const [randomMusic, setRandomMusic] = useState([]);
+    const [searchMusic, setSearchMusic] = useState(false);
 
     const dropdownRef = useRef(null);
+
+    const navigate = useNavigate();
 
     const fetchRankData = async () => {
         try {
@@ -41,13 +46,21 @@ function Social() {
         fetchRankData(); // 컴포넌트가 마운트될 때 데이터 호출
       }, []);
 
-    const handleTopRankClick = (songId) => {
-        const songIds = topSongs.map(song => song.songId)
-        setTrack(songIds); // 전체 트랙 리스트를 설정
-        setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
-        // setisPlay(true);
-        console.log(songId);
-    }
+      const handleRandomMusicClick = (songId) => {
+        const songIds = topSongs.map(song => song.songId);
+        setTrack(songIds);
+        setMusicNumber(songId);
+        navigate('/', {state: {track:songIds, musicNumber:songId}});
+      };
+
+      const handleTopRankClick = (songId) => {
+        const songIds = topSongs.map(song => song.songId);  // Track list
+        setTrack(songIds);  // 전체 트랙 리스트를 설정
+        setMusicNumber(songId);  // 선택된 곡의 songId를 설정
+    
+        // 이동과 함께 상태 전달
+        navigate('/', { state: { track: songIds, musicNumber: songId } });
+      };
 
     const handleTodayClick = (songId) => {
         const songIds = todaySongs.map(song => song.songId)
@@ -56,43 +69,53 @@ function Social() {
         // setisPlay(true);
         console.log(track);
         console.log(musicNumber);
-    }
+        navigate('/', { state: { track: songIds, musicNumber: songId } });
+    };
+
+    const fetchRandomData = async () => {
+        try {
+        const response = await Axios.get('/music/random'); // 인기 유저 랭크 API 호출
+        setRandomMusic(response.data.result); // 응답 데이터의 결과 저장
+        setLoading(false); // 로딩 상태 업데이트
+        } catch (err) {
+        console.error('Error fetching popular users:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchRandomData(); // 컴포넌트가 마운트될 때 데이터 호출
+    }, []);
 
     // 검색 기능 구현
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
+        const keyword = e.target.value.trim();
         setSearch(e.target.value);
         if (e.target.value === '') {
         setSearchResult(null); // 검색어가 없으면 결과를 초기화
+        setSearchMusic(false);
         return;
         }
+        setSearchMusic(true);
     
-        // TopRank와 Today에서 제목이 일부라도 일치하는 노래들 찾기
-        const foundTopSongs = topSongs.filter((song) =>
-        song.title.toLowerCase().includes(e.target.value.toLowerCase())
-        );
-        const foundTodaySongs = todaySongs.filter((song) =>
-        song.title.toLowerCase().includes(e.target.value.toLowerCase())
-        );
-    
-        // 이름 중복 확인을 위해 두 배열을 합치기
-        const combinedResults = [...foundTopSongs, ...foundTodaySongs];
-    
-        // 이름 중복 여부 확인
-        const uniqueResults = [];
-        const titles = new Set();
-    
-        combinedResults.forEach((song) => {
-        if (!titles.has(song.title)) {
-            uniqueResults.push(song); // 중복되지 않은 노래는 추가
-            titles.add(song.title); // 제목 저장
-        }
+    try {
+        // 검색 API 호출
+        const response = await Axios.get('/social/search', {
+            params: {
+            keyword: search, // Search keyword
+            },
         });
     
-        // 결과 설정
-        if (uniqueResults.length > 0) {
-        setSearchResult(uniqueResults); // 중복을 제외한 결과 저장
+        // 검색 결과를 받아와 처리
+        const searchResults = response.data.result.songs; // 검색 결과는 API의 'result'를 통해 받음
+    
+        if (searchResults.length > 0) {
+            setSearchResult(searchResults); // 검색 결과가 있으면 상태에 저장
         } else {
-        setSearchResult(null); // 검색 결과가 없으면 초기화
+            setSearchResult(null); // 검색 결과가 없으면 초기화
+        }
+        } catch (err) {
+        console.error('Error fetching search results:', err);
+        setSearchResult(null); // 에러 발생 시 결과 초기화
         }
     };
 
@@ -157,10 +180,33 @@ function Social() {
                         onChange={handleSearch}
                         placeholder="Please search for a user or song"
                     />
+                    {!searchMusic && (
+                        <SearchResultWrapper>
+                        {randomMusic.map((song, index) => (
+                            <ContentWrapper key={index} onClick={() => handleRandomMusicClick(song.songId)} >
+                            <RankContent>
+                                <img
+                                style={{
+                                    width: '78px',
+                                    height: '78px',
+                                    borderRadius: '20px',
+                                }}
+                                src={song.thumbnail}
+                                alt={`Thumbl ${index + 1}`}
+                                />
+                                <div style={{ marginLeft: '10px' }}>
+                                <Musictitle>{song.title}</Musictitle>
+                                <MusicArtist>{song.userName}</MusicArtist>
+                                </div>
+                            </RankContent>
+                            </ContentWrapper>
+                        ))}
+                        </SearchResultWrapper>
+                    )}
                     {searchResult && (
                         <SearchResultWrapper>
                         {searchResult.map((song, index) => (
-                            <ContentWrapper key={index}>
+                            <ContentWrapper key={index} onClick={() => handleRandomMusicClick(song.songId)}>
                             <RankContent>
                                 <img
                                 style={{
