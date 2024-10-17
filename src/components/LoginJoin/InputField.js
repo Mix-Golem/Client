@@ -2,34 +2,32 @@ import React from 'react';
 import styled from 'styled-components';
 import { Theme } from '../../styles/Theme.js';
 
-const InputField = ({
-  id,
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-  error,
-}) => {
-  return (
-    <FieldWrapper>
-      <LabelWrapper>
-        <Label htmlFor={id}>{label}</Label>
-        <InputWrapper>
-          <StyledInput
-            id={id}
-            type={type}
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            required
-          />
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-        </InputWrapper>
-      </LabelWrapper>
-    </FieldWrapper>
-  );
-};
+const InputField = React.forwardRef(
+  ({ id, label, type, value, onChange, placeholder, error }, ref) => {
+    return (
+      <FieldWrapper>
+        <LabelWrapper>
+          <Label htmlFor={id}>{label}</Label>
+          <InputWrapper>
+            <StyledInput
+              id={id}
+              type={type}
+              value={value}
+              onChange={onChange}
+              placeholder={placeholder}
+              required
+              ref={ref} // ref를 DOM 요소에 전달
+            />
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+          </InputWrapper>
+        </LabelWrapper>
+      </FieldWrapper>
+    );
+  }
+);
+
+// displayName 추가
+InputField.displayName = 'InputField';
 
 export default InputField;
 

@@ -13,6 +13,8 @@ import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
 import GlobalStyle from '../styles/GlobalStyle';
 import { Theme } from '../styles/Theme.js';
+import { useGoogleLogin } from '@react-oauth/google';
+import { postLogin } from '../api/user/PostLogin';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,18 +36,25 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Your login API call here
-      console.log('Submitted:', data);
-      navigate('/');
+      const { email, password } = data;
+      const loginResponse = await postLogin(email, password);
+
+      if (loginResponse.success) {
+        console.log('로그인 성공:', loginResponse.token);
+        navigate('/');
+      } else {
+        console.error('로그인 실패:', loginResponse.message);
+        setModalMessage(loginResponse.message || '로그인에 실패했습니다.');
+        setIsModalOpen(true);
+      }
     } catch (error) {
-      console.error(error);
+      console.error('로그인 요청 중 오류 발생:', error);
       setModalMessage('로그인에 실패했습니다.');
       setIsModalOpen(true);
     }
   };
-
   const handleSignupClick = () => {
-    navigate('/auth/signup');
+    navigate('/users/signup');
   };
 
   const handleModalClose = () => {
@@ -55,6 +64,43 @@ const Login = () => {
   const handleModalConfirm = () => {
     handleModalClose();
   };
+
+  // const handleKakaoLogin = () => {
+  //   if (!window.Kakao || !window.Kakao.Auth) {
+  //     console.error('Kakao SDK가 초기화되지 않았습니다.');
+  //     setModalMessage(
+  //       '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
+  //     );
+  //     setIsModalOpen(true);
+  //     return;
+  //   }
+
+  //   window.Kakao.Auth.login({
+  //     success: function (authObj) {
+  //       console.log('Kakao 로그인 성공:', authObj);
+  //       navigate('/');
+  //     },
+  //     fail: function (err) {
+  //       console.error('Kakao 로그인 실패:', err);
+  //       setModalMessage(
+  //         '카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.'
+  //       );
+  //       setIsModalOpen(true);
+  //     },
+  //   });
+  // };
+
+  // const googleLogin = useGoogleLogin({
+  //   onSuccess: (tokenResponse) => {
+  //     console.log('Google 로그인 성공:', tokenResponse);
+  //     navigate('/');
+  //   },
+  //   onError: () => {
+  //     console.error('Google 로그인 실패');
+  //     setModalMessage('구글 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  //     setIsModalOpen(true);
+  //   },
+  // });
 
   return (
     <ThemeProvider theme={Theme}>
@@ -87,6 +133,7 @@ const Login = () => {
                     label='비밀번호'
                     placeholder='비밀번호를 입력하세요'
                     type='password'
+                    autoComplete='current-password'
                     error={errors.password?.message}
                     {...field}
                   />
@@ -96,28 +143,39 @@ const Login = () => {
             <StyledBigButton type='submit'>로그인</StyledBigButton>
             <BlankContainer>OR</BlankContainer>
             <SocialLoginButton
-              bgColor={Theme.colors.white}
-              color={Theme.colors.black}
+              $bgColor={Theme.colors.white}
+              $color={Theme.colors.black}
+              // onClick={() => googleLogin()}
             >
               <img src={GoogleLogo} alt='Google Logo' />
               Sign With Google
             </SocialLoginButton>
-            <SocialLoginButton bgColor='#FEE500' color={Theme.colors.black}>
+            <SocialLoginButton
+              $bgColor='#FEE500'
+              color={Theme.colors.black}
+              // onClick={handleKakaoLogin}
+            >
               <img src={KakaoLogo} alt='Kakao Logo' />
               Sign With Kakao
             </SocialLoginButton>
             <Footer>
               <div>
                 이메일을 잊어버렸나요?
-                <FooterLink href='/findid'>이메일 찾기</FooterLink>
+                <FooterLink href='/users/findid'>이메일 찾기</FooterLink>
               </div>
               <div>
                 비밀번호를 잊어버렸나요?
-                <FooterLink href='/findpassword'>비밀번호 찾기</FooterLink>
+                <FooterLink href='/users/findpassword'>
+                  비밀번호 찾기
+                </FooterLink>
               </div>
               <div>
                 계정이 없으신가요?{' '}
-                <FooterLink href='/signup'>회원가입</FooterLink>
+                <FooterLink href='/users/signup'>회원가입</FooterLink>
+              </div>
+              <div>
+                일단 앱을 둘러보실래요?{' '}
+                <FooterLink href='/library'>로그인 없이 둘러보기</FooterLink>
               </div>
             </Footer>
           </FormGroup>
@@ -204,8 +262,6 @@ const SocialLoginButton = styled.button`
   margin: 10px 0;
   border: none;
   ${Theme.fonts.button}
-  background-color: ${(props) => props.bgColor};
-  color: ${(props) => props.color};
   width: 100%;
   height: 48.26px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -213,6 +269,8 @@ const SocialLoginButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: ${(props) => props.$bgColor};
+  color: ${(props) => props.$color};
 
   img {
     width: 24px;

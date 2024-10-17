@@ -1,6 +1,22 @@
-import axios from "axios";
+// src/api/Axios.js
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const Axios = axios.create({
     baseURL: "https://backend.mixgolem.site",
-    // withCredentials: true,
+    withCredentials: true,
+
 });
+
+Axios.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    if (window.location.pathname === 'users/login') {
+      return Promise.reject(error);
+    }
+
+    return Promise.reject(error);
+  }
+);
