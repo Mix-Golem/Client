@@ -10,6 +10,9 @@ import Library from './pages/Library';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import NotFound from './pages/NotFound';
+import Home from './pages/Home';
+import Create from './pages/Create';
+import Social from './pages/Social';
 
 const App = () => {
   // useEffect(() => {
