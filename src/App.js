@@ -26,15 +26,14 @@ const App = () => {
       <GlobalStyle />
       <Router>
         <Routes>
-          <Route path='/' element={<Login />} />
+          <Route path='/' element={<Home />} />
           <Route path='/users/login' element={<Login />} />
           <Route path='/users/signup' element={<Signup />} />
           <Route path='/users/findid' element={<FindId />} />
           <Route path='/users/findpassword' element={<FindPassword />} />
-          {/* <Route path='/home' element={<Home />} /> */}
-          {/* <Route path='/create' element={<Create />} /> */}
-          <Route path='/library' element={<Library />} />
-          {/* <Route path='/social' element={<Social />} /> */}
+          <Route exact path='/create' component={<Create />} />
+          <Route exact path='/library' element={<Library />} />
+          <Route exact path='/social' element={<Social />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </Router>
