@@ -6,12 +6,12 @@ import { Theme } from '../src/styles/Theme.js';
 import './App.css';
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
-import Library from './pages/Library';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
 import Create from './pages/Create';
+import Library from './pages/Library';
 import Social from './pages/Social';
 
 const App = () => {

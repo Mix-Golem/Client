@@ -1,57 +1,128 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import Lyrics from '../components/Lyrics';
 import Mypage from '../components/modals/Mypage.js';
 import SideMenu from '../components/SideMenu';
-import Album1 from '../img/Album1.svg';
+import LibraryComponent from '../components/LibraryComponent';
+import Lyrics from '../components/Lyrics';
+import Follow from '../components/Follow';
+import { Theme } from '../styles/Theme';
+import GetMySong from '../api/music/GetMySong.js';
+import GetAllPlaylist from '../api/music/GetAllPlaylist.js';
+import GetFollowList from '../api/social/GetFollowList.js';
+
 import Frame from '../img/Frame.svg';
 import Img_Credit from '../img/Img_Credit.svg';
-import { Theme } from '../styles/Theme';
+import Album1 from '../img/Album1.svg';
+import Icon_MyPlayList from '../img/playlist.svg';
+import User from '../img/user.svg';
 
 const Library = () => {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedLyrics, setSeletedLyrics] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const handleItemClick = (index) => {
-    setSelectedItem(index);
-    console.log(songList[index].lyrics);
-    setSeletedLyrics(songList[index].lyrics);
+  // api response 저장용
+  const FullSonglist = useState([]);
+  const FullPlaylist = useState([]);
+  const [songlist, setSonglist] = useState([
+    {
+      src: Album1,
+      title: '시흥 밤바다',
+      artist: '박스 깎는 노인',
+      thumbnail: Album1,
+      lyrics:
+        '1[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
+    },
+    {
+      id: 2,
+      title: '샤코 엔딩',
+      artist: '박스 깎는 노인',
+      thumbnail: Album1,
+      lyrics:
+        '2[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
+    },
+    {
+      id: 3,
+      title: '다이아를 향한 갈망',
+      artist: '박스 깎는 노인',
+      thumbnail: Album1,
+      lyrics:
+        '3[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
+    },
+    {
+      id: 4,
+      title: '코딩 싫어',
+      artist: '부따트롤주의',
+      thumbnail: Album1,
+      lyrics:
+        '4[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
+    },
+  ]);
+  const [playlist, setPlaylist] = useState([
+    { id: 1, title: 'Playlist 1', thumbnail: Icon_MyPlayList },
+    { id: 2, title: 'Playlist 2', thumbnail: Icon_MyPlayList },
+    { id: 3, title: 'Playlist 3', thumbnail: Icon_MyPlayList },
+    { id: 4, title: 'Playlist 4', thumbnail: Icon_MyPlayList },
+  ]);
+  const [selectedLyrics, setSelectedLyrics] = useState(null);
+  const [followlist, setFollowlist] = useState({
+    followingList: [],
+    followerList: [],
+  });
+
+  const updateSonglist = () => {
+    GetMySong().then((response) => {
+      if (response.isSuccess) {
+        setSonglist(response.result);
+      }
+    });
   };
+
+  const updatePlaylist = () => {
+    GetAllPlaylist().then((response) => {
+      if (response.isSuccess) {
+        setPlaylist(response.result);
+      }
+    });
+  };
+
+  const updateSelectedLyrics = (newLyrics) => {
+    setSelectedLyrics(newLyrics);
+  };
+
+  const updateFollowlist = (newFollowlist) => {
+    setFollowlist(newFollowlist).then((response) => {
+      if (response.isSuccess) {
+        setSonglist(response);
+      }
+    });
+  };
+
+  const [showModal, setShowModal] = useState(false);
 
   const toggleModal = () => {
     setShowModal(!showModal);
   };
 
-  const songList = [
-    {
-      src: Album1,
-      title: '시흥 밤바다',
-      artist: '박스 깎는 노인',
-      lyrics:
-        '1[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히` 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
-    },
-    {
-      src: Album1,
-      title: '샤코 엔딩',
-      artist: '박스 깎는 노인',
-      lyrics:
-        '2[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
-    },
-    {
-      src: Album1,
-      title: '다이아를 향한 갈망',
-      artist: '박스 깎는 노인',
-      lyrics:
-        '3[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
-    },
-    {
-      src: Album1,
-      title: '코딩 싫어',
-      artist: '부따트롤주의',
-      lyrics:
-        '4[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게\n\n[Verse]\n시흥의 밤바다 눈부신 별빛\n조용히 흐르는 파도 소리\n고요한 이 밤에 마음이 울려\n숨 쉬는 것 같아 나의 꿈들이\n\n[Verse 2]\n은빛 물결 따라 생각이 흘러\n작은 바람도 내 마음 안아\n바다 냄새 속에 추억이 떠올라\n단 한 번의 미소로 다시 살아나\n\n[Chorus]\n시흥의 밤바다 나를 부르는 소리\n깊은 어둠 속에 비치는 별빛\n더 멀리 떨어져도 느낄 수 있는\n너와 나의 꿈들 잊지 않을게',
-    },
-  ];
+  useEffect(() => {
+    GetMySong().then((response) => {
+      // console.log(response.isSuccess);
+      if (response.isSuccess) {
+        // console.log(response.result);
+        setSonglist(response.result);
+      }
+    });
+
+    GetAllPlaylist().then((response) => {
+      console.log(response.isSuccess);
+      if (response.isSuccess) {
+        console.log(response.result);
+        setPlaylist(response.result);
+      }
+    });
+
+    GetFollowList().then((response) => {
+      if (response.isSuccess) {
+        setFollowlist(response.result);
+      }
+    });
+  }, []);
 
   return (
     <LibraryContainer>
@@ -64,32 +135,17 @@ const Library = () => {
         </Credit>
       </SideWrapper>
       <LibraryWrapper>
-        <ContentsWrapper>
-          <ContentsTitle>Library</ContentsTitle>
-          <ContentsMenu>
-            <button>My Song</button>
-            <button>PlayList</button>
-            <button>Following</button>
-            <button>Followers</button>
-          </ContentsMenu>
-          <ContentsListWrapper>
-            {songList.map((value, index) => (
-              <ContentsList
-                as='button'
-                key={index}
-                onClick={() => handleItemClick(index)}
-                isSelected={index === selectedItem}
-              >
-                <img src={value.src} alt='Song' />
-                <SongInfo>
-                  <p>{value.title}</p>
-                  <p>{value.artist}</p>
-                </SongInfo>
-              </ContentsList>
-            ))}
-          </ContentsListWrapper>
-        </ContentsWrapper>
+        <LibraryComponent
+          songlist={songlist}
+          playlist={playlist}
+          followerlist={followlist}
+          updateSelectedLyrics={updateSelectedLyrics}
+          updateSonglist={updateSonglist}
+          updatePlaylist={updatePlaylist}
+          updateFollowlist={updateFollowlist}
+        />
         <Lyrics lyrics={selectedLyrics} />
+        <Follow followlist={followlist} />
       </LibraryWrapper>
       <Mypage show={showModal} onClose={toggleModal} />{' '}
     </LibraryContainer>
@@ -99,7 +155,7 @@ const Library = () => {
 export default Library;
 
 const LibraryContainer = styled.div`
-  position: fixed;
+  /* position: fixed; */
   position: absolute;
   display: flex;
   width: 100vw;
@@ -146,125 +202,5 @@ const LibraryWrapper = styled.div`
   left: 45px;
   top: 47px;
 
-  /* background: ${Theme.colors.lightGray};
-  border-radius: 20px; */
-
   background-image: url(${Frame});
-`;
-
-// 그라데이션 박스
-const GradientBox = styled.div`
-  background: linear-gradient(180deg, #666666 1.13%, #000000 25.35%);
-  border-radius: 20px;
-`;
-
-const ContentsWrapper = styled(GradientBox)`
-  position: absolute;
-  margin-left: 41px;
-  top: 23px;
-  width: 744px;
-  height: 663px;
-
-  overflow-x: hidden;
-  /* overflow-y: hidden; */
-`;
-
-const ContentsTitle = styled.p`
-  position: relative;
-  display: flex;
-  margin: 0px;
-  left: 32px;
-  width: auto;
-  height: 84px;
-  ${Theme.fonts.title}
-  color: ${Theme.colors.white};
-
-  align-items: center;
-`;
-
-// nav menu list
-const ContentsMenu = styled.ul`
-  margin: 0px;
-  margin-bottom: 46px;
-  padding-left: 32px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-
-  button {
-    margin-right: 38px;
-    background: none;
-    border: none;
-    ${Theme.fonts.list}
-    color: ${Theme.colors.white};
-
-    &:hover {
-      transition: 0.3s;
-      color: ${Theme.colors.lightBlue};
-    }
-
-    // test
-    &:active {
-      color: ${Theme.colors.red};
-    }
-  }
-`;
-
-const ContentsListWrapper = styled.div`
-  height: 490px;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    width: 5px;
-    height: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${Theme.colors.white};
-  }
-`;
-
-// 수록곡 갯수만큼 props로 albumImg, title, artist 넘겨주면 될 듯
-const ContentsList = styled.div`
-  display: flex;
-  width: 744px;
-  height: 163px;
-  background: ${(props) =>
-    props.isSelected
-      ? 'linear-gradient(270deg, #D9D9D9 28.08%, #81D8F3 100%)'
-      : 'black'};
-  border-style: none;
-
-  img {
-    margin-left: 42px;
-    width: 120px;
-    height: 120px;
-    border-radius: 20px;
-    object-fit: fill;
-    align-self: center;
-  }
-`;
-
-const SongInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  margin-left: 38px;
-
-  p {
-    justify-content: left;
-    text-align: left;
-
-    &:nth-child(1) {
-      margin-top: 31px;
-      margin-bottom: 0px;
-      ${Theme.fonts.songTitle}
-      color: ${Theme.colors.white};
-    }
-
-    &:nth-child(2) {
-      ${Theme.fonts.songArtist}
-      color: ${Theme.colors.gray};
-    }
-  }
 `;

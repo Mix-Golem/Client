@@ -48,6 +48,16 @@ export const Theme = {
       font-weight: 800;
       font-size: 20px;
     `,
+    dropdownItem: css`
+      font-family: 'FTLAB-HOON';
+      font-weight: 500;
+      font-size: 25px;
+    `,
+    playlistTitle: css`
+      font-family: 'FTLAB-HOON';
+      font-weight: 500;
+      font-size: 20px;
+    `,
     lyrics: css`
       font-family: 'NanumSquare_ac';
       font-weight: 800;
