@@ -4,8 +4,14 @@ import { Theme } from '../styles/Theme';
 import AddSongModal from './modals/AddSong';
 import RenameMySongModal from './modals/RenameMySong';
 import RenameMySong from '../api/music/RenameMySong';
+import AddSongToPlaylist from '../api/music/AddSongToPlaylist';
 import DeleteMySong from '../api/music/DeleteMySong';
 import CreatePlaylist from '../api/music/CreatePlaylist';
+import GetPlaylistByID from '../api/music/GetPlaylistByID';
+import RenamePlaylistModal from './modals/RenamePlaylist';
+import RenamePlaylist from '../api/music/RenamePlaylist';
+import DeleteSongInPlaylist from '../api/music/DeleteSongInPlaylist';
+import DeletePlaylistByID from '../api/music/DeletePlaylistByID';
 import Follow from '../api/social/Follow';
 import Unfollow from '../api/social/Unfollow';
 
@@ -25,19 +31,26 @@ const LibraryComponent = ({
   updateFollowlist,
 }) => {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedSongId, setSelectedSongId] = useState(null);
   const [activeScreen, setActiveScreen] = useState('MySong');
   const [dropdownIndex, setDropdownIndex] = useState(null);
   // const [selectedLyrics, setSelectedLyrics] = useState(null); // useless?
-  const [SelectedPlaylist, SetSelectedPlaylist] = useState(null);
+  const [SelectedPlaylist, SetSelectedPlaylist] = useState(null); // 화면 상의 playlist index(순서)
   const [playlistTrack, setPlaylistTrack] = useState(null); // 실제 받아올 playlist
   const [currentSong, setCurrentSong] = useState('');
   const [isAddSongModalOpen, setIsAddSongModalOpen] = useState(false);
   const [isRenameMySongModalOpen, setIsRenameMySongModalOpen] = useState(false);
+  const [isRenamePlaylistModalOpen, setIsRenamePlaylistModalOpen] =
+    useState(false);
+  const [isAddSongModalForSong, setIsAddSongModalForSong] = useState(true); // TODO
 
   const dropdownRef = useRef(null);
 
   const handleSongClick = (index) => {
     setSelectedItem(index);
+    // console.log('songlist[index].id: ' + songlist[index].id);
+    setSelectedSongId(songlist[index].id);
+    // console.log('selectedSongId: ' + selectedSongId);
     // setSelectedLyrics(songlist[index].lyrics);
     // 차후 api 수정에 따라 변경 가능
     updateSelectedLyrics(songlist[index].lyrics[0].content);
@@ -64,7 +77,9 @@ const LibraryComponent = ({
       openRenameMySongModal();
     }
     if (option === 'Add to Playlist') {
-      //
+      setIsAddSongModalForSong(true);
+      console.log('Set IsAddSongModalForSong true');
+      openAddSongModal(songlist[index].id);
     }
     if (option === 'Delete') {
       handleDeleteSong(currentSong);
@@ -77,13 +92,23 @@ const LibraryComponent = ({
       // handleSharePlaylist(index);
     }
     if (option === 'Rename') {
-      // handleRenamePlaylist(index);
+      openRenamePlaylistModal();
     }
     if (option === 'Add to Playlist') {
-      //
+      setIsAddSongModalForSong(false);
+      console.log('Set IsAddSongModalForSong false');
+      openAddSongModal(); //
     }
     if (option === 'Delete') {
-      // handleDeletePlaylist(index);
+      // handleDeletePlaylist(24);
+      // DeletePlaylistByID(24);
+      console.log(playlist[index].playlist_id); // 검증 필요, 이걸로 delete api 호출
+      DeletePlaylistByID(playlist[index].playlist_id).then((response) => {
+        if (response) {
+          handleMenuClick('Playlist');
+          updatePlaylist();
+        }
+      });
     }
   };
 
@@ -104,6 +129,7 @@ const LibraryComponent = ({
     }
   };
 
+  // MySong 관련
   // MySong 이름 변경
   const openRenameMySongModal = () => {
     setIsRenameMySongModalOpen(true);
@@ -126,16 +152,67 @@ const LibraryComponent = ({
     DeleteMySong(currentSong).then(updateSonglist());
   };
 
+  // playlist 관련
   // playlist에 노래 추가 관련
-  const openAddSongModal = () => {
+  const openAddSongModal = (srcID) => {
+    setSelectedSongId(srcID);
     setIsAddSongModalOpen(true);
   };
   const closeAddSongModal = () => {
     setIsAddSongModalOpen(false);
   };
-  const handleAddSongToPlaylist = (songIndex) => {
-    // Logic to add song to playlist
-    closeAddSongModal();
+  const handleAddSongToPlaylist = (playlistID, songID) => {
+    console.log('songID: ' + songID + '  playlistID: ' + playlistID);
+    AddSongToPlaylist(playlistID, songID).then((response) => {
+      if (response.isSuccess) {
+        // console.log('끼얏호');
+        updatePlaylistTrack(playlistID);
+      }
+    });
+  };
+
+  // playlistTrack 관련
+  // playlistTrack 업데이트
+  const updatePlaylistTrack = (playlistID) => {
+    GetPlaylistByID(playlistID).then((response) => {
+      if (response.isSuccess) {
+        console.log('playlistTrack Updated');
+        console.log(response.result);
+        setPlaylistTrack(response.result);
+        if (playlistTrack) {
+          console.log(playlistTrack.playlist_id);
+        }
+      }
+    });
+  };
+
+  // playlistTrack 이름 변경
+  const openRenamePlaylistModal = () => {
+    setIsRenamePlaylistModalOpen(true);
+  };
+  const closeRenamePlaylistModal = () => {
+    setIsRenamePlaylistModalOpen(false);
+  };
+  const handleRenamePlaylist = (playlistID, newName) => {
+    RenamePlaylist(playlistID, newName).then(() => {
+      GetPlaylistByID(playlistID).then((response) => {
+        if (response.isSuccess) {
+          // console.log(response.result);
+          setPlaylistTrack(response.result);
+        }
+      });
+    });
+  };
+
+  const handleDeleteSongInPlaylist = (playlistID, songID) => {
+    DeleteSongInPlaylist(playlistID, songID).then((response) => {
+      GetPlaylistByID(playlistID).then((response) => {
+        if (response.isSuccess) {
+          handleMenuClick('Playlist');
+          updatePlaylist();
+        }
+      });
+    });
   };
 
   // follow / unfollow 관련
@@ -185,6 +262,7 @@ const LibraryComponent = ({
     newFollowStates[index] = !newFollowStates[index];
     setFollowStates(newFollowStates);
   };
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -198,7 +276,14 @@ const LibraryComponent = ({
       {/* Library 메뉴 선택 */}
       <ContentsMenu>
         <button onClick={() => handleMenuClick('MySong')}>My Song</button>
-        <button onClick={() => handleMenuClick('Playlist')}>PlayList</button>
+        <button
+          onClick={() => {
+            handleMenuClick('Playlist');
+            updatePlaylist();
+          }}
+        >
+          PlayList
+        </button>
         <button onClick={() => handleMenuClick('Following')}>Following</button>
         <button onClick={() => handleMenuClick('Followers')}>Followers</button>
       </ContentsMenu>
@@ -294,20 +379,31 @@ const LibraryComponent = ({
                   </PlaylistTitleWrapper>
                 </PlaylistItem>
 
-                {/* display playlist */}
+                {/* display playlist (바둑판 배열) */}
                 {playlist.map((item, index) => (
                   <PlaylistItem
                     as='button'
                     key={index}
                     onClick={() => {
+                      // console.log(item.playlist_id);
                       SetSelectedPlaylist(index);
-                      console.log('playlist num: ' + index);
+                      // console.log('playlist num: ' + index);
+                      updatePlaylistTrack(item.playlist_id);
                     }}
                   >
-                    <PlaylistImage
-                      src={item.first_song_thumbnail}
-                      alt={item.playlist_title}
-                    />
+                    {/* 실제 들어있는 데이터 값 때문에 조건은 아래처럼 */}
+                    {item.first_song_thumbnail &&
+                    item.first_song_thumbnail !== null ? (
+                      <PlaylistImage
+                        src={item.first_song_thumbnail}
+                        alt={item.playlist_title}
+                      />
+                    ) : (
+                      <PlaylistImage
+                        src={Icon_MyPlayList}
+                        alt={item.playlist_title}
+                      />
+                    )}
                     <PlaylistTitleWrapper>
                       <PlaylistTitle>{item.playlist_title}</PlaylistTitle>
                       {/* <MoreButton
@@ -350,106 +446,145 @@ const LibraryComponent = ({
                 ))}
               </PlaylistWrapper>
             ) : // create playlist
+            // 이 부분 필요 없을 듯
             SelectedPlaylist === -1 ? (
               <></>
-            ) : // show playlist (playlist1, playlist2 ... )
+            ) : // 선택한 플레이리스트 보여주기 (playlist1, playlist2 ... )
             SelectedPlaylist >= 0 ? (
               <>
-                <PlaylistInfoWrapper>
-                  <PlaylistInfo>
-                    <img
-                      src={playlist[SelectedPlaylist].thumbnail}
-                      alt='Song'
-                    />
-                    <PlaylistSongInfo>
-                      <p>{playlist[SelectedPlaylist].title}</p>
-                      <p>{playlist[SelectedPlaylist].artist}</p>
-                    </PlaylistSongInfo>
-                    <PlaylistPlayBtn>
-                      <img src={PlayBtn} alt='' />
-                    </PlaylistPlayBtn>
+                {playlistTrack !== null ? (
+                  <PlaylistInfoWrapper>
+                    <PlaylistInfo>
+                      {playlistTrack.thumbnail !== null ? (
+                        <img src={playlistTrack.thumbnail} alt='Song' />
+                      ) : (
+                        <img src={Icon_MyPlayList} alt='Song' />
+                      )}
+                      <PlaylistSongInfo>
+                        <p>{playlistTrack.playlist_title}</p>
+                        {/* <p>{playlist[SelectedPlaylist].artist}</p> */}
+                      </PlaylistSongInfo>
+                      <PlaylistPlayBtn>
+                        <img src={PlayBtn} alt='' />
+                      </PlaylistPlayBtn>
 
-                    {/* MoreButton Here */}
+                      {/* MoreButton Here */}
 
-                    <MoreButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleDropdown(SelectedPlaylist);
-                      }}
-                    >
-                      •••
-                    </MoreButton>
-                    {dropdownIndex === SelectedPlaylist && (
-                      <DropdownMenu ref={dropdownRef}>
-                        <DropdownItem
-                          onClick={() =>
-                            handlePlaylistOptionClick('Share', SelectedPlaylist)
-                          }
-                        >
-                          Share
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            handlePlaylistOptionClick(
-                              'Rename',
-                              SelectedPlaylist
-                            )
-                          }
-                        >
-                          Rename
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            handlePlaylistOptionClick(
-                              'Delete',
-                              SelectedPlaylist
-                            )
-                          }
-                          delete
-                        >
-                          Delete
-                        </DropdownItem>
-                      </DropdownMenu>
-                    )}
-                  </PlaylistInfo>
-                  <hr />
-                  {/* test (playlistTrack -> songlist) */}
-                  {playlistTrack ? (
-                    <>
-                      {songlist.map((item, index) => (
-                        <MySongList
-                          key={index}
-                          // isSelected={index === selectedItem} // add if lyric is needed
-                          // onClick={() => handleSongClick(index)}
-                        >
-                          <img src={item.thumbnail} alt='Song' />
-                          <MySongInfo>
-                            <p>{item.title}</p>
-                            <p>{item.artist}</p>
-                          </MySongInfo>
-                          <DeleteButton
+                      <MoreButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDropdown(SelectedPlaylist);
+                        }}
+                      >
+                        •••
+                      </MoreButton>
+                      {dropdownIndex === SelectedPlaylist && (
+                        <DropdownMenu ref={dropdownRef}>
+                          <DropdownItem
+                            onClick={() =>
+                              handlePlaylistOptionClick(
+                                'Share',
+                                SelectedPlaylist
+                              )
+                            }
+                          >
+                            Share
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() =>
+                              handlePlaylistOptionClick(
+                                'Rename',
+                                SelectedPlaylist
+                              )
+                            }
+                          >
+                            Rename
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() =>
+                              handlePlaylistOptionClick(
+                                'Delete',
+                                SelectedPlaylist
+                              )
+                            }
+                            delete
+                          >
+                            Delete
+                          </DropdownItem>
+                        </DropdownMenu>
+                      )}
+                    </PlaylistInfo>
+                    <hr />
+                    {/* test (playlistTrack -> songlist) */}
+                    {playlistTrack.songs ? (
+                      <>
+                        {playlistTrack.songs.map((item, index) => (
+                          <MySongList
+                            key={index}
+                            // isSelected={index === selectedItem} // add if lyric is needed
+                            // onClick={() => handleSongClick(index)}
+                          >
+                            <img src={item.thumbnail} alt='Song' />
+                            <MySongInfo>
+                              <p>{item.song_title}</p>
+                              <p>{item.artist_name}</p>
+                            </MySongInfo>
+                            <DeleteButton
+                              onClick={() => {
+                                handleDeleteSongInPlaylist(
+                                  playlistTrack.playlist_id,
+                                  item.song_id
+                                );
+                              }}
+                            >
+                              <img src={DeleteBtn} alt='' />
+                            </DeleteButton>
+                          </MySongList>
+                        ))}
+                        <PlaylistTrackWrapper>
+                          <PlaylistNoTrack>
+                            Add more songs on your playlist!
+                          </PlaylistNoTrack>
+                          <PlaylistAddBtn
                             onClick={() => {
-                              //handleDeleteSong(index) 나중에 이름 바꾸기
+                              setIsAddSongModalForSong(false);
+                              console.log('Set IsAddSongModalForSong false');
+                              openAddSongModal(); //
                             }}
                           >
-                            <img src={DeleteBtn} alt='' />
-                          </DeleteButton>
-                        </MySongList>
-                      ))}
-                    </>
-                  ) : (
-                    <PlaylistTrackWrapper>
-                      <PlaylistNoTrack>
-                        There are no songs in your playlist.
-                        <br />
-                        Add them!
-                      </PlaylistNoTrack>
-                      <PlaylistAddBtn onClick={openAddSongModal}>
-                        add
-                      </PlaylistAddBtn>
-                    </PlaylistTrackWrapper>
-                  )}
-                </PlaylistInfoWrapper>
+                            add
+                          </PlaylistAddBtn>
+                        </PlaylistTrackWrapper>
+                      </>
+                    ) : (
+                      <PlaylistTrackWrapper>
+                        <PlaylistNoTrack>
+                          There are no songs in your playlist.
+                          <br />
+                          Add them!
+                        </PlaylistNoTrack>
+                        <PlaylistAddBtn
+                          onClick={() => {
+                            setIsAddSongModalForSong(false);
+                            console.log('Set IsAddSongModalForSong false');
+                            openAddSongModal(); //
+                          }}
+                        >
+                          add
+                        </PlaylistAddBtn>
+                      </PlaylistTrackWrapper>
+                    )}
+                    {isRenamePlaylistModalOpen && (
+                      <RenamePlaylistModal
+                        onClose={closeRenamePlaylistModal}
+                        onRename={handleRenamePlaylist}
+                        playlistID={playlistTrack.playlist_id}
+                      />
+                    )}
+                  </PlaylistInfoWrapper>
+                ) : (
+                  <></>
+                )}
               </>
             ) : null}
           </>
@@ -500,9 +635,13 @@ const LibraryComponent = ({
       </MySongWrapper>
       {isAddSongModalOpen && (
         <AddSongModal
-          songlist={songlist}
+          datalist={isAddSongModalForSong ? playlist : songlist}
           onClose={closeAddSongModal}
           onAddSong={handleAddSongToPlaylist}
+          isForSong={isAddSongModalForSong}
+          srcID={
+            isAddSongModalForSong ? selectedSongId : playlistTrack.playlist_id
+          }
         />
       )}
     </ContentsWrapper>
@@ -684,10 +823,15 @@ const PlaylistItem = styled.div`
   width: 185px;
   height: 185px;
   text-align: center;
+  border-radius: none;
 `;
 
 const PlaylistImage = styled.img`
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
+  /* border-radius: inherit; */
 `;
 
 const PlaylistTitleWrapper = styled.div`
@@ -810,7 +954,7 @@ const PlaylistNoTrack = styled.div`
 `;
 
 const PlaylistAddBtn = styled.button`
-  margin-top: 20px;
+  margin: 20px 0;
   width: 198px;
   height: 42px;
   /* border: none; */

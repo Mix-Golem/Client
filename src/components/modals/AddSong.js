@@ -1,33 +1,76 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../../styles/Theme';
 import Plus from '../../img/Plus.svg';
 
-const onAddSong = (index) => {};
+const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID }) => {
+  let currentSrcID;
+  let currentDatalist = datalist;
+  useEffect(() => {
+    currentSrcID = srcID;
+    currentDatalist = datalist;
+    // console.log('Updated srcID in modal:', currentSrcID);
+    // console.log('Updated datalist in modal:', currentDatalist);
+  }, [srcID, datalist]);
 
-const AddSong = ({ songlist, onClose, onAddSong }) => {
+  // isForSong == true면 MySong -> playlist로 호출(modal에 추가할 playlist 표시)
+  // isForSong == false면 playlist -> MySong으로 호출(modal에 추가될 MySong 표시)
+  const HandleAddSong = (destID) => {
+    console.log('isForSong: ' + isForSong);
+    console.log('srcID: ' + currentSrcID);
+    console.log('destID: ' + destID);
+    // console.log(currentDatalist);
+    if (isForSong) {
+      // MySong에서 playlist로 추가하기
+      onAddSong(destID, srcID);
+      console.log('playlist_id: ' + destID + ' song_id: ' + srcID);
+    } else {
+      // playlist에서 MySong을 추가하기
+      onAddSong(srcID, destID);
+      console.log('playlist_id: ' + srcID + ' song_id: ' + destID);
+    }
+  };
+
   return (
     <ModalOverlay>
       <ModalContent>
         <ModalHeader>
-          <p>My Songs</p>
+          {isForSong ? <p>My Playlists</p> : <p>My Songs</p>}
           <CloseButton onClick={onClose}>
             <img src={Plus} alt='X' />
           </CloseButton>
         </ModalHeader>
         <ModalBody>
-          {songlist.map((item, index) => (
-            <SongItem key={index}>
-              <img src={item.thumbnail} alt='Song' />
-              <SongInfo>
-                <p>{item.title}</p>
-                <p>{item.artist}</p>
-              </SongInfo>
-              <AddButton onClick={() => onAddSong(index)}>
-                <img src={Plus} alt='+' />
-              </AddButton>
-            </SongItem>
-          ))}
+          {isForSong ? (
+            <>
+              {currentDatalist.map((item, index) => (
+                <SongItem key={index}>
+                  <img src={item.thumbnail} alt='Song' />
+                  <SongInfo>
+                    <p>{item.playlist_title}</p>
+                  </SongInfo>
+                  <AddButton onClick={() => HandleAddSong(item.playlist_id)}>
+                    <img src={Plus} alt='+' />
+                  </AddButton>
+                </SongItem>
+              ))}
+            </>
+          ) : (
+            <>
+              {currentDatalist.map((item, index) => (
+                <SongItem key={index}>
+                  <img src={item.thumbnail} alt='Song' />
+                  <SongInfo>
+                    <p>{item.title}</p>
+                    <p>{item.artist}</p>
+                  </SongInfo>
+                  <AddButton onClick={() => HandleAddSong(item.id)}>
+                    <img src={Plus} alt='+' />
+                  </AddButton>
+                </SongItem>
+              ))}
+            </>
+          )}
         </ModalBody>
       </ModalContent>
     </ModalOverlay>

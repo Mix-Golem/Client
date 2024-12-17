@@ -66,7 +66,7 @@ const Library = () => {
     followerList: [],
   });
 
-  const updateSonglist = (newSonglist) => {
+  const updateSonglist = () => {
     GetMySong().then((response) => {
       if (response.isSuccess) {
         setSonglist(response.result);
@@ -109,7 +109,6 @@ const Library = () => {
       }
     });
 
-    // @@민혁이가 수정하는대로 재테스트
     GetAllPlaylist().then((response) => {
       console.log(response.isSuccess);
       if (response.isSuccess) {
