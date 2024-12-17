@@ -13,6 +13,7 @@ import Home from './pages/Home';
 import Create from './pages/Create';
 import Library from './pages/Library';
 import Social from './pages/Social';
+
 const App = () => {
   // useEffect(() => {
   //   const kakaoKey = process.env.REACT_APP_KAKAO_KEY;
@@ -28,15 +29,14 @@ const App = () => {
       <GlobalStyle />
       <Router>
         <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/findid' element={<FindId />} />
-          <Route path='/findpassword' element={<FindPassword />} />
           <Route path='/' element={<Home />} />
-          <Route path='/create' element={<Create />} />
-          <Route path='/library' element={<Library />} />
-          <Route path='/social' element={<Social />} />
+          <Route path='/users/login' element={<Login />} />
+          <Route path='/users/signup' element={<Signup />} />
+          <Route path='/users/findid' element={<FindId />} />
+          <Route path='/users/findpassword' element={<FindPassword />} />
+          <Route exact path='/create' component={<Create />} />
+          <Route exact path='/library' element={<Library />} />
+          <Route exact path='/social' element={<Social />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </Router>

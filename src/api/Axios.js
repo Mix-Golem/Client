@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 export const Axios = axios.create({
   baseURL: 'https://backend.mixgolem.site/',
   // withCredentials: true,
+
 });
 
 Axios.interceptors.response.use(
