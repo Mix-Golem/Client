@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import NotFoundImage from '../img/404.svg';
 import { Theme } from '../styles/Theme.js';
-import Button from '../components/LoginJoin/SmallButton';
+import Button from '../components/LoginJoin/SmallButton.jsx';
 
 const NotFound = () => {
   const navigate = useNavigate();

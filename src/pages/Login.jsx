@@ -3,18 +3,18 @@ import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
-import BigButton from '../components/LoginJoin/BigButton.js';
-import Footer, { FooterLink } from '../components/LoginJoin/Footer.js';
-import InputField from '../components/LoginJoin/InputField.js';
-import { schemaLogin } from '../hooks/ValidationYup';
+import BigButton from '../components/LoginJoin/BigButton.jsx';
+import Footer, { FooterLink } from '../components/LoginJoin/Footer.jsx';
+import InputField from '../components/LoginJoin/InputField.jsx';
+import { schemaLogin } from '../hooks/ValidationYup.js';
 import GoogleLogo from '../img/GoogleLogo.svg';
 import KakaoLogo from '../img/KakaoLogo.svg';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import Logo from '../img/Logo.svg';
-import GlobalStyle from '../styles/GlobalStyle';
+import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
-import { useGoogleLogin } from '@react-oauth/google';
-import { postLogin } from '../api/user/PostLogin';
+// import { useGoogleLogin } from '@react-oauth/google';
+import { postLogin } from '../api/user/PostLogin.js';
 
 const Login = () => {
   const navigate = useNavigate();

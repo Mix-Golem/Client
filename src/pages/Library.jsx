@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import Mypage from '../components/modals/Mypage.js';
+import Mypage from '../components/modals/Mypage.jsx';
 import SideMenu from '../components/SideMenu';
 import LibraryComponent from '../components/LibraryComponent';
 import Lyrics from '../components/Lyrics';
