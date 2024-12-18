@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import BigButton from '../components/LoginJoin/BigButton.js';
-import InputField from '../components/LoginJoin/InputField.js';
-import SmallButton from '../components/LoginJoin/SmallButton.js';
+import BigButton from '../components/LoginJoin/BigButton.jsx';
+import InputField from '../components/LoginJoin/InputField.jsx';
+import SmallButton from '../components/LoginJoin/SmallButton.jsx';
 import LoginBackgroundImg from '../img/LoginBackgroundColor.svg';
 import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';

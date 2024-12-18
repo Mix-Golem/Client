@@ -1,18 +1,18 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
-import GlobalStyle from '../src/styles/GlobalStyle.js';
-import { Theme } from '../src/styles/Theme.js';
+import GlobalStyle from './styles/GlobalStyle.js';
+import { Theme } from './styles/Theme.js';
 import './App.css';
-import FindId from './pages/FindId';
-import FindPassword from './pages/FindPassword';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import NotFound from './pages/NotFound';
-import Home from './pages/Home';
-import Create from './pages/Create';
-import Library from './pages/Library';
-import Social from './pages/Social';
+import FindId from './pages/FindId.jsx';
+import FindPassword from './pages/FindPassword.jsx';
+import Login from './pages/Login.jsx';
+import Signup from './pages/Signup.jsx';
+import NotFound from './pages/NotFound.jsx';
+import Home from './pages/Home.jsx';
+import Create from './pages/Create.jsx';
+import Library from './pages/Library.jsx';
+import Social from './pages/Social.jsx';
 
 const App = () => {
   // useEffect(() => {
