@@ -223,14 +223,16 @@ const LibraryComponent = ({
   };
 
   // 메인화면에서 플레이리스트 재생
-  const handlePlayClick = (songId) => {
+  const handlePlayClick = (songId, playlistId) => {
     const songIds = playlistTrack.songs.map((song) => song.song_id); // Track list
     // setTrack(songIds); // 전체 트랙 리스트를 설정
     // setMusicNumber(songId); // 선택된 곡의 songId를 설정
 
-    console.log([songIds]);
+    console.log(songId, playlistId);
     // 이동과 함께 상태 전달
-    navigate('/', { state: { track: songIds, musicNumber: songId } });
+    navigate('/', {
+      state: { track: songIds, musicNumber: songId, playlistId: playlistId },
+    });
   };
   //[12, 12, 13,3 ]
   // follow / unfollow 관련
@@ -488,7 +490,10 @@ const LibraryComponent = ({
                             src={PlayBtn}
                             alt=''
                             onClick={() =>
-                              handlePlayClick(playlistTrack.songs[0].song_id)
+                              handlePlayClick(
+                                playlistTrack.songs[0].song_id,
+                                playlistTrack.playlist_id
+                              )
                             }
                           />
                         </PlaylistPlayBtn>
