@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { Theme } from '../styles/Theme';
 import AddSongModal from './modals/AddSong';
 import RenameMySongModal from './modals/RenameMySong';
@@ -42,9 +43,14 @@ const LibraryComponent = ({
   const [isRenameMySongModalOpen, setIsRenameMySongModalOpen] = useState(false);
   const [isRenamePlaylistModalOpen, setIsRenamePlaylistModalOpen] =
     useState(false);
-  const [isAddSongModalForSong, setIsAddSongModalForSong] = useState(true); // TODO
+  const [isAddSongModalForSong, setIsAddSongModalForSong] = useState(true);
+  // 메인페이지 넘길 곡 정보
+  // const [track, setTrack] = useState([]);
+  // const [musicNumber, setMusicNumber] = useState(null);
 
   const dropdownRef = useRef(null);
+
+  const navigate = useNavigate();
 
   const handleSongClick = (index) => {
     setSelectedItem(index);
@@ -204,6 +210,7 @@ const LibraryComponent = ({
     });
   };
 
+  // 플레이리스트 삭제
   const handleDeleteSongInPlaylist = (playlistID, songID) => {
     DeleteSongInPlaylist(playlistID, songID).then((response) => {
       GetPlaylistByID(playlistID).then((response) => {
@@ -215,6 +222,19 @@ const LibraryComponent = ({
     });
   };
 
+  // 메인화면에서 플레이리스트 재생
+  const handlePlayClick = (songId, playlistId) => {
+    const songIds = playlistTrack.songs.map((song) => song.song_id); // Track list
+    // setTrack(songIds); // 전체 트랙 리스트를 설정
+    // setMusicNumber(songId); // 선택된 곡의 songId를 설정
+
+    console.log(songId, playlistId);
+    // 이동과 함께 상태 전달
+    navigate('/', {
+      state: { track: songIds, musicNumber: songId, playlistId: playlistId },
+    });
+  };
+  //[12, 12, 13,3 ]
   // follow / unfollow 관련
   // Initialize the state for all followingList items
   const [followStates, setFollowStates] = useState(
@@ -238,7 +258,7 @@ const LibraryComponent = ({
     setTimeout(() => {
       newDisabledButtons[index] = false;
       setDisabledButtons([...newDisabledButtons]);
-    }, 3000);
+    }, 1000);
 
     // state 따라 Follow or Unfollow
     if (followStates[index]) {
@@ -464,9 +484,20 @@ const LibraryComponent = ({
                         <p>{playlistTrack.playlist_title}</p>
                         {/* <p>{playlist[SelectedPlaylist].artist}</p> */}
                       </PlaylistSongInfo>
-                      <PlaylistPlayBtn>
-                        <img src={PlayBtn} alt='' />
-                      </PlaylistPlayBtn>
+                      {playlistTrack.songs && (
+                        <PlaylistPlayBtn>
+                          <img
+                            src={PlayBtn}
+                            alt=''
+                            onClick={() =>
+                              handlePlayClick(
+                                playlistTrack.songs[0].song_id,
+                                playlistTrack.playlist_id
+                              )
+                            }
+                          />
+                        </PlaylistPlayBtn>
+                      )}
 
                       {/* MoreButton Here */}
 
