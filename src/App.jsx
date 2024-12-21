@@ -34,7 +34,7 @@ const App = () => {
           <Route path='/users/signup' element={<Signup />} />
           <Route path='/users/findid' element={<FindId />} />
           <Route path='/users/findpassword' element={<FindPassword />} />
-          <Route exact path='/create' component={<Create />} />
+          <Route exact path='/create' element={<Create />} />
           <Route exact path='/library' element={<Library />} />
           <Route exact path='/social' element={<Social />} />
           <Route path='*' element={<NotFound />} />
