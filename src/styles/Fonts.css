@@ -3,11 +3,11 @@
 @font-face {
   font-family: 'FTLAB-HOON';
   font-style: normal;
-  src: url('./Fonts/FTLAB-Hoony\ Hoon.otf') format('truetype');
+  src: url('./Fonts/FTLAB-Hoony Hoon.otf') format('truetype');
 }
 
 @font-face {
   font-family: 'NanumSquare_ac';
   font-style: normal;
-  src: url('./Fonts/NanumSquare_ac\ ExtraBold.otf');
+  src: url('./Fonts/NanumSquare_ac ExtraBold.otf');
 }
