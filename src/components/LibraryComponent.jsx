@@ -205,6 +205,7 @@ const LibraryComponent = ({
         if (response.isSuccess) {
           // console.log(response.result);
           setPlaylistTrack(response.result);
+          updatePlaylist();
         }
       });
     });
