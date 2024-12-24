@@ -295,7 +295,14 @@ const LibraryComponent = ({
       <ContentsTitle>Library</ContentsTitle>
       {/* Library 메뉴 선택 */}
       <ContentsMenu>
-        <button onClick={() => handleMenuClick('MySong')}>My Song</button>
+        <button
+          onClick={() => {
+            handleMenuClick('MySong');
+            updateSonglist();
+          }}
+        >
+          My Song
+        </button>
         <button
           onClick={() => {
             handleMenuClick('Playlist');
