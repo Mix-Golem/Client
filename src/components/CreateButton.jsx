@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
 
+import PL from '../img/playlist.png';
+
 const CreateButton = ({ onSubmit }) => {
   const [inputValue, setInputValue] = useState('');
   const maxCharacters = 200;
@@ -43,17 +45,22 @@ export default CreateButton;
 
 const PromptContainer = styled.div`
   position: absolute;
-  padding: 0 20px;
-  width: 320px;
-  height: 258px;
-  left: 0px;
-  bottom: 0px;
-  background: none;
-  border-radius: 40px;
   display: flex;
+  z-index: 3;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: ${Theme.colors.black};
+  width: 401px;
+  height: 278px;
+  left: 312px;
+  top: 765px;
+  border-radius: 40px;
+
+  -webkit-mask-image: url(${PL});
+  mask-image: url(${PL});
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 `;
 
 const PromptTitle = styled.h2`
@@ -63,12 +70,13 @@ const PromptTitle = styled.h2`
 `;
 
 const InputArea = styled.textarea`
-  width: 90%;
+  width: 80%;
   height: 100px;
   background: ${Theme.colors.lightGray};
   border: none;
   border-radius: 10px;
   color: ${Theme.colors.white};
+  margin-right: 30px;
   padding: 10px;
   font-size: 15px;
   resize: none;
@@ -93,6 +101,7 @@ const CharacterCounter = styled.div`
   font-size: 14px;
   color: ${Theme.colors.gray};
   margin-top: 5px;
+  margin-right: 50px;
 `;
 
 const SubmitButton = styled.button`
@@ -103,7 +112,7 @@ const SubmitButton = styled.button`
   border: none;
   border-radius: 20px;
   margin-top: -5px;
-  padding-left: 40px;
+  /* padding-left: 40px; */
   width: 222px;
   height: 38px;
   color: ${Theme.colors.white};

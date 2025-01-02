@@ -519,7 +519,7 @@ const LibraryComponent = ({
                       </MoreButton>
                       {dropdownIndex === SelectedPlaylist && (
                         <DropdownMenu ref={dropdownRef}>
-                          <DropdownItem
+                          {/* <DropdownItem
                             onClick={() =>
                               handlePlaylistOptionClick(
                                 'Share',
@@ -528,7 +528,7 @@ const LibraryComponent = ({
                             }
                           >
                             Share
-                          </DropdownItem>
+                          </DropdownItem> */}
                           <DropdownItem
                             onClick={() =>
                               handlePlaylistOptionClick(

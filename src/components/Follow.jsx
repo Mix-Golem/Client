@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
 
+import PL from '../img/playlist.png';
+
 const Follow = ({ followlist }) => {
   let followingCount;
   let followerCount;
@@ -35,31 +37,40 @@ export default Follow;
 
 const FollowContainer = styled.div`
   position: absolute;
-  width: 380px;
+  display: inline-block;
+  z-index: 3;
+  width: 401px;
   height: 278px;
-  left: 0px;
-  bottom: 0px;
-  background: none;
+  left: 312px;
+  top: 765px;
+
+  -webkit-mask-image: url(${PL});
+  mask-image: url(${PL});
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  /* border-right: 20px solid transparent;
+   border-bottom: 50px solid gray;
+   border-left: 50px solid gray; */
+
+  background: ${Theme.colors.black};
   border-radius: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 `;
 
 const FollowTitle = styled.h1`
-  margin-right: 20px;
+  margin-top: 30px;
+  text-align: center;
   color: ${Theme.colors.white};
   ${Theme.fonts.title};
-  font-size: 36px;
+  font-size: 40px;
+  line-height: 40px;
 `;
 
 const FollowStats = styled.div`
   display: flex;
   justify-content: space-around;
   width: 100%;
-  padding: 0 50px;
-  margin-top: 20px;
+  margin-top: 30px;
 `;
 
 const StatItem = styled.div`

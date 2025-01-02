@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
+import { Theme } from '../styles/Theme';
+import GlobalStyle from '../styles/GlobalStyle';
+
 import Mypage from '../components/modals/Mypage.jsx';
 import SideMenu from '../components/SideMenu';
 import LibraryComponent from '../components/LibraryComponent';
 import Lyrics from '../components/Lyrics';
 import Follow from '../components/Follow';
-import { Theme } from '../styles/Theme';
+import Profile from '../components/Profile';
+import Credit from '../components/Credit';
+
 import GetMySong from '../api/music/GetMySong.js';
 import GetAllPlaylist from '../api/music/GetAllPlaylist.js';
 import GetFollowList from '../api/social/GetFollowList.js';
 
-import Frame from '../img/Frame.svg';
-import Img_Credit from '../img/Img_Credit.svg';
+import background from '../img/background.png';
 import Album1 from '../img/Album1.svg';
 import Icon_MyPlayList from '../img/playlist.svg';
 import User from '../img/user.svg';
@@ -125,30 +129,28 @@ const Library = () => {
   }, []);
 
   return (
-    <LibraryContainer>
-      <SideWrapper>
+    <ThemeProvider theme={Theme}>
+      <GlobalStyle />
+      <LibraryContainer>
         <SideMenu />
-        <Credit onClick={toggleModal}>
-          {' '}
-          <img src={Img_Credit} alt='' />
-          <p>50 Credits</p>
-        </Credit>
-      </SideWrapper>
-      <LibraryWrapper>
-        <LibraryComponent
-          songlist={songlist}
-          playlist={playlist}
-          followerlist={followlist}
-          updateSelectedLyrics={updateSelectedLyrics}
-          updateSonglist={updateSonglist}
-          updatePlaylist={updatePlaylist}
-          updateFollowlist={updateFollowlist}
-        />
-        <Lyrics lyrics={selectedLyrics} />
+        <Credit />
+        <LibraryWrapper>
+          <LibraryComponent
+            songlist={songlist}
+            playlist={playlist}
+            followerlist={followlist}
+            updateSelectedLyrics={updateSelectedLyrics}
+            updateSonglist={updateSonglist}
+            updatePlaylist={updatePlaylist}
+            updateFollowlist={updateFollowlist}
+          />
+          <Lyrics lyrics={selectedLyrics} />
+        </LibraryWrapper>
         <Follow followlist={followlist} />
-      </LibraryWrapper>
-      <Mypage show={showModal} onClose={toggleModal} />{' '}
-    </LibraryContainer>
+        <Mypage show={showModal} onClose={toggleModal} />
+        <Profile />
+      </LibraryContainer>
+    </ThemeProvider>
   );
 };
 
@@ -156,51 +158,32 @@ export default Library;
 
 const LibraryContainer = styled.div`
   /* position: fixed; */
-  position: absolute;
+  position: relative;
   display: flex;
   width: 100vw;
   height: 100vh;
   background: ${Theme.colors.darkGray};
-`;
-
-const SideWrapper = styled.div`
-  position: relative;
-  display: flex;
-  width: 249px;
-  height: 1010px;
-  left: 18px;
-  top: 38px;
-
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const Credit = styled.div`
-  display: flex;
-  width: 249px;
-  height: 93px;
-  background: ${Theme.colors.black};
-  border-radius: 70px;
-
-  justify-content: center;
-  align-items: center;
-
-  img {
-    margin-right: 12px;
-  }
-
-  p {
-    ${Theme.fonts.credit}
-    color: ${Theme.colors.white};
-  }
+  overflow-y: auto;
 `;
 
 const LibraryWrapper = styled.div`
+  margin-top: 47px;
+  /* display: flex; */
   position: relative;
+  /* overflow: visible; */
+  z-index: 1;
   width: 1571px;
-  height: 1001px;
-  left: 45px;
-  top: 47px;
+  height: 1000px;
+  margin-left: 45px;
 
-  background-image: url(${Frame});
+  -webkit-mask-image: url(${background});
+  mask-image: url(${background});
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  background-image: url(${background});
+  background-size: cover;
+  background-position: 50% 50%;
+
+  z-index: 0;
 `;
