@@ -30,6 +30,7 @@ const LibraryComponent = ({
   updateSonglist,
   updatePlaylist,
   updateFollowlist,
+  updateFollowingNum,
 }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedSongId, setSelectedSongId] = useState(null);
@@ -235,7 +236,7 @@ const LibraryComponent = ({
       state: { track: songIds, musicNumber: songId, playlistId: playlistId },
     });
   };
-  //[12, 12, 13,3 ]
+
   // follow / unfollow 관련
   // Initialize the state for all followingList items
   const [followStates, setFollowStates] = useState(
@@ -251,7 +252,7 @@ const LibraryComponent = ({
   const handleFollowToggle = async (index, followingId) => {
     if (disabledButtons[index]) return; // If the button is disabled, do nothing
 
-    // 3초 이내 추가 클릭 금지
+    // 1초 이내 추가 클릭 금지
     const newDisabledButtons = [...disabledButtons];
     newDisabledButtons[index] = true;
     setDisabledButtons(newDisabledButtons);
@@ -266,6 +267,7 @@ const LibraryComponent = ({
       const response = await Follow(followingId);
       if (response.success) {
         console.log(response.message);
+        updateFollowingNum(1);
       } else {
         console.error(response.message);
       }
@@ -273,6 +275,7 @@ const LibraryComponent = ({
       const response = await Unfollow(followingId);
       if (response.success) {
         console.log(response.message);
+        updateFollowingNum(-1);
       } else {
         console.error(response.message);
       }

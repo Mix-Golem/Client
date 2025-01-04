@@ -4,11 +4,11 @@ import { Theme } from '../styles/Theme';
 
 import PL from '../img/playlist.png';
 
-const Follow = ({ followlist }) => {
+const Follow = ({ followlist, followingDiff }) => {
   let followingCount;
   let followerCount;
   if (followlist) {
-    followingCount = followlist.followingList.length;
+    followingCount = followlist.followingList.length + Number(followingDiff);
     followerCount = followlist.followerList.length;
   } else {
     followingCount = followerCount = '';

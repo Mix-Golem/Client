@@ -69,6 +69,7 @@ const Library = () => {
     followingList: [],
     followerList: [],
   });
+  const [followingDiff, setFollwingDiff] = useState(0);
 
   const updateSonglist = () => {
     GetMySong().then((response) => {
@@ -90,12 +91,16 @@ const Library = () => {
     setSelectedLyrics(newLyrics);
   };
 
-  const updateFollowlist = (newFollowlist) => {
-    setFollowlist(newFollowlist).then((response) => {
+  const updateFollowlist = () => {
+    GetFollowList().then((response) => {
       if (response.isSuccess) {
-        setSonglist(response);
+        setFollowlist(response.result);
       }
     });
+  };
+
+  const updateFollowingNum = (diff) => {
+    setFollwingDiff(followingDiff + diff);
   };
 
   const [showModal, setShowModal] = useState(false);
@@ -143,10 +148,11 @@ const Library = () => {
             updateSonglist={updateSonglist}
             updatePlaylist={updatePlaylist}
             updateFollowlist={updateFollowlist}
+            updateFollowingNum={updateFollowingNum}
           />
           <Lyrics lyrics={selectedLyrics} />
         </LibraryWrapper>
-        <Follow followlist={followlist} />
+        <Follow followlist={followlist} followingDiff={followingDiff} />
         <Mypage show={showModal} onClose={toggleModal} />
         <Profile />
       </LibraryContainer>
