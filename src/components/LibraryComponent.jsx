@@ -46,6 +46,7 @@ const LibraryComponent = ({
     useState(false);
   const [isAddSongModalForSong, setIsAddSongModalForSong] = useState(true);
   const [hoverPlaylistIndex, setHoverPlaylistIndex] = useState(null);
+  const [clickedPlaylistID, setClickedPlaylistID] = useState(null);
 
   const dropdownRef = useRef(null);
 
@@ -91,7 +92,7 @@ const LibraryComponent = ({
     }
   };
 
-  const handlePlaylistOptionClick = (option, index) => {
+  const handlePlaylistOptionClick = (option, ID) => {
     setDropdownIndex(null);
     if (option === 'Rename') {
       openRenamePlaylistModal();
@@ -99,8 +100,8 @@ const LibraryComponent = ({
     if (option === 'Delete') {
       // handleDeletePlaylist(24);
       // DeletePlaylistByID(24);
-      console.log(playlist[index].playlist_id); // 검증 필요, 이걸로 delete api 호출
-      DeletePlaylistByID(playlist[index].playlist_id).then((response) => {
+      // console.log(playlist[index].playlist_id); // 검증 필요, 이걸로 delete api 호출
+      DeletePlaylistByID(ID).then((response) => {
         if (response) {
           handleMenuClick('Playlist');
           updatePlaylist();
@@ -409,9 +410,11 @@ const LibraryComponent = ({
                       // console.log(item.playlist_id);
                       SetSelectedPlaylist(index);
                       // console.log('playlist num: ' + index);
-                      updatePlaylistTrack(item.playlist_id);
+                      updatePlaylistTrack(item.playlist_id); // dropdown menu 눌러도 이거 호출
                     }}
-                    onMouseEnter={() => setHoverPlaylistIndex(index)}
+                    onMouseEnter={() => {
+                      setHoverPlaylistIndex(index);
+                    }}
                     onMouseLeave={() => setHoverPlaylistIndex(null)}
                   >
                     {/* 실제 들어있는 데이터 값 때문에 조건은 아래처럼 */}
@@ -435,6 +438,8 @@ const LibraryComponent = ({
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleDropdown(index);
+                          setClickedPlaylistID(item.playlist_id);
+                          console.log(clickedPlaylistID);
                         }}
                       >
                         •••
@@ -444,30 +449,41 @@ const LibraryComponent = ({
                 ))}
                 {dropdownIndex !== null && (
                   <DropdownMenu ref={dropdownRef}>
-                    <DropdownItem
-                      onClick={() => handleOptionClick('Share', index)}
-                    >
-                      Share
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => handleOptionClick('Rename', index)}
-                    >
-                      Rename
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() =>
-                        handleOptionClick('Add to Playlist', index)
-                      }
-                    >
-                      Add to Playlist
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() => handleOptionClick('Delete', index)}
-                      delete
-                    >
-                      Delete
-                    </DropdownItem>
+                    <DropdownMenu ref={dropdownRef}>
+                      {/* <DropdownItem
+                            onClick={() =>
+                              handlePlaylistOptionClick(
+                                'Share',
+                                SelectedPlaylist
+                              )
+                            }
+                          >
+                            Share
+                          </DropdownItem> */}
+                      <DropdownItem
+                        onClick={() =>
+                          handlePlaylistOptionClick('Rename', SelectedPlaylist)
+                        }
+                      >
+                        Rename
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() =>
+                          handlePlaylistOptionClick('Delete', clickedPlaylistID)
+                        }
+                        delete
+                      >
+                        Delete
+                      </DropdownItem>
+                    </DropdownMenu>
                   </DropdownMenu>
+                )}
+                {isRenamePlaylistModalOpen && (
+                  <RenamePlaylistModal
+                    onClose={closeRenamePlaylistModal}
+                    onRename={handleRenamePlaylist}
+                    playlistID={clickedPlaylistID}
+                  />
                 )}
               </PlaylistWrapper>
             ) : // create playlist
@@ -540,7 +556,7 @@ const LibraryComponent = ({
                             onClick={() =>
                               handlePlaylistOptionClick(
                                 'Delete',
-                                SelectedPlaylist
+                                playlistTrack.playlist_id
                               )
                             }
                             delete
@@ -941,7 +957,8 @@ const PlaylistSongInfo = styled.div`
     text-align: left;
 
     &:nth-child(1) {
-      margin-top: 110px;
+      /* margin-top: 110px; */
+      margin-top: 150px;
       margin-bottom: 0px;
       ${Theme.fonts.songTitle}
       color: ${Theme.colors.white};
