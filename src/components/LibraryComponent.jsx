@@ -45,9 +45,7 @@ const LibraryComponent = ({
   const [isRenamePlaylistModalOpen, setIsRenamePlaylistModalOpen] =
     useState(false);
   const [isAddSongModalForSong, setIsAddSongModalForSong] = useState(true);
-  // 메인페이지 넘길 곡 정보
-  // const [track, setTrack] = useState([]);
-  // const [musicNumber, setMusicNumber] = useState(null);
+  const [hoverPlaylistIndex, setHoverPlaylistIndex] = useState(null);
 
   const dropdownRef = useRef(null);
 
@@ -95,16 +93,8 @@ const LibraryComponent = ({
 
   const handlePlaylistOptionClick = (option, index) => {
     setDropdownIndex(null);
-    if (option === 'Share') {
-      // handleSharePlaylist(index);
-    }
     if (option === 'Rename') {
       openRenamePlaylistModal();
-    }
-    if (option === 'Add to Playlist') {
-      setIsAddSongModalForSong(false);
-      console.log('Set IsAddSongModalForSong false');
-      openAddSongModal(); //
     }
     if (option === 'Delete') {
       // handleDeletePlaylist(24);
@@ -421,6 +411,8 @@ const LibraryComponent = ({
                       // console.log('playlist num: ' + index);
                       updatePlaylistTrack(item.playlist_id);
                     }}
+                    onMouseEnter={() => setHoverPlaylistIndex(index)}
+                    onMouseLeave={() => setHoverPlaylistIndex(null)}
                   >
                     {/* 실제 들어있는 데이터 값 때문에 조건은 아래처럼 */}
                     {item.first_song_thumbnail &&
@@ -437,44 +429,46 @@ const LibraryComponent = ({
                     )}
                     <PlaylistTitleWrapper>
                       <PlaylistTitle>{item.playlist_title}</PlaylistTitle>
-                      {/* <MoreButton
+                    </PlaylistTitleWrapper>
+                    {hoverPlaylistIndex === index && (
+                      <MoreButton
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleDropdown(index);
                         }}
                       >
                         •••
-                      </MoreButton> */}
-                    </PlaylistTitleWrapper>
-                    {/* {dropdownIndex === index && (
-                      <DropdownMenu ref={dropdownRef}>
-                        <DropdownItem
-                          onClick={() => handleOptionClick('Share', index)}
-                        >
-                          Share
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => handleOptionClick('Rename', index)}
-                        >
-                          Rename
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            handleOptionClick('Add to Playlist', index)
-                          }
-                        >
-                          Add to Playlist
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => handleOptionClick('Delete', index)}
-                          delete
-                        >
-                          Delete
-                        </DropdownItem>
-                      </DropdownMenu>
-                    )} */}
+                      </MoreButton>
+                    )}
                   </PlaylistItem>
                 ))}
+                {dropdownIndex !== null && (
+                  <DropdownMenu ref={dropdownRef}>
+                    <DropdownItem
+                      onClick={() => handleOptionClick('Share', index)}
+                    >
+                      Share
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() => handleOptionClick('Rename', index)}
+                    >
+                      Rename
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() =>
+                        handleOptionClick('Add to Playlist', index)
+                      }
+                    >
+                      Add to Playlist
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() => handleOptionClick('Delete', index)}
+                      delete
+                    >
+                      Delete
+                    </DropdownItem>
+                  </DropdownMenu>
+                )}
               </PlaylistWrapper>
             ) : // create playlist
             // 이 부분 필요 없을 듯
@@ -852,7 +846,9 @@ const PlaylistWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   padding: 30px;
-  gap: 30px;
+  /* gap: 30px; */
+  row-gap: 30px;
+  /* column-gap: 10px; */
   width: 100%;
   height: 500px;
 
