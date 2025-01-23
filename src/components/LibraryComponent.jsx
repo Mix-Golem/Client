@@ -30,6 +30,7 @@ const LibraryComponent = ({
   updateSonglist,
   updatePlaylist,
   updateFollowlist,
+  updateFollowingNum,
 }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedSongId, setSelectedSongId] = useState(null);
@@ -44,9 +45,8 @@ const LibraryComponent = ({
   const [isRenamePlaylistModalOpen, setIsRenamePlaylistModalOpen] =
     useState(false);
   const [isAddSongModalForSong, setIsAddSongModalForSong] = useState(true);
-  // 메인페이지 넘길 곡 정보
-  // const [track, setTrack] = useState([]);
-  // const [musicNumber, setMusicNumber] = useState(null);
+  const [hoverPlaylistIndex, setHoverPlaylistIndex] = useState(null);
+  const [clickedPlaylistID, setClickedPlaylistID] = useState(null);
 
   const dropdownRef = useRef(null);
 
@@ -92,24 +92,16 @@ const LibraryComponent = ({
     }
   };
 
-  const handlePlaylistOptionClick = (option, index) => {
+  const handlePlaylistOptionClick = (option, ID) => {
     setDropdownIndex(null);
-    if (option === 'Share') {
-      // handleSharePlaylist(index);
-    }
     if (option === 'Rename') {
       openRenamePlaylistModal();
-    }
-    if (option === 'Add to Playlist') {
-      setIsAddSongModalForSong(false);
-      console.log('Set IsAddSongModalForSong false');
-      openAddSongModal(); //
     }
     if (option === 'Delete') {
       // handleDeletePlaylist(24);
       // DeletePlaylistByID(24);
-      console.log(playlist[index].playlist_id); // 검증 필요, 이걸로 delete api 호출
-      DeletePlaylistByID(playlist[index].playlist_id).then((response) => {
+      // console.log(playlist[index].playlist_id); // 검증 필요, 이걸로 delete api 호출
+      DeletePlaylistByID(ID).then((response) => {
         if (response) {
           handleMenuClick('Playlist');
           updatePlaylist();
@@ -205,6 +197,7 @@ const LibraryComponent = ({
         if (response.isSuccess) {
           // console.log(response.result);
           setPlaylistTrack(response.result);
+          updatePlaylist();
         }
       });
     });
@@ -234,7 +227,7 @@ const LibraryComponent = ({
       state: { track: songIds, musicNumber: songId, playlistId: playlistId },
     });
   };
-  //[12, 12, 13,3 ]
+
   // follow / unfollow 관련
   // Initialize the state for all followingList items
   const [followStates, setFollowStates] = useState(
@@ -250,7 +243,7 @@ const LibraryComponent = ({
   const handleFollowToggle = async (index, followingId) => {
     if (disabledButtons[index]) return; // If the button is disabled, do nothing
 
-    // 3초 이내 추가 클릭 금지
+    // 1초 이내 추가 클릭 금지
     const newDisabledButtons = [...disabledButtons];
     newDisabledButtons[index] = true;
     setDisabledButtons(newDisabledButtons);
@@ -265,6 +258,7 @@ const LibraryComponent = ({
       const response = await Follow(followingId);
       if (response.success) {
         console.log(response.message);
+        updateFollowingNum(1);
       } else {
         console.error(response.message);
       }
@@ -272,6 +266,7 @@ const LibraryComponent = ({
       const response = await Unfollow(followingId);
       if (response.success) {
         console.log(response.message);
+        updateFollowingNum(-1);
       } else {
         console.error(response.message);
       }
@@ -295,7 +290,14 @@ const LibraryComponent = ({
       <ContentsTitle>Library</ContentsTitle>
       {/* Library 메뉴 선택 */}
       <ContentsMenu>
-        <button onClick={() => handleMenuClick('MySong')}>My Song</button>
+        <button
+          onClick={() => {
+            handleMenuClick('MySong');
+            updateSonglist();
+          }}
+        >
+          My Song
+        </button>
         <button
           onClick={() => {
             handleMenuClick('Playlist');
@@ -408,8 +410,12 @@ const LibraryComponent = ({
                       // console.log(item.playlist_id);
                       SetSelectedPlaylist(index);
                       // console.log('playlist num: ' + index);
-                      updatePlaylistTrack(item.playlist_id);
+                      updatePlaylistTrack(item.playlist_id); // dropdown menu 눌러도 이거 호출
                     }}
+                    onMouseEnter={() => {
+                      setHoverPlaylistIndex(index);
+                    }}
+                    onMouseLeave={() => setHoverPlaylistIndex(null)}
                   >
                     {/* 실제 들어있는 데이터 값 때문에 조건은 아래처럼 */}
                     {item.first_song_thumbnail &&
@@ -426,44 +432,59 @@ const LibraryComponent = ({
                     )}
                     <PlaylistTitleWrapper>
                       <PlaylistTitle>{item.playlist_title}</PlaylistTitle>
-                      {/* <MoreButton
+                    </PlaylistTitleWrapper>
+                    {hoverPlaylistIndex === index && (
+                      <MoreButton
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleDropdown(index);
+                          setClickedPlaylistID(item.playlist_id);
+                          console.log(clickedPlaylistID);
                         }}
                       >
                         •••
-                      </MoreButton> */}
-                    </PlaylistTitleWrapper>
-                    {/* {dropdownIndex === index && (
-                      <DropdownMenu ref={dropdownRef}>
-                        <DropdownItem
-                          onClick={() => handleOptionClick('Share', index)}
-                        >
-                          Share
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => handleOptionClick('Rename', index)}
-                        >
-                          Rename
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            handleOptionClick('Add to Playlist', index)
-                          }
-                        >
-                          Add to Playlist
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => handleOptionClick('Delete', index)}
-                          delete
-                        >
-                          Delete
-                        </DropdownItem>
-                      </DropdownMenu>
-                    )} */}
+                      </MoreButton>
+                    )}
                   </PlaylistItem>
                 ))}
+                {dropdownIndex !== null && (
+                  <DropdownMenu ref={dropdownRef}>
+                    <DropdownMenu ref={dropdownRef}>
+                      {/* <DropdownItem
+                            onClick={() =>
+                              handlePlaylistOptionClick(
+                                'Share',
+                                SelectedPlaylist
+                              )
+                            }
+                          >
+                            Share
+                          </DropdownItem> */}
+                      <DropdownItem
+                        onClick={() =>
+                          handlePlaylistOptionClick('Rename', SelectedPlaylist)
+                        }
+                      >
+                        Rename
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() =>
+                          handlePlaylistOptionClick('Delete', clickedPlaylistID)
+                        }
+                        delete
+                      >
+                        Delete
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </DropdownMenu>
+                )}
+                {isRenamePlaylistModalOpen && (
+                  <RenamePlaylistModal
+                    onClose={closeRenamePlaylistModal}
+                    onRename={handleRenamePlaylist}
+                    playlistID={clickedPlaylistID}
+                  />
+                )}
               </PlaylistWrapper>
             ) : // create playlist
             // 이 부분 필요 없을 듯
@@ -511,7 +532,7 @@ const LibraryComponent = ({
                       </MoreButton>
                       {dropdownIndex === SelectedPlaylist && (
                         <DropdownMenu ref={dropdownRef}>
-                          <DropdownItem
+                          {/* <DropdownItem
                             onClick={() =>
                               handlePlaylistOptionClick(
                                 'Share',
@@ -520,7 +541,7 @@ const LibraryComponent = ({
                             }
                           >
                             Share
-                          </DropdownItem>
+                          </DropdownItem> */}
                           <DropdownItem
                             onClick={() =>
                               handlePlaylistOptionClick(
@@ -535,7 +556,7 @@ const LibraryComponent = ({
                             onClick={() =>
                               handlePlaylistOptionClick(
                                 'Delete',
-                                SelectedPlaylist
+                                playlistTrack.playlist_id
                               )
                             }
                             delete
@@ -841,7 +862,9 @@ const PlaylistWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   padding: 30px;
-  gap: 30px;
+  /* gap: 30px; */
+  row-gap: 30px;
+  /* column-gap: 10px; */
   width: 100%;
   height: 500px;
 
@@ -934,7 +957,8 @@ const PlaylistSongInfo = styled.div`
     text-align: left;
 
     &:nth-child(1) {
-      margin-top: 110px;
+      /* margin-top: 110px; */
+      margin-top: 150px;
       margin-bottom: 0px;
       ${Theme.fonts.songTitle}
       color: ${Theme.colors.white};
