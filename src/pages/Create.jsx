@@ -1,16 +1,20 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import { Theme } from '../styles/Theme';
+import GlobalStyle from '../styles/GlobalStyle';
+
 import SideMenu from '../components/SideMenu';
 import CreateComponent from '../components/CreateComponent';
 import History from '../components/History';
 import CreateButton from '../components/CreateButton';
+import Profile from '../components/Profile';
+import Credit from '../components/Credit';
+
 import CreateSong from '../api/music/CreateSong';
 import SaveSong from '../api/music/SaveSong';
 import GetHistory from '../api/music/GetHistory';
 
-import Frame from '../img/Frame.svg';
-import Img_Credit from '../img/Img_Credit.svg';
+import background from '../img/background.png';
 
 function Create() {
   const [selectedSong, setSelectedSong] = React.useState(null); // index
@@ -78,20 +82,19 @@ function Create() {
   }, []);
 
   return (
-    <CreateContainer>
-      <SideWrapper>
+    <ThemeProvider theme={Theme}>
+      <GlobalStyle />
+      <CreateContainer>
         <SideMenu />
-        <Credit>
-          <img src={Img_Credit} alt='Credits' />
-          <p>50 Credits</p>
-        </Credit>
-      </SideWrapper>
-      <CreateWrapper>
-        <CreateComponent history={history} selectedSong={selectedSong} />
-        <History history={history} updateSelectedSong={setSelectedSong} />
+        <Credit />
+        <CreateWrapper>
+          <CreateComponent history={history} selectedSong={selectedSong} />
+          <History history={history} updateSelectedSong={setSelectedSong} />
+        </CreateWrapper>
         <CreateButton onSubmit={handlePromptSubmit} />
-      </CreateWrapper>
-    </CreateContainer>
+        <Profile />
+      </CreateContainer>
+    </ThemeProvider>
   );
 }
 
@@ -99,43 +102,12 @@ export default Create;
 
 const CreateContainer = styled.div`
   /* position: fixed; */
-  position: absolute;
+  position: relative;
   display: flex;
   width: 100vw;
   height: 100vh;
   background: ${Theme.colors.darkGray};
-`;
-
-const SideWrapper = styled.div`
-  position: relative;
-  display: flex;
-  width: 249px;
-  height: 1010px;
-  left: 18px;
-  top: 38px;
-
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const Credit = styled.div`
-  display: flex;
-  width: 249px;
-  height: 93px;
-  background: ${Theme.colors.black};
-  border-radius: 70px;
-
-  justify-content: center;
-  align-items: center;
-
-  img {
-    margin-right: 12px;
-  }
-
-  p {
-    ${Theme.fonts.credit}
-    color: ${Theme.colors.white};
-  }
+  overflow-y: auto;
 `;
 
 const CreateWrapper = styled.div`
@@ -145,5 +117,12 @@ const CreateWrapper = styled.div`
   left: 45px;
   top: 47px;
 
-  background-image: url(${Frame});
+  -webkit-mask-image: url(${background});
+  mask-image: url(${background});
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  background-image: url(${background});
+  background-size: cover;
+  background-position: 50% 50%;
 `;

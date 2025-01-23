@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../../styles/Theme';
+import GetPlaylistByID from '../../api/music/GetPlaylistByID';
 import Plus from '../../img/Plus.svg';
 
 const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID }) => {
@@ -9,8 +10,6 @@ const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID }) => {
   useEffect(() => {
     currentSrcID = srcID;
     currentDatalist = datalist;
-    // console.log('Updated srcID in modal:', currentSrcID);
-    // console.log('Updated datalist in modal:', currentDatalist);
   }, [srcID, datalist]);
 
   // isForSong == true면 MySong -> playlist로 호출(modal에 추가할 playlist 표시)
@@ -22,12 +21,58 @@ const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID }) => {
     // console.log(currentDatalist);
     if (isForSong) {
       // MySong에서 playlist로 추가하기
-      onAddSong(destID, srcID);
-      console.log('playlist_id: ' + destID + ' song_id: ' + srcID);
+      GetPlaylistByID(destID).then((response) => {
+        if (response.isSuccess) {
+          const playlistSongs = response.result.songs;
+
+          // 곡이 없다면 바로 추가
+          if (!playlistSongs) {
+            onAddSong(destID, srcID);
+            console.log('add successfully');
+            return;
+          }
+
+          // 중복 여부 확인
+          const isSongAlreadyInPlaylist = playlistSongs.some(
+            (song) => song.song_id === srcID
+          );
+
+          if (isSongAlreadyInPlaylist) {
+            console.log('Already present');
+            return;
+          }
+
+          onAddSong(destID, srcID);
+          console.log('add successfully');
+        }
+      });
     } else {
       // playlist에서 MySong을 추가하기
-      onAddSong(srcID, destID);
-      console.log('playlist_id: ' + srcID + ' song_id: ' + destID);
+      GetPlaylistByID(srcID).then((response) => {
+        if (response.isSuccess) {
+          const playlistSongs = response.result.songs;
+
+          // 곡이 없는 경우 바로 추가
+          if (!playlistSongs) {
+            onAddSong(srcID, destID);
+            console.log('add successfully');
+            return;
+          }
+
+          // 중복 여부 확인
+          const isSongAlreadyInPlaylist = playlistSongs.some(
+            (song) => song.song_id === destID
+          );
+
+          if (isSongAlreadyInPlaylist) {
+            console.log('Already present');
+            return;
+          }
+
+          onAddSong(srcID, destID);
+          console.log('add successfully');
+        }
+      });
     }
   };
 
@@ -85,7 +130,7 @@ const ModalOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;

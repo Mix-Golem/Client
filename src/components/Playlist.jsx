@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Theme } from '../styles/Theme'
@@ -59,8 +60,8 @@ function Playlist({ tokens, playlistId, setisPlay, setTrack, track, setMusicNumb
 
   return (
     <FieldWrapper>
-        <Listtitle>PlayList</Listtitle>
-        <ContentWrapper>
+      <Listtitle>PlayList</Listtitle>
+      <ContentWrapper>
         {playlist.length > 0 ? (
           playlist.map((playlist, index) => (
             <Content
@@ -72,146 +73,149 @@ function Playlist({ tokens, playlistId, setisPlay, setTrack, track, setMusicNumb
             <Line
                 key={playlist.playlistId}
                 isSelected={index === select}  // 선택된 항목에 스타일 적용
+              key={playlist.playlist_id}
+              isSelected={index === select} // 선택된 항목에 스타일 적용
+              as='button'
+              onClick={() => {
+                setSelect(index);
+                handleListClick(playlist.songId);
+              }}
+            >
+              <Line
+                key={playlist.playlist_id}
+                isSelected={index === select} // 선택된 항목에 스타일 적용
                 // as="button"
                 onClick={() => setSelect(index)}
-            />
-            <img
+              />
+              <img
                 style={{
-                width: '65px',
-                height: '65px',
-                borderRadius: '20px',
-                marginLeft: '26px'
+                  width: '65px',
+                  height: '65px',
+                  borderRadius: '20px',
+                  marginLeft: '26px',
                 }}
                 src={playlist.thumbnail}
                 alt={`playlist ${index + 1}`}
-            />
-            <MusicContent>
+              />
+              <MusicContent>
                 <MusicTitle
-                key={playlist.playlist_id}
-                isSelected={index === select}  // 선택된 항목에 스타일 적용
-                // as="button"
-                onClick={() => setSelect(index)}
-                >{playlist.playlist_title}</MusicTitle>
+                  key={playlist.playlist_id}
+                  isSelected={index === select} // 선택된 항목에 스타일 적용
+                  // as="button"
+                  onClick={() => setSelect(index)}
+                >
+                  {playlist.playlist_title}
+                </MusicTitle>
                 {/* <Artist>{playlist.userName}</Artist> */}
-            </MusicContent>
+              </MusicContent>
             </Content>
           ))
         ) : (
-          <div>No playlists available</div>  // 플레이리스트가 없을 때 표시
+          <div>No playlists available</div> // 플레이리스트가 없을 때 표시
         )}
-        </ContentWrapper>
+      </ContentWrapper>
     </FieldWrapper>
-  )
+  );
 }
 
-export default Playlist
+export default Playlist;
 
 const FieldWrapper = styled.div`
-    position: absolute;
-    display: inline-block;
-    z-index: 3;
-    width: 401px;
-    height: 278px;
-    left: 312px;
-    top: 765px;
+  position: absolute;
+  display: inline-block;
+  z-index: 3;
+  width: 401px;
+  height: 278px;
+  left: 312px;
+  top: 765px;
 
- -webkit-mask-image: url(${PL});
+  -webkit-mask-image: url(${PL});
   mask-image: url(${PL});
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
- 
 
- /* border-right: 20px solid transparent;
+  /* border-right: 20px solid transparent;
  border-bottom: 50px solid gray;
  border-left: 50px solid gray; */
 
- background: ${Theme.colors.black};
- border-radius: 40px;
-`
+  background: ${Theme.colors.black};
+  border-radius: 40px;
+`;
 
 const Listtitle = styled.p`
-    margin-top: 30px;
-    margin-right: 0px;
-    /* position: relative; */
-    /* display: flex; */
-    text-align: center;
-    ${Theme.fonts.title}
-    color: ${Theme.colors.white};
-    font-size: 40px;
-    line-height: 40px;
-`
+  margin-top: 30px;
+  margin-right: 0px;
+  /* position: relative; */
+  /* display: flex; */
+  text-align: center;
+  ${Theme.fonts.title}
+  color: ${Theme.colors.white};
+  font-size: 40px;
+  line-height: 40px;
+`;
 
 const ContentWrapper = styled.div`
-    /* display: flex; */
-    /* justify-content: center; */
-    display: static;
-    /* align-items: center; */
-    overflow-y: auto;
-    margin-top: 10px;
-    width: 400px;
-    height: 225px;
-    padding-bottom: 20px;
+  /* display: flex; */
+  /* justify-content: center; */
+  display: static;
+  /* align-items: center; */
+  overflow-y: auto;
+  margin-top: 10px;
+  width: 400px;
+  height: 225px;
+  padding-bottom: 20px;
 
-    &::-webkit-scrollbar {
+  &::-webkit-scrollbar {
     width: 5px;
     height: 8px;
-    }
-    &::-webkit-scrollbar-thumb {
+  }
+  &::-webkit-scrollbar-thumb {
     background: ${Theme.colors.white};
   }
-
-`
+`;
 
 const Content = styled.div`
-    cursor: pointer;
-    width: 400px;
-    height: 75px;
-    display: flex;
-    align-items: center;
-    /* margin-left: 27px; */
-    border-style: none;
-    /* border-left: ${(props) =>
-    props.isSelected
-      ? '2px solid #FFFFFF'
-      : 'none'}; */
-    background: ${(props) =>
+  cursor: pointer;
+  width: 400px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  /* margin-left: 27px; */
+  border-style: none;
+  /* border-left: ${(props) =>
+    props.isSelected ? '2px solid #FFFFFF' : 'none'}; */
+  background: ${(props) =>
     props.isSelected
       ? 'linear-gradient(270deg, #D9D9D9 28.08%, #81D8F3 100%)'
       : 'black'};
-`
+`;
 
 const Line = styled.div`
-    margin-left: 27px;
-    width: 0;
-    height: 32px;
-    margin-bottom: 23px;
-    border: ${(props) =>
-    props.isSelected
-      ? '1px solid #FFFFFF'
-      : 'none'};
-`
+  margin-left: 27px;
+  width: 0;
+  height: 32px;
+  margin-bottom: 23px;
+  border: ${(props) => (props.isSelected ? '1px solid #FFFFFF' : 'none')};
+`;
 const MusicContent = styled.div`
-    /* display: flex; */
-    margin-left: 17px;
-    position: static;
-    align-items: center;
-    text-align: left;
-    flex-grow: 1;
-`
+  /* display: flex; */
+  margin-left: 17px;
+  position: static;
+  align-items: center;
+  text-align: left;
+  flex-grow: 1;
+`;
 
 const MusicTitle = styled.div`
-    /* text-align: left; */
-    ${Theme.fonts.songTitle}
-    font-size: 18px;
-    color: ${(props) =>
-    props.isSelected
-      ? 'black'
-      : 'white'};
-`
+  /* text-align: left; */
+  ${Theme.fonts.songTitle}
+  font-size: 18px;
+  color: ${(props) => (props.isSelected ? 'black' : 'white')};
+`;
 
 const Artist = styled.div`
-    margin-top: 5px;
-    ${Theme.fonts.songArtist}
-    color: ${Theme.colors.gray};
-    font-size: 12px;
-`
+  margin-top: 5px;
+  ${Theme.fonts.songArtist}
+  color: ${Theme.colors.gray};
+  font-size: 12px;
+`;
