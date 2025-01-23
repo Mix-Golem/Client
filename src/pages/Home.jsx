@@ -7,6 +7,7 @@ import GlobalStyle from '../styles/GlobalStyle';
 
 import  AudioPlayer  from  'react-h5-audio-player' ;
 import 'react-h5-audio-player/lib/styles.css' ; 
+import { useCookies } from 'react-cookie';
 
 import nonmain from '../img/notLoginMain.png';
 import t1 from '../img/t1.jpg';
@@ -23,9 +24,9 @@ import Wave from '../components/Wave';
 
 function Home() {
   const [track, setTrack] =useState([]);
-  const [playlist, setPlaylist] = useState(0);
+  const [playlistId, setPlaylistId] = useState(-1);
 
-  const [login, setLogin] = useState(false);
+  const [login, setLogin] = useState(true);
   const [isPlay, setisPlay] = useState(false);
   const [backimg, setBackimg] = useState(t1);
   const [animating, setAnimating] = useState(false);
@@ -35,6 +36,35 @@ function Home() {
   const [artist, setArtist] = useState(null);
   const [music, setMusic] =useState(null);
   const [isSongInfoVisible, setIsSongInfoVisible] = useState(false); // 곡 정보 창의 표시 여부 상태
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "token",
+    "socialToken"
+  ]);
+
+  // 페이지가 처음 로드될 때만 토큰을 설정
+	useEffect(() => {
+		const storedSocialToken = cookies.socialToken;
+		if (storedSocialToken && !cookies.token) {
+			setCookie("token", storedSocialToken, {
+				path: "/",
+				domain: "localhost:5173",
+			});
+			console.log("설정 후 토큰 쿠키:", cookies.token);
+		}
+	}, []);
+
+  //토큰 유무 확인
+  useEffect(() => {
+		if (
+			!cookies.token ||
+			cookies.token === undefined ||
+			cookies.token === "undefined"
+		) {
+			setLogin(false);
+		} else {
+			setLogin(true);
+		}
+	}, [cookies.token]);
 
   const location = useLocation();
   //social에서 받아오기
@@ -42,7 +72,14 @@ function Home() {
     if (location.state?.track) {
       setTrack(location.state.track);  // 전달받은 track 설정
       setMusicNumber(location.state.musicNumber);  // 전달받은 songId 설정
+      console.log([track]);
       setisPlay(true);  // 자동 재생 설정
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if(location.state?.playlistId){
+      setPlaylistId(location.state.playlistId);
     }
   }, [location.state]);
 
@@ -65,9 +102,14 @@ function Home() {
     };
   }, []);
 
+  //노래 정보 열기기
   const handleToggleSongInfo = () => {
     setIsSongInfoVisible(!isSongInfoVisible); // 클릭 시 곡 정보 표시 여부를 토글
   };
+  //노래 정보 닫기
+  const handleToggleOff = () =>{
+    setIsSongInfoVisible(!isSongInfoVisible);
+  }
 
   useEffect
 
@@ -146,8 +188,8 @@ function Home() {
         <GlobalStyle/>
         <FieldWrapper>
           <SideMenu/>
-          <Credit/>
-          <MainField animating={animating} backimg={backimg}>
+          <Credit login={login} tokens={cookies.token}/>
+          <MainField animating={animating} backimg={backimg} onClick={handleToggleSongInfo}>
             {!isPlay && (<div>
               <Stationary>As you imagine<br/>unfold the music<br/>of your dreams!</Stationary>
               <StartBtn onClick={handleCreateBtn}>Create</StartBtn>
@@ -155,7 +197,7 @@ function Home() {
             )}
           </MainField>
           {isSongInfoVisible && isPlay && ( // 곡 정보가 표시될 때만 나타남
-          <SongInfoWrapper>
+          <SongInfoWrapper onClick={handleToggleOff}>
             <SongTitle>{currentSong?.title}</SongTitle>
             <About>{currentSong?.about}</About>
             <LyricsWrapper>
@@ -167,8 +209,8 @@ function Home() {
           </SongInfoWrapper>
         )}
           <Wave music={music} musicTitle={musicTitle} artist={artist} />
-          <Profile/>
-          <Playlist playlist={playlist} setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
+          <Profile login={login}/>
+          <Playlist tokens={cookies.token} playlistId={playlistId} setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
           <TopRank setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
           <MusicPlayer>
           <AudioPlayer
@@ -297,20 +339,24 @@ const Stationary = styled.p`
 
 const SongInfoWrapper = styled.div`
   position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 80%;
-  height: 80%;
-  background-color: rgba(0, 0, 0, 0.8);
+  margin-top: 200px;
+  /* position: relative; */
+  /* z-index: 1; */
+  width: 1400px;
+  height: 500px;
+  margin-left: 345px;
+  background-color: black;
+  background-color: rgba(0,0,0,0.4);
   color: white;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 40px;
   z-index: 10;
 `;
 
 const SongTitle = styled.h1`
   font-size: 36px;
   font-weight: bold;
+  /* ${Theme.fonts.title} */
 `;
 
 const About = styled.p`
@@ -322,13 +368,14 @@ const LyricsWrapper = styled.div`
   margin-top: 40px;
 `;
 const LyricsTitle = styled.h2`
-  font-size: 28px;
+  font-size: 35px;
   font-weight: bold;
   margin-bottom: 20px;
 `;
 
 const Lyric = styled.p`
-  font-size: 18px;
+  font-size: 25px;
   line-height: 1.6;
   margin-bottom: 10px;
+  ${Theme.fonts.lyrics}
 `;

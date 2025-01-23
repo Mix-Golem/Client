@@ -12,7 +12,7 @@ const SideMenu = () => {
       <Logo src={img_Logo} alt='Logo' />
       <NavLinks>
         <NavLink>
-          <Link to='/home'>Home</Link>
+          <Link to='/'>Home</Link>
         </NavLink>
         <NavLink>
           <Link to='/create'>Create</Link>

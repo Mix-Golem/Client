@@ -203,32 +203,6 @@ function Social() {
                 ))}
               </SearchResultWrapper>
             )}
-            {searchResult && (
-              <SearchResultWrapper>
-                {searchResult.map((song, index) => (
-                  <ContentWrapper
-                    key={index}
-                    onClick={() => handleRandomMusicClick(song.songId)}
-                  >
-                    <RankContent>
-                      <img
-                        style={{
-                          width: '78px',
-                          height: '78px',
-                          borderRadius: '20px',
-                        }}
-                        src={song.thumbnail}
-                        alt={`Thumbl ${index + 1}`}
-                      />
-                      <div style={{ marginLeft: '10px' }}>
-                        <Musictitle>{song.title}</Musictitle>
-                        <MusicArtist>{song.userName}</MusicArtist>
-                      </div>
-                    </RankContent>
-                  </ContentWrapper>
-                ))}
-              </SearchResultWrapper>
-            )}
           </SearchField>
           <TopField>
             <ContentTitle>TopRank</ContentTitle>
