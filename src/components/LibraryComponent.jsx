@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { Theme } from '../styles/Theme';
+import Cookies from 'js-cookie';
+
 import AddSongModal from './modals/AddSong';
 import RenameMySongModal from './modals/RenameMySong';
 import RenameMySong from '../api/music/RenameMySong';

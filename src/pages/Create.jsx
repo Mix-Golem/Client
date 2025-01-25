@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { Theme } from '../styles/Theme';
 import GlobalStyle from '../styles/GlobalStyle';
+import Cookies from 'js-cookie';
 
 import SideMenu from '../components/SideMenu';
 import CreateComponent from '../components/CreateComponent';
@@ -38,8 +39,14 @@ function Create() {
     },
   ]);
 
+  const token = Cookies.get('token');
+
   // 곡 생성
   const handlePromptSubmit = (inputValue) => {
+    if (token === undefined) {
+      return;
+    }
+
     CreateSong(inputValue)
       .then((response) => {
         console.log(response);
@@ -60,7 +67,7 @@ function Create() {
               },
             ],
           };
-          SaveSong(songInfo).then((response) => {
+          SaveSong(songInfo, token).then((response) => {
             console.log('Song creation success');
           });
         } else {
