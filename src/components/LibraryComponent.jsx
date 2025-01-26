@@ -145,12 +145,12 @@ const LibraryComponent = ({
       public: songData.public, // true or false
     };
 
-    RenameMySong(newSongData, newName, token).then(updateSonglist());
+    RenameMySong(newSongData, newName, token).then(() => updateSonglist());
   };
 
   // MySong 삭제
   const handleDeleteSong = (currentSong) => {
-    DeleteMySong(currentSong, token).then(updateSonglist());
+    DeleteMySong(currentSong, token).then(() => updateSonglist());
   };
 
   // playlist 관련
