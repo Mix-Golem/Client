@@ -293,24 +293,36 @@ const LibraryComponent = ({
       <ContentsTitle>Library</ContentsTitle>
       {/* Library 메뉴 선택 */}
       <ContentsMenu>
-        <button
+        <MenuButton
+          isActive={activeScreen === 'MySong'}
           onClick={() => {
             handleMenuClick('MySong');
             updateSonglist();
           }}
         >
-          My Song
-        </button>
-        <button
+          My Songs
+        </MenuButton>
+        <MenuButton
+          isActive={activeScreen === 'Playlist'}
           onClick={() => {
             handleMenuClick('Playlist');
             updatePlaylist();
           }}
         >
           PlayList
-        </button>
-        <button onClick={() => handleMenuClick('Following')}>Following</button>
-        <button onClick={() => handleMenuClick('Followers')}>Followers</button>
+        </MenuButton>
+        <MenuButton
+          isActive={activeScreen === 'Following'}
+          onClick={() => handleMenuClick('Following')}
+        >
+          Following
+        </MenuButton>
+        <MenuButton
+          isActive={activeScreen === 'Followers'}
+          onClick={() => handleMenuClick('Followers')}
+        >
+          Followers
+        </MenuButton>
       </ContentsMenu>
       <MySongWrapper>
         {activeScreen === 'MySong' &&
@@ -740,26 +752,31 @@ const ContentsTitle = styled.p`
 const ContentsMenu = styled.ul`
   margin: 0px;
   margin-bottom: 46px;
-  padding-left: 32px;
+  padding-left: 18px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+`;
 
-  button {
-    margin-right: 38px;
-    background: none;
-    border: none;
-    ${Theme.fonts.list}
-    color: ${Theme.colors.white};
+const MenuButton = styled.div`
+  margin-right: 20px;
+  width: 150px;
+  height: 42px;
+  background-color: ${({ isActive }) => {
+    return isActive ? '#000000' : '';
+  }};
+  border-radius: 15px;
+  ${Theme.fonts.list};
+  color: ${({ isActive }) => {
+    return isActive ? '#81D8F3' : '#EEEEEE';
+  }};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    &:hover {
-      transition: 0.3s;
-      color: ${Theme.colors.lightBlue};
-    }
-
-    &:active {
-      color: ${Theme.colors.red};
-    }
+  &:hover {
+    transition: 0.3s;
+    color: ${Theme.colors.lightBlue};
   }
 `;
 
