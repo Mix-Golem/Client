@@ -50,6 +50,7 @@ const LibraryComponent = ({
   const [hoverPlaylistIndex, setHoverPlaylistIndex] = useState(null);
   const [clickedPlaylistID, setClickedPlaylistID] = useState(null);
 
+  const token = Cookies.get('token');
   const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
@@ -103,7 +104,7 @@ const LibraryComponent = ({
       // handleDeletePlaylist(24);
       // DeletePlaylistByID(24);
       // console.log(playlist[index].playlist_id); // 검증 필요, 이걸로 delete api 호출
-      DeletePlaylistByID(ID).then((response) => {
+      DeletePlaylistByID(ID, token).then((response) => {
         if (response) {
           handleMenuClick('Playlist');
           updatePlaylist();
@@ -144,12 +145,12 @@ const LibraryComponent = ({
       public: songData.public, // true or false
     };
 
-    RenameMySong(newSongData, newName).then(updateSonglist());
+    RenameMySong(newSongData, newName, token).then(updateSonglist());
   };
 
   // MySong 삭제
   const handleDeleteSong = (currentSong) => {
-    DeleteMySong(currentSong).then(updateSonglist());
+    DeleteMySong(currentSong, token).then(updateSonglist());
   };
 
   // playlist 관련
@@ -163,7 +164,7 @@ const LibraryComponent = ({
   };
   const handleAddSongToPlaylist = (playlistID, songID) => {
     console.log('songID: ' + songID + '  playlistID: ' + playlistID);
-    AddSongToPlaylist(playlistID, songID).then((response) => {
+    AddSongToPlaylist(playlistID, songID, token).then((response) => {
       if (response.isSuccess) {
         // console.log('끼얏호');
         updatePlaylistTrack(playlistID);
@@ -174,7 +175,7 @@ const LibraryComponent = ({
   // playlistTrack 관련
   // playlistTrack 업데이트
   const updatePlaylistTrack = (playlistID) => {
-    GetPlaylistByID(playlistID).then((response) => {
+    GetPlaylistByID(playlistID, token).then((response) => {
       if (response.isSuccess) {
         console.log('playlistTrack Updated');
         console.log(response.result);
@@ -194,8 +195,8 @@ const LibraryComponent = ({
     setIsRenamePlaylistModalOpen(false);
   };
   const handleRenamePlaylist = (playlistID, newName) => {
-    RenamePlaylist(playlistID, newName).then(() => {
-      GetPlaylistByID(playlistID).then((response) => {
+    RenamePlaylist(playlistID, newName, token).then(() => {
+      GetPlaylistByID(playlistID, token).then((response) => {
         if (response.isSuccess) {
           // console.log(response.result);
           setPlaylistTrack(response.result);
@@ -207,8 +208,8 @@ const LibraryComponent = ({
 
   // 플레이리스트 삭제
   const handleDeleteSongInPlaylist = (playlistID, songID) => {
-    DeleteSongInPlaylist(playlistID, songID).then((response) => {
-      GetPlaylistByID(playlistID).then((response) => {
+    DeleteSongInPlaylist(playlistID, songID, token).then((response) => {
+      GetPlaylistByID(playlistID, token).then((response) => {
         if (response.isSuccess) {
           handleMenuClick('Playlist');
           updatePlaylist();
@@ -257,7 +258,7 @@ const LibraryComponent = ({
 
     // state 따라 Follow or Unfollow
     if (followStates[index]) {
-      const response = await Follow(followingId);
+      const response = await Follow(followingId, token);
       if (response.success) {
         console.log(response.message);
         updateFollowingNum(1);
@@ -265,7 +266,7 @@ const LibraryComponent = ({
         console.error(response.message);
       }
     } else {
-      const response = await Unfollow(followingId);
+      const response = await Unfollow(followingId, token);
       if (response.success) {
         console.log(response.message);
         updateFollowingNum(-1);
@@ -386,12 +387,16 @@ const LibraryComponent = ({
                   onClick={() => {
                     // SetSelectedPlaylist(-1); 이거 필요없이 그냥 바로 생성해도 될거 같은데?
                     console.log('playlist num: -1');
-                    // 추후 모달 추가해서 플리 이름 정할 수 있게 하는게 나을 듯 함
-                    CreatePlaylist('예시 플레이리스트').then((response) => {
-                      if (response.isSuccess) {
-                        updatePlaylist();
-                      }
-                    });
+                    // 로그인 필요 모달 넣기
+                    if (token !== undefined) {
+                      CreatePlaylist('예시 플레이리스트', token).then(
+                        (response) => {
+                          if (response.isSuccess) {
+                            updatePlaylist();
+                          }
+                        }
+                      );
+                    }
                   }}
                 >
                   <PlaylistImage
@@ -696,6 +701,7 @@ const LibraryComponent = ({
           srcID={
             isAddSongModalForSong ? selectedSongId : playlistTrack.playlist_id
           }
+          token={token}
         />
       )}
     </ContentsWrapper>

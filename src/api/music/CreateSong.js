@@ -1,9 +1,8 @@
 import { Axios } from '../Axios';
 import Cookies from 'js-cookie';
 
-export const CreateSong = async (prompt) => {
+export const CreateSong = async (prompt, token) => {
   try {
-    const token = Cookies.get('token');
     if (token === undefined) {
       return;
     }

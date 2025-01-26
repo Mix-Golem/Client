@@ -44,10 +44,11 @@ function Create() {
   // 곡 생성
   const handlePromptSubmit = (inputValue) => {
     if (token === undefined) {
+      // 로그인 필요하다는 모달 띄우기
       return;
     }
 
-    CreateSong(inputValue)
+    CreateSong(inputValue, token)
       .then((response) => {
         console.log(response);
         if (response.isSuccess) {
@@ -80,7 +81,7 @@ function Create() {
   };
 
   useEffect(() => {
-    GetHistory().then((response) => {
+    GetHistory(token).then((response) => {
       // console.log(response.result);
       if (response.isSuccess) {
         setHistory(response.result);
@@ -93,7 +94,7 @@ function Create() {
       <GlobalStyle />
       <CreateContainer>
         <SideMenu />
-        <Credit />
+        <Credit tokens={token} />
         <CreateWrapper>
           <CreateComponent history={history} selectedSong={selectedSong} />
           <History history={history} updateSelectedSong={setSelectedSong} />
