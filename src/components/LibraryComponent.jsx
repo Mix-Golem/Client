@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { Theme } from '../styles/Theme';
+import Cookies from 'js-cookie';
+
 import AddSongModal from './modals/AddSong';
 import RenameMySongModal from './modals/RenameMySong';
 import RenameMySong from '../api/music/RenameMySong';
@@ -48,6 +50,7 @@ const LibraryComponent = ({
   const [hoverPlaylistIndex, setHoverPlaylistIndex] = useState(null);
   const [clickedPlaylistID, setClickedPlaylistID] = useState(null);
 
+  const token = Cookies.get('token');
   const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
@@ -101,7 +104,7 @@ const LibraryComponent = ({
       // handleDeletePlaylist(24);
       // DeletePlaylistByID(24);
       // console.log(playlist[index].playlist_id); // 검증 필요, 이걸로 delete api 호출
-      DeletePlaylistByID(ID).then((response) => {
+      DeletePlaylistByID(ID, token).then((response) => {
         if (response) {
           handleMenuClick('Playlist');
           updatePlaylist();
@@ -142,12 +145,12 @@ const LibraryComponent = ({
       public: songData.public, // true or false
     };
 
-    RenameMySong(newSongData, newName).then(updateSonglist());
+    RenameMySong(newSongData, newName, token).then(() => updateSonglist());
   };
 
   // MySong 삭제
   const handleDeleteSong = (currentSong) => {
-    DeleteMySong(currentSong).then(updateSonglist());
+    DeleteMySong(currentSong, token).then(() => updateSonglist());
   };
 
   // playlist 관련
@@ -161,7 +164,7 @@ const LibraryComponent = ({
   };
   const handleAddSongToPlaylist = (playlistID, songID) => {
     console.log('songID: ' + songID + '  playlistID: ' + playlistID);
-    AddSongToPlaylist(playlistID, songID).then((response) => {
+    AddSongToPlaylist(playlistID, songID, token).then((response) => {
       if (response.isSuccess) {
         // console.log('끼얏호');
         updatePlaylistTrack(playlistID);
@@ -172,7 +175,7 @@ const LibraryComponent = ({
   // playlistTrack 관련
   // playlistTrack 업데이트
   const updatePlaylistTrack = (playlistID) => {
-    GetPlaylistByID(playlistID).then((response) => {
+    GetPlaylistByID(playlistID, token).then((response) => {
       if (response.isSuccess) {
         console.log('playlistTrack Updated');
         console.log(response.result);
@@ -192,8 +195,8 @@ const LibraryComponent = ({
     setIsRenamePlaylistModalOpen(false);
   };
   const handleRenamePlaylist = (playlistID, newName) => {
-    RenamePlaylist(playlistID, newName).then(() => {
-      GetPlaylistByID(playlistID).then((response) => {
+    RenamePlaylist(playlistID, newName, token).then(() => {
+      GetPlaylistByID(playlistID, token).then((response) => {
         if (response.isSuccess) {
           // console.log(response.result);
           setPlaylistTrack(response.result);
@@ -205,8 +208,8 @@ const LibraryComponent = ({
 
   // 플레이리스트 삭제
   const handleDeleteSongInPlaylist = (playlistID, songID) => {
-    DeleteSongInPlaylist(playlistID, songID).then((response) => {
-      GetPlaylistByID(playlistID).then((response) => {
+    DeleteSongInPlaylist(playlistID, songID, token).then((response) => {
+      GetPlaylistByID(playlistID, token).then((response) => {
         if (response.isSuccess) {
           handleMenuClick('Playlist');
           updatePlaylist();
@@ -255,7 +258,7 @@ const LibraryComponent = ({
 
     // state 따라 Follow or Unfollow
     if (followStates[index]) {
-      const response = await Follow(followingId);
+      const response = await Follow(followingId, token);
       if (response.success) {
         console.log(response.message);
         updateFollowingNum(1);
@@ -263,7 +266,7 @@ const LibraryComponent = ({
         console.error(response.message);
       }
     } else {
-      const response = await Unfollow(followingId);
+      const response = await Unfollow(followingId, token);
       if (response.success) {
         console.log(response.message);
         updateFollowingNum(-1);
@@ -290,24 +293,36 @@ const LibraryComponent = ({
       <ContentsTitle>Library</ContentsTitle>
       {/* Library 메뉴 선택 */}
       <ContentsMenu>
-        <button
+        <MenuButton
+          isActive={activeScreen === 'MySong'}
           onClick={() => {
             handleMenuClick('MySong');
             updateSonglist();
           }}
         >
-          My Song
-        </button>
-        <button
+          My Songs
+        </MenuButton>
+        <MenuButton
+          isActive={activeScreen === 'Playlist'}
           onClick={() => {
             handleMenuClick('Playlist');
             updatePlaylist();
           }}
         >
           PlayList
-        </button>
-        <button onClick={() => handleMenuClick('Following')}>Following</button>
-        <button onClick={() => handleMenuClick('Followers')}>Followers</button>
+        </MenuButton>
+        <MenuButton
+          isActive={activeScreen === 'Following'}
+          onClick={() => handleMenuClick('Following')}
+        >
+          Following
+        </MenuButton>
+        <MenuButton
+          isActive={activeScreen === 'Followers'}
+          onClick={() => handleMenuClick('Followers')}
+        >
+          Followers
+        </MenuButton>
       </ContentsMenu>
       <MySongWrapper>
         {activeScreen === 'MySong' &&
@@ -384,12 +399,16 @@ const LibraryComponent = ({
                   onClick={() => {
                     // SetSelectedPlaylist(-1); 이거 필요없이 그냥 바로 생성해도 될거 같은데?
                     console.log('playlist num: -1');
-                    // 추후 모달 추가해서 플리 이름 정할 수 있게 하는게 나을 듯 함
-                    CreatePlaylist('예시 플레이리스트').then((response) => {
-                      if (response.isSuccess) {
-                        updatePlaylist();
-                      }
-                    });
+                    // 로그인 필요 모달 넣기
+                    if (token !== undefined) {
+                      CreatePlaylist('예시 플레이리스트', token).then(
+                        (response) => {
+                          if (response.isSuccess) {
+                            updatePlaylist();
+                          }
+                        }
+                      );
+                    }
                   }}
                 >
                   <PlaylistImage
@@ -694,6 +713,7 @@ const LibraryComponent = ({
           srcID={
             isAddSongModalForSong ? selectedSongId : playlistTrack.playlist_id
           }
+          token={token}
         />
       )}
     </ContentsWrapper>
@@ -732,26 +752,31 @@ const ContentsTitle = styled.p`
 const ContentsMenu = styled.ul`
   margin: 0px;
   margin-bottom: 46px;
-  padding-left: 32px;
+  padding-left: 18px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+`;
 
-  button {
-    margin-right: 38px;
-    background: none;
-    border: none;
-    ${Theme.fonts.list}
-    color: ${Theme.colors.white};
+const MenuButton = styled.div`
+  margin-right: 20px;
+  width: 150px;
+  height: 42px;
+  background-color: ${({ isActive }) => {
+    return isActive ? '#000000' : '';
+  }};
+  border-radius: 15px;
+  ${Theme.fonts.list};
+  color: ${({ isActive }) => {
+    return isActive ? '#81D8F3' : '#EEEEEE';
+  }};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    &:hover {
-      transition: 0.3s;
-      color: ${Theme.colors.lightBlue};
-    }
-
-    &:active {
-      color: ${Theme.colors.red};
-    }
+  &:hover {
+    transition: 0.3s;
+    color: ${Theme.colors.lightBlue};
   }
 `;
 

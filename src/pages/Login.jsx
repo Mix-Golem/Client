@@ -15,6 +15,7 @@ import GlobalStyle from '../styles/GlobalStyle.js';
 import { Theme } from '../styles/Theme.js';
 // import { useGoogleLogin } from '@react-oauth/google';
 import { postLogin } from '../api/user/PostLogin.js';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const Login = () => {
 
       if (loginResponse.success) {
         console.log('로그인 성공:', loginResponse.token);
+        Cookies.set('token', loginResponse.token);
         navigate('/');
       } else {
         console.error('로그인 실패:', loginResponse.message);

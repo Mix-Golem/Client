@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../../styles/Theme';
+
 import GetPlaylistByID from '../../api/music/GetPlaylistByID';
 import Plus from '../../img/Plus.svg';
 
-const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID }) => {
+const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID, token }) => {
   let currentSrcID;
   let currentDatalist = datalist;
   useEffect(() => {
@@ -21,7 +22,7 @@ const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID }) => {
     // console.log(currentDatalist);
     if (isForSong) {
       // MySong에서 playlist로 추가하기
-      GetPlaylistByID(destID).then((response) => {
+      GetPlaylistByID(destID, token).then((response) => {
         if (response.isSuccess) {
           const playlistSongs = response.result.songs;
 
@@ -48,7 +49,7 @@ const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID }) => {
       });
     } else {
       // playlist에서 MySong을 추가하기
-      GetPlaylistByID(srcID).then((response) => {
+      GetPlaylistByID(srcID, token).then((response) => {
         if (response.isSuccess) {
           const playlistSongs = response.result.songs;
 

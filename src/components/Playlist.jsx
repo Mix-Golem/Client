@@ -1,62 +1,67 @@
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { Theme } from '../styles/Theme';
+import { Axios } from '../api/Axios';
 
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-import { Theme } from '../styles/Theme'
-import {Axios} from '../api/Axios'
+import PL from '../img/playlist.png';
 
-import PL from '../img/playlist.png'
+function Playlist({
+  tokens,
+  playlistId,
+  setisPlay,
+  setTrack,
+  track,
+  setMusicNumber,
+}) {
+  const [play, setplay] = useState(true);
+  const [select, setSelect] = useState(-1);
+  const [playlist, setPlaylist] = useState([]);
 
-function Playlist({ tokens, playlistId, setisPlay, setTrack, track, setMusicNumber}) {
+  // const fetchPlaylists = async () => {
+  //     try {
+  //       const response = await Axios.get('/social/rank/top'); // 플리 호출
 
-    const [play, setplay] = useState(true);
-    const [select, setSelect] = useState(-1);
-    const [playlist, setPlaylist] = useState([]);
+  //       setPlaylist(response.data.result.topsongs); // 플리 저장
+  //     //   setLoading(false); // 로딩 상태 업데이트
+  //       console.log(response);
+  //     } catch (err) {
+  //       console.error('Error fetching rank data:', err);
+  //     }
+  //   };
 
-    // const fetchPlaylists = async () => {
-    //     try {
-    //       const response = await Axios.get('/social/rank/top'); // 플리 호출
-    
-    //       setPlaylist(response.data.result.topsongs); // 플리 저장
-    //     //   setLoading(false); // 로딩 상태 업데이트
-    //       console.log(response);
-    //     } catch (err) {
-    //       console.error('Error fetching rank data:', err);
-    //     }
-    //   };
-    
-    //   useEffect(() => {
-    //     fetchPlaylists(); // 컴포넌트가 마운트될 때 데이터 호출
-    //   }, []);
+  //   useEffect(() => {
+  //     fetchPlaylists(); // 컴포넌트가 마운트될 때 데이터 호출
+  //   }, []);
 
-    useEffect(() => {
-        const fetchPlaylists = async () => {
-          const token = tokens;
-        
-          try {
-            const response = await Axios.get(`/music/playlist/${playlistId}`, {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-              },
-            })
-            // .then((response) => {
-            //   console.log(response);
-            // })
-            setPlaylist(response.data.result);
-            // 데이터를 상태에 저장
-            // setLoading(false);
-          } catch (err) {
-            // setError(err.message);
-            // setLoading(false);
-          }
-        };
-        fetchPlaylists();
-      }, []);
-    const handleListClick = (songId) => {
-        setTrack(playlist); // 전체 트랙 리스트를 설정
-        setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
-        setisPlay(true);
-        console.log(songId);
-        }
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      const token = tokens;
+
+      try {
+        const response = await Axios.get(`/music/playlist/${playlistId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // .then((response) => {
+        //   console.log(response);
+        // })
+        setPlaylist(response.data.result);
+        // 데이터를 상태에 저장
+        // setLoading(false);
+      } catch (err) {
+        // setError(err.message);
+        // setLoading(false);
+      }
+    };
+    fetchPlaylists();
+  }, []);
+  const handleListClick = (songId) => {
+    setTrack(playlist); // 전체 트랙 리스트를 설정
+    setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
+    setisPlay(true);
+    console.log(songId);
+  };
 
   return (
     <FieldWrapper>
@@ -66,14 +71,6 @@ function Playlist({ tokens, playlistId, setisPlay, setTrack, track, setMusicNumb
           playlist.map((playlist, index) => (
             <Content
               key={playlist.playlistId}
-              isSelected={index === select}  // 선택된 항목에 스타일 적용
-              as="button"
-              onClick={() => {setSelect(index); handleListClick(playlist.songId);}}
-            >
-            <Line
-                key={playlist.playlistId}
-                isSelected={index === select}  // 선택된 항목에 스타일 적용
-              key={playlist.playlist_id}
               isSelected={index === select} // 선택된 항목에 스타일 적용
               as='button'
               onClick={() => {

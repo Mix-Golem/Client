@@ -1,6 +1,8 @@
 import { React, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
+import Cookies from 'js-cookie';
+
 import GetMySongByID from '../api/music/GetMySongByID';
 import TogglePublic from '../api/music/TogglePublic';
 
@@ -27,6 +29,8 @@ const CreateComponent = ({ history, selectedSong }) => {
 
   const [isPublic, setIsPublic] = useState(selectedSongInfo.public);
 
+  const token = Cookies.get('token');
+
   // Toggle between public and private
   const handleTogglePublic = () => {
     setIsPublic((prevState) => !prevState); // Toggle state
@@ -34,12 +38,12 @@ const CreateComponent = ({ history, selectedSong }) => {
       ...prevInfo,
       public: !prevInfo.public,
     }));
-    TogglePublic(selectedSongInfo);
+    TogglePublic(selectedSongInfo, token);
   };
 
   const updateSongInfo = (selectedSong) => {
     if (selectedSong !== null) {
-      GetMySongByID(history[selectedSong].id).then((response) => {
+      GetMySongByID(history[selectedSong].id, token).then((response) => {
         if (response.isSuccess) {
           setSelectedSongInfo(response.result);
         }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { Theme } from '../styles/Theme';
 import GlobalStyle from '../styles/GlobalStyle';
+import Cookies from 'js-cookie';
 
 import Mypage from '../components/modals/Mypage.jsx';
 import SideMenu from '../components/SideMenu';
@@ -70,9 +71,10 @@ const Library = () => {
     followerList: [],
   });
   const [followingDiff, setFollwingDiff] = useState(0);
+  const token = Cookies.get('token');
 
   const updateSonglist = () => {
-    GetMySong().then((response) => {
+    GetMySong(token).then((response) => {
       if (response.isSuccess) {
         setSonglist(response.result);
       }
@@ -80,7 +82,7 @@ const Library = () => {
   };
 
   const updatePlaylist = () => {
-    GetAllPlaylist().then((response) => {
+    GetAllPlaylist(token).then((response) => {
       if (response.isSuccess) {
         setPlaylist(response.result);
       }
@@ -92,7 +94,7 @@ const Library = () => {
   };
 
   const updateFollowlist = () => {
-    GetFollowList().then((response) => {
+    GetFollowList(token).then((response) => {
       if (response.isSuccess) {
         setFollowlist(response.result);
       }
@@ -110,7 +112,7 @@ const Library = () => {
   };
 
   useEffect(() => {
-    GetMySong().then((response) => {
+    GetMySong(token).then((response) => {
       // console.log(response.isSuccess);
       if (response.isSuccess) {
         // console.log(response.result);
@@ -118,7 +120,7 @@ const Library = () => {
       }
     });
 
-    GetAllPlaylist().then((response) => {
+    GetAllPlaylist(token).then((response) => {
       console.log(response.isSuccess);
       if (response.isSuccess) {
         console.log(response.result);
@@ -126,7 +128,7 @@ const Library = () => {
       }
     });
 
-    GetFollowList().then((response) => {
+    GetFollowList(token).then((response) => {
       if (response.isSuccess) {
         setFollowlist(response.result);
       }

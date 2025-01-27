@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { Theme } from '../styles/Theme';
 import GlobalStyle from '../styles/GlobalStyle';
+import Cookies from 'js-cookie';
 
 import SideMenu from '../components/SideMenu';
 import CreateComponent from '../components/CreateComponent';
@@ -38,9 +39,16 @@ function Create() {
     },
   ]);
 
+  const token = Cookies.get('token');
+
   // 곡 생성
   const handlePromptSubmit = (inputValue) => {
-    CreateSong(inputValue)
+    if (token === undefined) {
+      // 로그인 필요하다는 모달 띄우기
+      return;
+    }
+
+    CreateSong(inputValue, token)
       .then((response) => {
         console.log(response);
         if (response.isSuccess) {
@@ -60,7 +68,7 @@ function Create() {
               },
             ],
           };
-          SaveSong(songInfo).then((response) => {
+          SaveSong(songInfo, token).then((response) => {
             console.log('Song creation success');
           });
         } else {
@@ -73,7 +81,7 @@ function Create() {
   };
 
   useEffect(() => {
-    GetHistory().then((response) => {
+    GetHistory(token).then((response) => {
       // console.log(response.result);
       if (response.isSuccess) {
         setHistory(response.result);
@@ -86,7 +94,7 @@ function Create() {
       <GlobalStyle />
       <CreateContainer>
         <SideMenu />
-        <Credit />
+        <Credit tokens={token} />
         <CreateWrapper>
           <CreateComponent history={history} selectedSong={selectedSong} />
           <History history={history} updateSelectedSong={setSelectedSong} />
