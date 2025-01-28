@@ -4,6 +4,7 @@ import { Theme } from '../styles/Theme';
 import { Axios } from '../api/Axios';
 import { useLocation } from 'react-router-dom';
 import GlobalStyle from '../styles/GlobalStyle';
+import Cookies from 'react-cookie';
 
 import  AudioPlayer  from  'react-h5-audio-player' ;
 import 'react-h5-audio-player/lib/styles.css' ; 
@@ -36,35 +37,21 @@ function Home() {
   const [artist, setArtist] = useState(null);
   const [music, setMusic] =useState(null);
   const [isSongInfoVisible, setIsSongInfoVisible] = useState(false); // 곡 정보 창의 표시 여부 상태
-  const [cookies, setCookie, removeCookie] = useCookies([
-    "token",
-    "socialToken"
-  ]);
 
-  // 페이지가 처음 로드될 때만 토큰을 설정
-	useEffect(() => {
-		const storedSocialToken = cookies.socialToken;
-		if (storedSocialToken && !cookies.token) {
-			setCookie("token", storedSocialToken, {
-				path: "/",
-				domain: "localhost:5173",
-			});
-			console.log("설정 후 토큰 쿠키:", cookies.token);
-		}
-	}, []);
+  const tokens = Cookies.get('token');
 
   //토큰 유무 확인
   useEffect(() => {
 		if (
-			!cookies.token ||
-			cookies.token === undefined ||
-			cookies.token === "undefined"
+			!Cookies.token ||
+			Cookies.token === undefined ||
+			Cookies.token === "undefined"
 		) {
 			setLogin(false);
 		} else {
 			setLogin(true);
 		}
-	}, [cookies.token]);
+	}, [Cookies.token]);
 
   const location = useLocation();
   //social에서 받아오기
@@ -145,8 +132,7 @@ function Home() {
   useEffect(() => {
     if(musicNumber){
     const fetchSongInfo = async () => {
-      const token =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXEiOnsiaWQiOjE2LCJuYW1lIjoi7YOI7Ye0IO2FjOyKpO2KuCIsInBob25lbnVtYmVyIjoiMDEwMTIzNDU2NzgiLCJiaXJ0aCI6IjIwMDAtMDYtMjRUMTU6MDA6MDAuMDAwWiIsImdlbmRlciI6Ik0iLCJlbWFpbCI6ImRhcmttb29uQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiaGlkZGVuIiwiY3JlZGl0IjoyMDAsInByb2ZpbGUiOiJodHRwOi8vdDEua2FrYW9jZG4ubmV0L2FjY291bnRfaW1hZ2VzL2RlZmF1bHRfcHJvZmlsZS5qcGVnLnR3Zy50aHVtYi5SNjQweDY0MCIsImludHJvZHVjZSI6bnVsbCwic29jaWFsX3Byb3ZpZGVyIjpudWxsLCJyb2xlIjoiVVNFUiIsImNyZWF0ZWRfYXQiOiIyMDI0LTA4LTI1VDA1OjU3OjM2LjAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNC0wOC0yNVQwNTo1NzozNi4wMDBaIiwid2l0aGRyYXdfYXQiOm51bGwsIndpdGhkcmF3X3N0YXR1cyI6MH0sImlhdCI6MTcyNzYwNTUyNn0.wRFBmXGIMxLgfLJ8gut-n1kWCxNS6PYUzzxpkyaLbEQ';
+      const token = tokens;
     
       try {
         const response = await Axios.get(`/music/info/${musicNumber}`, {
@@ -188,7 +174,7 @@ function Home() {
         <GlobalStyle/>
         <FieldWrapper>
           <SideMenu/>
-          <Credit login={login} tokens={cookies.token}/>
+          <Credit login={login} tokens={tokens}/>
           <MainField animating={animating} backimg={backimg} onClick={handleToggleSongInfo}>
             {!isPlay && (<div>
               <Stationary>As you imagine<br/>unfold the music<br/>of your dreams!</Stationary>
@@ -209,8 +195,8 @@ function Home() {
           </SongInfoWrapper>
         )}
           <Wave music={music} musicTitle={musicTitle} artist={artist} />
-          <Profile login={login}/>
-          <Playlist tokens={cookies.token} playlistId={playlistId} setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
+          <Profile login={login} tokens={tokens}/>
+          <Playlist tokens={tokens} playlistId={playlistId} setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
           <TopRank setisPlay={setisPlay} setTrack={setTrack} setMusicNumber={setMusicNumber} track={track} musicNumber={musicNumber}/>
           <MusicPlayer>
           <AudioPlayer
