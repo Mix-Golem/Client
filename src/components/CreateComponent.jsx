@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { Theme } from '../styles/Theme';
 import Cookies from 'js-cookie';
 
@@ -28,7 +29,7 @@ const CreateComponent = ({ history, selectedSong }) => {
   });
 
   const [isPublic, setIsPublic] = useState(selectedSongInfo.public);
-
+  const navigate = useNavigate();
   const token = Cookies.get('token');
 
   // Toggle between public and private
@@ -51,8 +52,15 @@ const CreateComponent = ({ history, selectedSong }) => {
     }
   };
 
+  const handleSongDoubleClick = (songId) => {
+    const songIds = [songId];
+
+    // 이동과 함께 상태 전달
+    navigate('/', { state: { track: songIds, musicNumber: songId } });
+  };
+
   useEffect(() => {
-    setIsPublic(selectedSongInfo.public); // Sync isPublic with selectedSongInfo.public
+    setIsPublic(selectedSongInfo.public);
   }, [selectedSongInfo.public]);
 
   useEffect(() => {
@@ -64,7 +72,14 @@ const CreateComponent = ({ history, selectedSong }) => {
       <AlbumContainer>
         {selectedSongInfo.id !== '' && (
           <>
-            <img src={selectedSongInfo.thumbnail} alt='Song' />
+            <img
+              onDoubleClick={() => {
+                handleSongDoubleClick(selectedSongInfo.id);
+              }}
+              src={selectedSongInfo.thumbnail}
+              alt='Song'
+            />
+
             <AlbumInfo>
               <p>{selectedSongInfo.title}</p>
               <p>{selectedSongInfo.artist}</p>
@@ -134,6 +149,7 @@ const AlbumContainer = styled.div`
     height: 160px;
     border-radius: 20px;
     object-fit: fill;
+    cursor: pointer;
   }
 `;
 
