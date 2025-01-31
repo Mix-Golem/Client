@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { Theme } from "../styles/Theme";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { Theme } from '../styles/Theme';
 
 // 가사 text를 직접 전달
 const Lyrics = ({ lyrics }) => {
-  const [lyricsText, setLyricsText] = useState("");
+  const [lyricsText, setLyricsText] = useState('');
 
   useEffect(() => {
     setLyricsText(lyrics);
@@ -68,6 +68,7 @@ const LyricsContentsWrapper = styled.div`
 `;
 
 const LyricsContents = styled.div`
+  margin-bottom: 30px;
   padding: 0 40px; // 양쪽 공백
   box-sizing: border-box;
   ${Theme.fonts.lyrics}
