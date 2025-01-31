@@ -70,6 +70,12 @@ function Create() {
           };
           SaveSong(songInfo, token).then((response) => {
             console.log('Song creation success');
+            GetHistory(token).then((response) => {
+              // console.log(response.result);
+              if (response.isSuccess) {
+                setHistory(response.result);
+              }
+            });
           });
         } else {
           console.error('Song creation failed:', response.message);
