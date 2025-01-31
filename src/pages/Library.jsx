@@ -11,6 +11,7 @@ import Lyrics from '../components/Lyrics';
 import Follow from '../components/Follow';
 import Profile from '../components/Profile';
 import Credit from '../components/Credit';
+import TopRank from '../components/TopRank.jsx';
 
 import GetMySong from '../api/music/GetMySong.js';
 import GetAllPlaylist from '../api/music/GetAllPlaylist.js';
@@ -156,6 +157,7 @@ const Library = () => {
         </LibraryWrapper>
         <Follow followlist={followlist} followingDiff={followingDiff} />
         <Mypage show={showModal} onClose={toggleModal} />
+        <TopRank/>
         <Profile />
       </LibraryContainer>
     </ThemeProvider>

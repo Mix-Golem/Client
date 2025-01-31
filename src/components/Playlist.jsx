@@ -2,21 +2,22 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
 import { Axios } from '../api/Axios';
-
+import Cookies from 'js-cookie';
 import PL from '../img/playlist.png';
 
 function Playlist({
-  tokens,
+  // tokens,
   playlistId,
   setisPlay,
   setTrack,
   track,
   setMusicNumber,
 }) {
-  const [play, setplay] = useState(true);
   const [select, setSelect] = useState(-1);
   const [playlist, setPlaylist] = useState([]);
+  const [songs, setSongs] = useState([]);
 
+  const tokens = Cookies.get('token');
   // const fetchPlaylists = async () => {
   //     try {
   //       const response = await Axios.get('/social/rank/top'); // 플리 호출
@@ -47,6 +48,10 @@ function Playlist({
         //   console.log(response);
         // })
         setPlaylist(response.data.result);
+        setSongs(response.data.result.songs || []);
+        
+        const songIds = response.data.result.songs.map(song => song.song_id);
+        setTrack(songIds || []); // 전체 트랙 리스트를 설정
         // 데이터를 상태에 저장
         // setLoading(false);
       } catch (err) {
@@ -55,9 +60,9 @@ function Playlist({
       }
     };
     fetchPlaylists();
-  }, []);
+  }, [playlistId]);
+
   const handleListClick = (songId) => {
-    setTrack(playlist); // 전체 트랙 리스트를 설정
     setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
     setisPlay(true);
     console.log(songId);
@@ -67,19 +72,19 @@ function Playlist({
     <FieldWrapper>
       <Listtitle>PlayList</Listtitle>
       <ContentWrapper>
-        {playlist.length > 0 ? (
-          playlist.map((playlist, index) => (
+        {songs.length > 0 ? (
+          songs.map((song, index) => (
             <Content
-              key={playlist.playlistId}
+              key={song.song_id}
               isSelected={index === select} // 선택된 항목에 스타일 적용
               as='button'
               onClick={() => {
                 setSelect(index);
-                handleListClick(playlist.songId);
+                handleListClick(song.song_id);
               }}
             >
               <Line
-                key={playlist.playlist_id}
+                key={song.song_id}
                 isSelected={index === select} // 선택된 항목에 스타일 적용
                 // as="button"
                 onClick={() => setSelect(index)}
@@ -91,25 +96,27 @@ function Playlist({
                   borderRadius: '20px',
                   marginLeft: '26px',
                 }}
-                src={playlist.thumbnail}
+                src={song.thumbnail}
                 alt={`playlist ${index + 1}`}
               />
               <MusicContent>
                 <MusicTitle
-                  key={playlist.playlist_id}
+                  key={song.song_Id}
                   isSelected={index === select} // 선택된 항목에 스타일 적용
                   // as="button"
                   onClick={() => setSelect(index)}
                 >
-                  {playlist.playlist_title}
+                  {song.song_title}
                 </MusicTitle>
                 {/* <Artist>{playlist.userName}</Artist> */}
               </MusicContent>
             </Content>
           ))
-        ) : (
+        )
+         : (
           <div>No playlists available</div> // 플레이리스트가 없을 때 표시
-        )}
+        )
+        }
       </ContentWrapper>
     </FieldWrapper>
   );

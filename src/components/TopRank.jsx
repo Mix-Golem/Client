@@ -2,6 +2,7 @@ import {React, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import { Theme } from '../styles/Theme'
 import { Axios } from '../api/Axios'
+import { useNavigate } from 'react-router-dom'
 
 import fst from '../img/t1.jpg'
 import snd from '../img/t1.jpg'
@@ -11,6 +12,7 @@ function TopRank({ setisPlay, setTrack, setMusicNumber, track, musicNumber }) {
     const [topSongs, setTopSongs] = useState([]);
     const [todaySongs, setTodaySongs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate(); // 페이지 이동을 위한 훅
 
     const fetchRankData = async () => {
         try {
@@ -31,20 +33,28 @@ function TopRank({ setisPlay, setTrack, setMusicNumber, track, musicNumber }) {
       }, []);
 
     const handleTopRankClick = (songId) => {
-        const songIds = topSongs.map(song => song.songId)
-        setTrack(songIds); // 전체 트랙 리스트를 설정
-        setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
-        setisPlay(true);
-        console.log(songId);
-        }
+      // 현재 페이지가 '/'가 아니라면 '/'로 이동
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
+      const songIds = topSongs.map(song => song.songId)
+      setTrack(songIds); // 전체 트랙 리스트를 설정
+      setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
+      setisPlay(true);
+      console.log(songId);
+    }
 
     const handleTodayRankClick = (songId) => {
-        const songIds = todaySongs.map(song => song.songId)
-        setTrack(songIds); // 전체 트랙 리스트를 설정
-        setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
-        setisPlay(true);
-        console.log(track);
-        console.log(musicNumber);
+      // 현재 페이지가 '/'가 아니라면 '/'로 이동
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
+      const songIds = todaySongs.map(song => song.songId)
+      setTrack(songIds); // 전체 트랙 리스트를 설정
+      setMusicNumber(songId); // 선택된 곡의 songId를 Home.js에 전달
+      setisPlay(true);
+      console.log(track);
+      console.log(musicNumber);
     }
     
 

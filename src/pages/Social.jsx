@@ -53,6 +53,13 @@ function Social() {
     navigate('/', { state: { track: songIds, musicNumber: songId } });
   };
 
+  const handleSearchMusicClick = (songId) => {
+    const songIds = topSongs.map((song) => song.songId);
+    setTrack(songIds);
+    setMusicNumber(songId);
+    navigate('/', { state: { track: songIds, musicNumber: songId } });
+  };
+
   const handleTopRankClick = (songId) => {
     const songIds = topSongs.map((song) => song.songId); // Track list
     setTrack(songIds); // 전체 트랙 리스트를 설정
@@ -104,6 +111,7 @@ function Social() {
           keyword: search, // Search keyword
         },
       });
+      console.log(response);
 
       // 검색 결과를 받아와 처리
       const searchResults = response.data.result.songs; // 검색 결과는 API의 'result'를 통해 받음
@@ -203,6 +211,29 @@ function Social() {
                 ))}
               </SearchResultWrapper>
             )}
+            {searchResult && (
+              <SearchResultWrapper>
+              {searchResult.map((song, index) => (
+                  <ContentWrapper key={index} onClick={() => handleRandomMusicClick(song.id)}>
+                  <RankContent>
+                      <img
+                      style={{
+                          width: '78px',
+                          height: '78px',
+                          borderRadius: '20px',
+                      }}
+                      src={song.thumbnail}
+                      alt={`Thumbl ${index + 1}`}
+                      />
+                      <div style={{ marginLeft: '10px' }}>
+                      <Musictitle>{song.title}</Musictitle>
+                      <MusicArtist>{song.userName}</MusicArtist>
+                      </div>
+                  </RankContent>
+                  </ContentWrapper>
+              ))}
+              </SearchResultWrapper>
+          )}
           </SearchField>
           <TopField>
             <ContentTitle>TopRank</ContentTitle>
