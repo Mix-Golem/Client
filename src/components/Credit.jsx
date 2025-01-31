@@ -3,15 +3,17 @@ import { Theme } from '../styles/Theme';
 import styled from 'styled-components';
 // import axios from 'axios'
 import { Axios } from '../api/Axios';
+import Cookies from 'js-cookie';
 
 import user from '../img/GuideLogo.png';
 import Mypage from './modals/Mypage';
 
-function Credit({ login, tokens }) {
+function Credit({ login}) {
   const [userInfo, setUserInfo] = useState({});
   const [credit, setCredit] = useState(0);
   const [profile, setProfile] = useState(user);
 
+  const tokens = Cookies.get('token');
   useEffect(() => {
     const fetchUserInfo = async () => {
       const token = tokens;
@@ -55,9 +57,12 @@ function Credit({ login, tokens }) {
     setShowModal(!showModal);
   };
 
+  function handleLogin() {
+    window.location.href = "/users/login";
+  }
   return (
     <CreditContainer onClick={toggleModal}>
-      {userInfo && (
+      {tokens && (
         <>
           <img
             style={{ width: '60px', height: '60px', borderRadius: '50px' }}
@@ -68,6 +73,10 @@ function Credit({ login, tokens }) {
           <Mypage show={showModal} onClose={toggleModal} />
         </>
       )}
+      {tokens === undefined &&(
+        <NotLoginContainer onClick={handleLogin}>login/signin</NotLoginContainer>
+      )
+      }
     </CreditContainer>
   );
 }
@@ -79,6 +88,7 @@ const CreditContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor:pointer;
   gap: 10px;
 
   width: 249px;
@@ -93,3 +103,10 @@ const Creditmoney = styled.div`
   ${Theme.fonts.credit};
   color: ${Theme.colors.white};
 `;
+
+const NotLoginContainer = styled.div`
+position: relative;
+display: flex;
+  ${Theme.fonts.credit}
+  color: ${Theme.colors.white};
+`
