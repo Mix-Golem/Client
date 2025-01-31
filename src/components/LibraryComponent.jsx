@@ -453,7 +453,7 @@ const LibraryComponent = ({
                       <PlaylistTitle>{item.playlist_title}</PlaylistTitle>
                     </PlaylistTitleWrapper>
                     {hoverPlaylistIndex === index && (
-                      <MoreButton
+                      <PlaylistMoreButton
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleDropdown(index);
@@ -462,14 +462,13 @@ const LibraryComponent = ({
                         }}
                       >
                         •••
-                      </MoreButton>
+                      </PlaylistMoreButton>
                     )}
                   </PlaylistItem>
                 ))}
                 {dropdownIndex !== null && (
                   <DropdownMenu ref={dropdownRef}>
-                    <DropdownMenu ref={dropdownRef}>
-                      {/* <DropdownItem
+                    {/* <DropdownItem
                             onClick={() =>
                               handlePlaylistOptionClick(
                                 'Share',
@@ -479,22 +478,21 @@ const LibraryComponent = ({
                           >
                             Share
                           </DropdownItem> */}
-                      <DropdownItem
-                        onClick={() =>
-                          handlePlaylistOptionClick('Rename', SelectedPlaylist)
-                        }
-                      >
-                        Rename
-                      </DropdownItem>
-                      <DropdownItem
-                        onClick={() =>
-                          handlePlaylistOptionClick('Delete', clickedPlaylistID)
-                        }
-                        delete
-                      >
-                        Delete
-                      </DropdownItem>
-                    </DropdownMenu>
+                    <DropdownItem
+                      onClick={() =>
+                        handlePlaylistOptionClick('Rename', SelectedPlaylist)
+                      }
+                    >
+                      Rename
+                    </DropdownItem>
+                    <DropdownItem
+                      onClick={() =>
+                        handlePlaylistOptionClick('Delete', clickedPlaylistID)
+                      }
+                      delete
+                    >
+                      Delete
+                    </DropdownItem>
                   </DropdownMenu>
                 )}
                 {isRenamePlaylistModalOpen && (
@@ -777,6 +775,7 @@ const MenuButton = styled.div`
   &:hover {
     transition: 0.3s;
     color: ${Theme.colors.lightBlue};
+    cursor: pointer;
   }
 `;
 
@@ -881,6 +880,22 @@ const DropdownItem = styled.div`
     `
     color: ${Theme.colors.red};
   `}
+`;
+
+const PlaylistMoreButton = styled.button`
+  position: absolute;
+  top: 15px; /* Adjust as needed for spacing */
+  right: 20px; /* Adjust for alignment */
+  background: none;
+  border: none;
+  color: ${Theme.colors.white};
+  font-size: 32px;
+  cursor: pointer;
+  z-index: 10; /* Ensure it's above other elements */
+
+  &:hover {
+    color: ${Theme.colors.gray};
+  }
 `;
 
 const PlaylistWrapper = styled.div`
