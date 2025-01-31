@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Theme } from '../styles/Theme';
-import LogoImage from '../img/logo.svg'; // Replace with your actual logo path
+import { Theme } from '../../styles/Theme';
+import LogoImage from '../../img/Logo.svg';
 
 const LoginModal = ({ onClose, onLogin }) => {
   return (
@@ -20,7 +20,6 @@ const LoginModal = ({ onClose, onLogin }) => {
 
 export default LoginModal;
 
-// Styled Components
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;

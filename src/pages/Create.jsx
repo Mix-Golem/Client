@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { React, useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { Theme } from '../styles/Theme';
 import GlobalStyle from '../styles/GlobalStyle';
@@ -10,6 +10,7 @@ import History from '../components/History';
 import CreateButton from '../components/CreateButton';
 import Profile from '../components/Profile';
 import Credit from '../components/Credit';
+import LoginModal from '../components/modals/LoginModal';
 
 import CreateSong from '../api/music/CreateSong';
 import SaveSong from '../api/music/SaveSong';
@@ -18,8 +19,8 @@ import GetHistory from '../api/music/GetHistory';
 import background from '../img/background.png';
 
 function Create() {
-  const [selectedSong, setSelectedSong] = React.useState(null); // index
-  const [history, setHistory] = React.useState([
+  const [selectedSong, setSelectedSong] = useState(null); // index
+  const [history, setHistory] = useState([
     {
       status: 'OK',
       code: 200,
@@ -41,10 +42,27 @@ function Create() {
 
   const token = Cookies.get('token');
 
+  const [isLogin, setIsLogin] = useState(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // 로그인 모달
+  const handleOpenModal = () => {
+    setIsLoginModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsLoginModalOpen(false);
+  };
+
+  const handleLogin = () => {
+    setIsLoginModalOpen(false);
+    window.location.href = '/users/login';
+  };
+
   // 곡 생성
   const handlePromptSubmit = (inputValue) => {
     if (token === undefined) {
-      // 로그인 필요하다는 모달 띄우기
+      handleOpenModal();
       return;
     }
 
@@ -89,11 +107,17 @@ function Create() {
   useEffect(() => {
     GetHistory(token).then((response) => {
       // console.log(response.result);
-      if (response.isSuccess) {
+      if (response && response.isSuccess) {
         setHistory(response.result);
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (!token) {
+      handleOpenModal();
+    }
+  }, [token]);
 
   return (
     <ThemeProvider theme={Theme}>
@@ -105,8 +129,14 @@ function Create() {
           <CreateComponent history={history} selectedSong={selectedSong} />
           <History history={history} updateSelectedSong={setSelectedSong} />
         </CreateWrapper>
-        <CreateButton onSubmit={handlePromptSubmit} />
+        <CreateButton
+          onSubmit={handlePromptSubmit}
+          onModalOpen={handleOpenModal}
+        />
         <Profile />
+        {isLoginModalOpen && (
+          <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
+        )}
       </CreateContainer>
     </ThemeProvider>
   );

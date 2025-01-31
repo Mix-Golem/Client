@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Theme } from '../styles/Theme';
+import Cookies from 'js-cookie';
 
 import PL from '../img/playlist.png';
 
-const CreateButton = ({ onSubmit }) => {
+const CreateButton = ({ onSubmit, onModalOpen }) => {
   const [inputValue, setInputValue] = useState('');
   const maxCharacters = 200;
+  const token = Cookies.get('token');
 
   const handleInputChange = (e) => {
     if (e.target.value.length <= maxCharacters) {
@@ -15,9 +17,12 @@ const CreateButton = ({ onSubmit }) => {
   };
 
   const handleSubmit = () => {
+    if (token === undefined) {
+      onModalOpen();
+    }
     if (inputValue.trim()) {
       onSubmit(inputValue);
-      setInputValue(''); // Clear the input after submission
+      setInputValue('');
     }
   };
 
