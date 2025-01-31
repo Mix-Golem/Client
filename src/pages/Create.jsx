@@ -11,6 +11,7 @@ import CreateButton from '../components/CreateButton';
 import Profile from '../components/Profile';
 import Credit from '../components/Credit';
 import LoginModal from '../components/modals/LoginModal';
+import TopRank from '../components/TopRank.jsx';
 
 import CreateSong from '../api/music/CreateSong';
 import SaveSong from '../api/music/SaveSong';
@@ -134,6 +135,7 @@ function Create() {
           onModalOpen={handleOpenModal}
         />
         <Profile />
+        <TopRank />
         {isLoginModalOpen && (
           <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
         )}
