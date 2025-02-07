@@ -21,25 +21,7 @@ import background from '../img/background.png';
 
 function Create() {
   const [selectedSong, setSelectedSong] = useState(null); // index
-  const [history, setHistory] = useState([
-    {
-      status: 'OK',
-      code: 200,
-      message: '히스토리 호출 완료',
-      result: [
-        {
-          id: 1,
-          userId: 1,
-          userName: '곡 작성자',
-          title: '수정한 제목',
-          thumbnail: '저장된 url',
-        },
-      ],
-      // 등 여러개
-      // 곡 id 기반으로 곡 정보 클릭시 해당 곡 정보 불러와야 함
-      isSuccess: true,
-    },
-  ]);
+  const [history, setHistory] = useState([]);
 
   const token = Cookies.get('token');
 
