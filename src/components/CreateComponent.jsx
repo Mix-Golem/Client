@@ -1,5 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { helix } from 'ldrs';
+
 import { useNavigate } from 'react-router-dom';
 import { Theme } from '../styles/Theme';
 import Cookies from 'js-cookie';
@@ -7,7 +9,7 @@ import Cookies from 'js-cookie';
 import GetMySongByID from '../api/music/GetMySongByID';
 import TogglePublic from '../api/music/TogglePublic';
 
-const CreateComponent = ({ history, selectedSong }) => {
+const CreateComponent = ({ history, selectedSong, isLoading }) => {
   const [selectedSongInfo, setSelectedSongInfo] = useState({
     id: '',
     userId: '',
@@ -31,10 +33,16 @@ const CreateComponent = ({ history, selectedSong }) => {
   const [isPublic, setIsPublic] = useState(selectedSongInfo.public);
   const navigate = useNavigate();
   const token = Cookies.get('token');
+  helix.register();
 
-  // Toggle between public and private
+  // let loadingState = false;
+  const [loadingState, setLoadingState] = useState(false);
+  useEffect(() => {
+    setLoadingState(isLoading);
+  }, [isLoading]);
+
   const handleTogglePublic = () => {
-    setIsPublic((prevState) => !prevState); // Toggle state
+    setIsPublic((prevState) => !prevState);
     setSelectedSongInfo((prevInfo) => ({
       ...prevInfo,
       public: !prevInfo.public,
@@ -70,27 +78,66 @@ const CreateComponent = ({ history, selectedSong }) => {
   return (
     <ComponentContainer>
       <AlbumContainer>
-        {selectedSongInfo.id !== '' && (
+        {!selectedSongInfo?.id ? (
+          // CASE 1: No song & Loading
+          loadingState ? (
+            <AlbumBlankFrame>
+              <l-helix size='70' speed='1.5' color='black'></l-helix>
+            </AlbumBlankFrame>
+          ) : (
+            // CASE 2: No song & No loading
+            <AlbumBlankFrame />
+          )
+        ) : (
+          // CASE 3 & 4: Song
           <>
-            <img
-              onDoubleClick={() => {
-                handleSongDoubleClick(selectedSongInfo.id);
-              }}
-              src={selectedSongInfo.thumbnail}
-              alt='Song'
-            />
+            {loadingState ? (
+              // CASE 3: Song & Loading
+              <AlbumFrame>
+                <img
+                  onDoubleClick={() => {
+                    handleSongDoubleClick(selectedSongInfo.id);
+                  }}
+                  src={selectedSongInfo.thumbnail}
+                  alt='Song'
+                />
 
-            <AlbumInfo>
-              <p>{selectedSongInfo.title}</p>
-              <p>{selectedSongInfo.artist}</p>
-              <PublicBtn
-                isPublic={isPublic} // Pass state to control color
-                onClick={handleTogglePublic} // Handle button click
-              >
-                {isPublic ? 'Private' : 'Public'}
-                {/* Display Public or Private */}
-              </PublicBtn>
-            </AlbumInfo>
+                <AlbumInfo>
+                  <p>{selectedSongInfo.title}</p>
+                  <p>{selectedSongInfo.artist}</p>
+                  <PublicBtn
+                    isPublic={isPublic} // Pass state to control color
+                    onClick={handleTogglePublic} // Handle button click
+                  >
+                    {isPublic ? 'Private' : 'Public'}
+                    {/* Display Public or Private */}
+                  </PublicBtn>
+                </AlbumInfo>
+              </AlbumFrame>
+            ) : (
+              // CASE 4: Song & No loading
+              <AlbumFrame>
+                <img
+                  onDoubleClick={() => {
+                    handleSongDoubleClick(selectedSongInfo.id);
+                  }}
+                  src={selectedSongInfo.thumbnail}
+                  alt='Song'
+                />
+
+                <AlbumInfo>
+                  <p>{selectedSongInfo.title}</p>
+                  <p>{selectedSongInfo.artist}</p>
+                  <PublicBtn
+                    isPublic={isPublic} // Pass state to control color
+                    onClick={handleTogglePublic} // Handle button click
+                  >
+                    {isPublic ? 'Private' : 'Public'}
+                    {/* Display Public or Private */}
+                  </PublicBtn>
+                </AlbumInfo>
+              </AlbumFrame>
+            )}
           </>
         )}
       </AlbumContainer>
@@ -136,15 +183,26 @@ const AlbumContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  flex-direction: row;
   width: 100%;
   height: 200px;
   background: ${Theme.colors.black};
   border-style: none;
   padding: 10px;
   gap: 10px;
+`;
+
+const AlbumFrame = styled.div`
+  position: relative;
+  display: flex;
+  margin-left: 52px;
+  /* width: 160px; */
+  height: 160px;
+  border-radius: 20px;
+  /* background-color: white; */
 
   img {
-    margin-left: 52px;
+    background-color: white;
     width: 160px;
     height: 160px;
     border-radius: 20px;
@@ -153,10 +211,23 @@ const AlbumContainer = styled.div`
   }
 `;
 
+const AlbumBlankFrame = styled.div`
+  margin-left: 52px;
+  background-color: white;
+  width: 160px;
+  height: 160px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: fill;
+`;
+
 const AlbumInfo = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: left;
+  justify-content: center;
+  align-items: flex-start;
   margin-left: 18px;
 
   ${Theme.fonts.title};

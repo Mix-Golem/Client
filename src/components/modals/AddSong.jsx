@@ -39,12 +39,12 @@ const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID, token }) => {
           );
 
           if (isSongAlreadyInPlaylist) {
-            console.log('Already present');
+            console.log('이미 플레이리스트에 존재하는 곡입니다.');
             return;
           }
 
           onAddSong(destID, srcID);
-          console.log('add successfully');
+          console.log('성공적으로 저장되었습니다.');
         }
       });
     } else {

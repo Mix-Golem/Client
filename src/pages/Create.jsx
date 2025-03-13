@@ -25,8 +25,10 @@ function Create() {
 
   const token = Cookies.get('token');
 
-  const [isLogin, setIsLogin] = useState(null);
+  const [isLogin, setIsLogin] = useState(null); // useless?
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   // 로그인 모달
   const handleOpenModal = () => {
@@ -37,7 +39,7 @@ function Create() {
     setIsLoginModalOpen(false);
   };
 
-  const handleLogin = () => {
+  const handleNoLogin = () => {
     setIsLoginModalOpen(false);
     window.location.href = '/users/login';
   };
@@ -49,6 +51,7 @@ function Create() {
       return;
     }
 
+    setIsLoading(true);
     CreateSong(inputValue, token)
       .then((response) => {
         console.log(response);
@@ -81,9 +84,11 @@ function Create() {
         } else {
           console.error('Song creation failed:', response.message);
         }
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error('An error occurred:', error);
+        setIsLoading(false);
       });
   };
 
@@ -109,7 +114,11 @@ function Create() {
         <SideMenu />
         <Credit tokens={token} />
         <CreateWrapper>
-          <CreateComponent history={history} selectedSong={selectedSong} />
+          <CreateComponent
+            history={history}
+            selectedSong={selectedSong}
+            isLoading={isLoading}
+          />
           <History history={history} updateSelectedSong={setSelectedSong} />
         </CreateWrapper>
         <CreateButton
@@ -119,7 +128,7 @@ function Create() {
         <Profile />
         <TopRank />
         {isLoginModalOpen && (
-          <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
+          <LoginModal onClose={handleCloseModal} onGoLogin={handleNoLogin} />
         )}
       </CreateContainer>
     </ThemeProvider>
