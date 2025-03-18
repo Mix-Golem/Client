@@ -28,7 +28,7 @@ function Create() {
   const [isLogin, setIsLogin] = useState(null); // useless?
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // 로그인 모달
   const handleOpenModal = () => {

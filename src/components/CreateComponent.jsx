@@ -94,14 +94,18 @@ const CreateComponent = ({ history, selectedSong, isLoading }) => {
             {loadingState ? (
               // CASE 3: Song & Loading
               <AlbumFrame>
-                <img
-                  onDoubleClick={() => {
-                    handleSongDoubleClick(selectedSongInfo.id);
-                  }}
-                  src={selectedSongInfo.thumbnail}
-                  alt='Song'
-                />
-
+                <AlbumImgFrame>
+                  <img
+                    onDoubleClick={() => {
+                      handleSongDoubleClick(selectedSongInfo.id);
+                    }}
+                    src={selectedSongInfo.thumbnail}
+                    alt='Song'
+                  ></img>
+                  <AlbumLoadingBox>
+                    <l-helix size='30' speed='1.5' color='black'></l-helix>
+                  </AlbumLoadingBox>
+                </AlbumImgFrame>
                 <AlbumInfo>
                   <p>{selectedSongInfo.title}</p>
                   <p>{selectedSongInfo.artist}</p>
@@ -117,14 +121,15 @@ const CreateComponent = ({ history, selectedSong, isLoading }) => {
             ) : (
               // CASE 4: Song & No loading
               <AlbumFrame>
-                <img
-                  onDoubleClick={() => {
-                    handleSongDoubleClick(selectedSongInfo.id);
-                  }}
-                  src={selectedSongInfo.thumbnail}
-                  alt='Song'
-                />
-
+                <AlbumImgFrame>
+                  <img
+                    onDoubleClick={() => {
+                      handleSongDoubleClick(selectedSongInfo.id);
+                    }}
+                    src={selectedSongInfo.thumbnail}
+                    alt='Song'
+                  />
+                </AlbumImgFrame>
                 <AlbumInfo>
                   <p>{selectedSongInfo.title}</p>
                   <p>{selectedSongInfo.artist}</p>
@@ -200,13 +205,20 @@ const AlbumFrame = styled.div`
   height: 160px;
   border-radius: 20px;
   /* background-color: white; */
+`;
+
+const AlbumImgFrame = styled.div`
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 20px;
 
   img {
     background-color: white;
-    width: 160px;
-    height: 160px;
+    width: 100%;
+    height: 100%;
     border-radius: 20px;
-    object-fit: fill;
+    object-fit: cover;
     cursor: pointer;
   }
 `;
@@ -221,6 +233,20 @@ const AlbumBlankFrame = styled.div`
   justify-content: center;
   align-items: center;
   object-fit: fill;
+`;
+
+const AlbumLoadingBox = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 살짝 그림자 추가 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const AlbumInfo = styled.div`
