@@ -52,45 +52,83 @@ function Create() {
     }
 
     setIsLoading(true);
-    CreateSong(inputValue, token)
-      .then((response) => {
-        console.log(response);
-        if (response.isSuccess) {
-          console.log('Song created successfully:', response.result);
-          const songInfo = {
-            title: response.result.title,
-            about: '곡 소개',
-            prompt: response.result.prompt,
-            media: response.result.audio,
-            genre: response.result.tags,
-            thumbnail: response.result.image,
-            lyrics: [
-              {
-                startTime: '시작시간',
-                endTime: '종료시간',
-                content: response.result.lyric,
-              },
-            ],
-          };
-          SaveSong(songInfo, token).then((response) => {
-            console.log('Song creation success');
-            GetHistory(token).then((response) => {
-              // console.log(response.result);
-              if (response.isSuccess) {
-                setHistory(response.result);
-              }
-            });
-          });
-        } else {
-          console.error('Song creation failed:', response.message);
-        }
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error('An error occurred:', error);
-        setIsLoading(false);
-      });
+    // CreateSong(inputValue, token)
+    //   .then((response) => {
+    //     console.log(response);
+    //     if (response.isSuccess) {
+    //       console.log('Song created successfully:', response.result);
+    //       const songInfo = {
+    //         title: response.result.title,
+    //         about: '곡 소개',
+    //         prompt: response.result.prompt,
+    //         media: response.result.audio,
+    //         genre: response.result.tags,
+    //         thumbnail: response.result.image,
+    //         lyrics: [
+    //           {
+    //             startTime: '시작시간',
+    //             endTime: '종료시간',
+    //             content: response.result.lyric,
+    //           },
+    //         ],
+    //       };
+    //       SaveSong(songInfo, token).then((response) => {
+    //         console.log('Song creation success');
+    //         GetHistory(token).then((response) => {
+    //           // console.log(response.result);
+    //           if (response.isSuccess) {
+    //             setHistory(response.result);
+    //           }
+    //         });
+    //       });
+    //     } else {
+    //       console.error('Song creation failed:', response.message);
+    //     }
+    //     setIsLoading(false);
+    //   })
+    //   .catch((error) => {
+    //     console.error('An error occurred:', error);
+    //     setIsLoading(false);
+    //   });
   };
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (isLoading) {
+        event.preventDefault();
+        event.returnValue =
+          '현재 노래가 생성중입니다. 페이지를 떠나면 노래가 정상적으로 저장되지 않을 수 있습니다.';
+      }
+    };
+
+    if (isLoading) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    } else {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isLoading]);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      const anchor = e.target.closest('a');
+      if (anchor && anchor.href && isLoading) {
+        const confirmed = window.confirm(
+          '곡 생성 중입니다. 페이지를 이동하면 저장되지 않을 수 있어요. 계속하시겠어요?'
+        );
+        if (!confirmed) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClick, true);
+    return () => document.removeEventListener('click', handleClick, true);
+  }, [isLoading]);
 
   useEffect(() => {
     GetHistory(token).then((response) => {
