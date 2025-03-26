@@ -468,16 +468,6 @@ const LibraryComponent = ({
                 ))}
                 {dropdownIndex !== null && (
                   <DropdownMenu ref={dropdownRef}>
-                    {/* <DropdownItem
-                            onClick={() =>
-                              handlePlaylistOptionClick(
-                                'Share',
-                                SelectedPlaylist
-                              )
-                            }
-                          >
-                            Share
-                          </DropdownItem> */}
                     <DropdownItem
                       onClick={() =>
                         handlePlaylistOptionClick('Rename', SelectedPlaylist)
