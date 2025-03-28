@@ -54,6 +54,11 @@ const CreateComponent = ({ history, selectedSong, isLoading }) => {
     if (selectedSong !== null) {
       GetMySongByID(history[selectedSong].id, token).then((response) => {
         if (response.isSuccess) {
+          response.result.lyrics[0].content =
+            response.result.lyrics[0].content.replace(/\[/g, (offset) => {
+              return offset === 0 ? '[' : '\n[';
+            });
+
           setSelectedSongInfo(response.result);
         }
       });
@@ -156,8 +161,8 @@ const CreateComponent = ({ history, selectedSong, isLoading }) => {
         <RightColumn>
           <SectionTitle>Prompt</SectionTitle>
           <SectionText>{selectedSongInfo.prompt}</SectionText>
-          <SectionTitle>About</SectionTitle>
-          <SectionText>{selectedSongInfo.about}</SectionText>
+          {/* <SectionTitle>About</SectionTitle>
+          <SectionText>{selectedSongInfo.about}</SectionText> */}
         </RightColumn>
       </ContentContainer>
     </ComponentContainer>

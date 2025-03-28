@@ -62,7 +62,7 @@ const LibraryComponent = ({
     // console.log('selectedSongId: ' + selectedSongId);
     // setSelectedLyrics(songlist[index].lyrics);
     // 차후 api 수정에 따라 변경 가능
-    updateSelectedLyrics(songlist[index].lyrics[0].content);
+    updateSelectedLyrics(songlist[index].lyrics[0].content); // 여기 할거임
   };
 
   const handleMenuClick = (screen) => {
@@ -294,7 +294,7 @@ const LibraryComponent = ({
       {/* Library 메뉴 선택 */}
       <ContentsMenu>
         <MenuButton
-          isActive={activeScreen === 'MySong'}
+          $isactive={activeScreen === 'MySong'}
           onClick={() => {
             handleMenuClick('MySong');
             updateSonglist();
@@ -303,7 +303,7 @@ const LibraryComponent = ({
           My Songs
         </MenuButton>
         <MenuButton
-          isActive={activeScreen === 'Playlist'}
+          $isactive={activeScreen === 'Playlist'}
           onClick={() => {
             handleMenuClick('Playlist');
             updatePlaylist();
@@ -312,13 +312,13 @@ const LibraryComponent = ({
           PlayList
         </MenuButton>
         <MenuButton
-          isActive={activeScreen === 'Following'}
+          $isactive={activeScreen === 'Following'}
           onClick={() => handleMenuClick('Following')}
         >
           Following
         </MenuButton>
         <MenuButton
-          isActive={activeScreen === 'Followers'}
+          $isactive={activeScreen === 'Followers'}
           onClick={() => handleMenuClick('Followers')}
         >
           Followers
@@ -329,7 +329,7 @@ const LibraryComponent = ({
           songlist.map((item, index) => (
             <MySongList
               key={index}
-              isSelected={index === selectedItem}
+              $isselected={index === selectedItem}
               onClick={() => handleSongClick(index)}
             >
               <img src={item.thumbnail} alt='Song' />
@@ -373,6 +373,7 @@ const LibraryComponent = ({
                   </DropdownItem>
                   <DropdownItem
                     onClick={() => handleMySongOptionClick('Delete', index)}
+                    $delete
                   >
                     Delete
                   </DropdownItem>
@@ -479,7 +480,7 @@ const LibraryComponent = ({
                       onClick={() =>
                         handlePlaylistOptionClick('Delete', clickedPlaylistID)
                       }
-                      delete
+                      $delete
                     >
                       Delete
                     </DropdownItem>
@@ -566,7 +567,7 @@ const LibraryComponent = ({
                                 playlistTrack.playlist_id
                               )
                             }
-                            delete
+                            $delete
                           >
                             Delete
                           </DropdownItem>
@@ -580,7 +581,7 @@ const LibraryComponent = ({
                         {playlistTrack.songs.map((item, index) => (
                           <MySongList
                             key={index}
-                            // isSelected={index === selectedItem} // add if lyric is needed
+                            // $isselected={index === selectedItem} // add if lyric is needed
                             // onClick={() => handleSongClick(index)}
                           >
                             <img src={item.thumbnail} alt='Song' />
@@ -750,13 +751,13 @@ const MenuButton = styled.div`
   margin-right: 20px;
   width: 150px;
   height: 42px;
-  background-color: ${({ isActive }) => {
-    return isActive ? '#000000' : '';
+  background-color: ${({ $isactive }) => {
+    return $isactive ? '#000000' : '';
   }};
   border-radius: 15px;
   ${Theme.fonts.list};
-  color: ${({ isActive }) => {
-    return isActive ? '#81D8F3' : '#EEEEEE';
+  color: ${({ $isactive }) => {
+    return $isactive ? '#81D8F3' : '#EEEEEE';
   }};
   display: flex;
   align-items: center;
@@ -789,7 +790,7 @@ const MySongList = styled.div`
   width: 744px;
   height: 163px;
   background: ${(props) =>
-    props.isSelected
+    props.$isselected
       ? 'linear-gradient(270deg, #D9D9D9 28.08%, #81D8F3 100%)'
       : 'black'};
   border-style: none;
@@ -866,7 +867,7 @@ const DropdownItem = styled.div`
   }
 
   ${(props) =>
-    props.delete &&
+    props.$delete &&
     `
     color: ${Theme.colors.red};
   `}
@@ -960,7 +961,7 @@ const PlaylistInfo = styled.div`
   width: 744px;
   height: 163px;
   background: ${(props) =>
-    props.isSelected
+    props.$isselected
       ? 'linear-gradient(270deg, #D9D9D9 28.08%, #81D8F3 100%)'
       : 'black'};
   border-style: none;
