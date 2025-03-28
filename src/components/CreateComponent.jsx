@@ -112,14 +112,12 @@ const CreateComponent = ({ history, selectedSong, isLoading }) => {
                   </AlbumLoadingBox>
                 </AlbumImgFrame>
                 <AlbumInfo>
-                  <p>{selectedSongInfo.title}</p>
-                  <p>{selectedSongInfo.artist}</p>
-                  <PublicBtn
-                    isPublic={isPublic} // Pass state to control color
-                    onClick={handleTogglePublic} // Handle button click
-                  >
+                  <p title={selectedSongInfo.title}>{selectedSongInfo.title}</p>
+                  <p title={selectedSongInfo.artist}>
+                    {selectedSongInfo.artist}
+                  </p>
+                  <PublicBtn $isPublic={isPublic} onClick={handleTogglePublic}>
                     {isPublic ? 'Private' : 'Public'}
-                    {/* Display Public or Private */}
                   </PublicBtn>
                 </AlbumInfo>
               </AlbumFrame>
@@ -136,12 +134,11 @@ const CreateComponent = ({ history, selectedSong, isLoading }) => {
                   />
                 </AlbumImgFrame>
                 <AlbumInfo>
-                  <p>{selectedSongInfo.title}</p>
-                  <p>{selectedSongInfo.artist}</p>
-                  <PublicBtn
-                    isPublic={isPublic} // Pass state to control color
-                    onClick={handleTogglePublic} // Handle button click
-                  >
+                  <p title={selectedSongInfo.title}>{selectedSongInfo.title}</p>
+                  <p title={selectedSongInfo.artist}>
+                    {selectedSongInfo.artist}
+                  </p>
+                  <PublicBtn $isPublic={isPublic} onClick={handleTogglePublic}>
                     {isPublic ? 'Private' : 'Public'}
                     {/* Display Public or Private */}
                   </PublicBtn>
@@ -263,9 +260,14 @@ const AlbumInfo = styled.div`
 
   ${Theme.fonts.title};
   font-weight: 800;
+  width: 480px;
 
   p {
     text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 480px;
 
     &:nth-child(1) {
       margin-top: 15px;
@@ -288,8 +290,8 @@ const PublicBtn = styled.button`
   margin-top: 20px;
   width: 87px;
   height: 25px;
-  background: ${({ isPublic }) =>
-    isPublic ? Theme.colors.red : Theme.colors.gray};
+  background: ${({ $isPublic }) =>
+    $isPublic ? Theme.colors.red : Theme.colors.gray};
   border: none;
   border-radius: 20px;
   justify-content: center;
