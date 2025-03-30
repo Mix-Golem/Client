@@ -465,27 +465,34 @@ const LibraryComponent = ({
                         •••
                       </PlaylistMoreButton>
                     )}
+                    {dropdownIndex === index && (
+                      <DropdownMenu ref={dropdownRef}>
+                        <DropdownItem
+                          onClick={() =>
+                            handlePlaylistOptionClick(
+                              'Rename',
+                              SelectedPlaylist
+                            )
+                          }
+                        >
+                          Rename
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            handlePlaylistOptionClick(
+                              'Delete',
+                              clickedPlaylistID
+                            )
+                          }
+                          $delete
+                        >
+                          Delete
+                        </DropdownItem>
+                      </DropdownMenu>
+                    )}
                   </PlaylistItem>
                 ))}
-                {dropdownIndex !== null && (
-                  <DropdownMenu ref={dropdownRef}>
-                    <DropdownItem
-                      onClick={() =>
-                        handlePlaylistOptionClick('Rename', SelectedPlaylist)
-                      }
-                    >
-                      Rename
-                    </DropdownItem>
-                    <DropdownItem
-                      onClick={() =>
-                        handlePlaylistOptionClick('Delete', clickedPlaylistID)
-                      }
-                      $delete
-                    >
-                      Delete
-                    </DropdownItem>
-                  </DropdownMenu>
-                )}
+
                 {isRenamePlaylistModalOpen && (
                   <RenamePlaylistModal
                     onClose={closeRenamePlaylistModal}
