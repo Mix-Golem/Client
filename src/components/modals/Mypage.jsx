@@ -1,10 +1,51 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
+import { Axios } from '../../api/Axios.js';
 import styled, { ThemeProvider } from 'styled-components';
 import profileImage from '../../img/profile.svg';
 import stoneImage from '../../img/stone.svg';
 import { Theme } from '../../styles/Theme.js';
 
-const Mypage = ({ show, onClose, onBack }) => {
+import noprof from '../../img/nonprofile.png';
+
+const Mypage = ({ show, onClose, onBack, tokens }) => {
+  
+    const [userInfo, setUserInfo] = useState({});
+    const [credit, setCredit] = useState(0);
+    const [profile, setProfile] = useState(noprof);
+
+    useEffect(() => {
+      const fetchUserInfo = async () => {
+        const token = tokens;
+        try {
+          if (token === undefined) {
+            return;
+          }
+          const response = await Axios.get('/users/info', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }).then((response) => {
+            console.log(response.data.result);
+            setUserInfo(response.data.result);
+            // console.log(userInfo.profile);
+            if(userInfo.profile !== undefined){
+              setProfile(userInfo.profile);
+            }
+          });
+  
+          // 데이터를 상태에 저장
+  
+          console.log(userInfo);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+  
+      fetchUserInfo();
+    }, []);
+    
   if (!show) {
     return null;
   }
@@ -16,9 +57,9 @@ const Mypage = ({ show, onClose, onBack }) => {
           <CloseButton onClick={onClose}>X</CloseButton>
           <BackButton onClick={onBack}>&lt; Back</BackButton>
           <ProfileContainer>
-            <ProfileImage src={profileImage} alt='Profile' />
+            <ProfileImage src={profile} alt='Profile' />
             <ProfileDetails>
-              <Title>박스 깎는 노인</Title>
+              <Title>{userInfo.name}</Title>
               <Subtitle>&quot;샤코, 오직 샤코&quot;</Subtitle>
               <ChangeButton>Change</ChangeButton>
             </ProfileDetails>
