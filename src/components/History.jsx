@@ -28,7 +28,7 @@ const History = ({ history, updateSelectedSong }) => {
             {history.map((item, index) => (
               <HistoryList
                 key={index}
-                isSelected={index === selectedSong}
+                $isSelected={index === selectedSong}
                 onClick={() => handleSongClick(index)}
               >
                 {/* 예시 api는 이미지 없음 아래 이미지는 견본 */}
@@ -96,7 +96,7 @@ const HistoryList = styled.div`
   width: 100%;
   height: 163px;
   background: ${(props) =>
-    props.isSelected
+    props.$isSelected
       ? 'linear-gradient(270deg, #D9D9D9 28.08%, #81D8F3 100%)'
       : 'black'};
   border-style: none;

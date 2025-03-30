@@ -1,5 +1,4 @@
 import { Axios } from '../Axios';
-import Cookies from 'js-cookie';
 
 export const SaveSong = async (songData, token) => {
   try {
