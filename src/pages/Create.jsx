@@ -21,30 +21,14 @@ import background from '../img/background.png';
 
 function Create() {
   const [selectedSong, setSelectedSong] = useState(null); // index
-  const [history, setHistory] = useState([
-    {
-      status: 'OK',
-      code: 200,
-      message: '히스토리 호출 완료',
-      result: [
-        {
-          id: 1,
-          userId: 1,
-          userName: '곡 작성자',
-          title: '수정한 제목',
-          thumbnail: '저장된 url',
-        },
-      ],
-      // 등 여러개
-      // 곡 id 기반으로 곡 정보 클릭시 해당 곡 정보 불러와야 함
-      isSuccess: true,
-    },
-  ]);
+  const [history, setHistory] = useState([]);
 
   const token = Cookies.get('token');
 
-  const [isLogin, setIsLogin] = useState(null);
+  const [isLogin, setIsLogin] = useState(null); // useless?
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // 로그인 모달
   const handleOpenModal = () => {
@@ -55,7 +39,7 @@ function Create() {
     setIsLoginModalOpen(false);
   };
 
-  const handleLogin = () => {
+  const handleNoLogin = () => {
     setIsLoginModalOpen(false);
     window.location.href = '/users/login';
   };
@@ -67,43 +51,84 @@ function Create() {
       return;
     }
 
-    CreateSong(inputValue, token)
-      .then((response) => {
-        console.log(response);
-        if (response.isSuccess) {
-          console.log('Song created successfully:', response.result);
-          const songInfo = {
-            title: response.result.title,
-            about: '곡 소개',
-            prompt: response.result.prompt,
-            media: response.result.audio,
-            genre: response.result.tags,
-            thumbnail: response.result.image,
-            lyrics: [
-              {
-                startTime: '시작시간',
-                endTime: '종료시간',
-                content: response.result.lyric,
-              },
-            ],
-          };
-          SaveSong(songInfo, token).then((response) => {
-            console.log('Song creation success');
-            GetHistory(token).then((response) => {
-              // console.log(response.result);
-              if (response.isSuccess) {
-                setHistory(response.result);
-              }
-            });
-          });
-        } else {
-          console.error('Song creation failed:', response.message);
-        }
-      })
-      .catch((error) => {
-        console.error('An error occurred:', error);
-      });
+    setIsLoading(true);
+    // CreateSong(inputValue, token)
+    //   .then((response) => {
+    //     console.log(response);
+    //     if (response.isSuccess) {
+    //       console.log('Song created successfully:', response.result);
+    //       const songInfo = {
+    //         title: response.result.title,
+    //         about: '곡 소개',
+    //         prompt: response.result.prompt,
+    //         media: response.result.audio,
+    //         genre: response.result.tags,
+    //         thumbnail: response.result.image,
+    //         lyrics: [
+    //           {
+    //             startTime: '시작시간',
+    //             endTime: '종료시간',
+    //             content: response.result.lyric,
+    //           },
+    //         ],
+    //       };
+    //       SaveSong(songInfo, token).then((response) => {
+    //         console.log('Song creation success');
+    //         GetHistory(token).then((response) => {
+    //           // console.log(response.result);
+    //           if (response.isSuccess) {
+    //             setHistory(response.result);
+    //           }
+    //         });
+    //       });
+    //     } else {
+    //       console.error('Song creation failed:', response.message);
+    //     }
+    //     setIsLoading(false);
+    //   })
+    //   .catch((error) => {
+    //     console.error('An error occurred:', error);
+    //     setIsLoading(false);
+    //   });
   };
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (isLoading) {
+        event.preventDefault();
+        event.returnValue =
+          '현재 노래가 생성중입니다. 페이지를 떠나면 노래가 정상적으로 저장되지 않을 수 있습니다.';
+      }
+    };
+
+    if (isLoading) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    } else {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isLoading]);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      const anchor = e.target.closest('a');
+      if (anchor && anchor.href && isLoading) {
+        const confirmed = window.confirm(
+          '곡 생성 중입니다. 페이지를 이동하면 저장되지 않을 수 있어요. 계속하시겠어요?'
+        );
+        if (!confirmed) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClick, true);
+    return () => document.removeEventListener('click', handleClick, true);
+  }, [isLoading]);
 
   useEffect(() => {
     GetHistory(token).then((response) => {
@@ -127,7 +152,11 @@ function Create() {
         <SideMenu />
         <Credit tokens={token} />
         <CreateWrapper>
-          <CreateComponent history={history} selectedSong={selectedSong} />
+          <CreateComponent
+            history={history}
+            selectedSong={selectedSong}
+            isLoading={isLoading}
+          />
           <History history={history} updateSelectedSong={setSelectedSong} />
         </CreateWrapper>
         <CreateButton
@@ -137,7 +166,7 @@ function Create() {
         <Profile />
         <TopRank />
         {isLoginModalOpen && (
-          <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
+          <LoginModal onClose={handleCloseModal} onGoLogin={handleNoLogin} />
         )}
       </CreateContainer>
     </ThemeProvider>

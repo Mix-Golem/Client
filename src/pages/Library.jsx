@@ -91,7 +91,11 @@ const Library = () => {
   };
 
   const updateSelectedLyrics = (newLyrics) => {
-    setSelectedLyrics(newLyrics);
+    const formattedLyrics = newLyrics.replace(/\[/g, (offset) => {
+      return offset === 0 ? '[' : '\n[';
+    });
+
+    setSelectedLyrics(formattedLyrics);
   };
 
   const updateFollowlist = () => {

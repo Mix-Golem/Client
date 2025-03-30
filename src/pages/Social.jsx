@@ -4,12 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { Theme } from '../styles/Theme';
 import { Axios } from '../api/Axios';
 import GlobalStyle from '../styles/GlobalStyle';
+import Cookies from 'js-cookie';
 
 import background from '../img/background.png';
 
 import SideMenu from '../components/SideMenu';
 import Credit from '../components/Credit';
 import Profile from '../components/Profile';
+
+import AddSongModal from '../components/modals/AddSong';
+import GetAllPlaylist from '../api/music/GetAllPlaylist.js';
+import AddSongToPlaylist from '../api/music/AddSongToPlaylist';
+
+const token = Cookies.get('token');
 
 function Social() {
   const [topSongs, setTopSongs] = useState([]);
@@ -23,6 +30,11 @@ function Social() {
   const [dropdownIndex, setDropdownIndex] = useState(null);
   const [randomMusic, setRandomMusic] = useState([]);
   const [searchMusic, setSearchMusic] = useState(false);
+
+  const [playlist, setPlaylist] = useState([]);
+  // const [currentSong, setCurrentSong] = useState('');
+  const [selectedSongId, setSelectedSongId] = useState(null);
+  const [isAddSongModalOpen, setIsAddSongModalOpen] = useState(false);
 
   const dropdownRef = useRef(null);
 
@@ -142,11 +154,35 @@ function Social() {
     fetchPopularUsers(); // 컴포넌트가 마운트될 때 데이터 호출
   }, []);
 
+  // 플레이리스트에 곡 추가하기
+  const openAddSongModal = (srcID) => {
+    setSelectedSongId(srcID); // 여기서도 필요한가? - ㅇㅇ addSongModal에 들어감
+    setIsAddSongModalOpen(true);
+  };
+  const closeAddSongModal = () => {
+    setIsAddSongModalOpen(false);
+  };
+  const handleAddSongToPlaylist = (playlistID, songID) => {
+    console.log('songID: ' + songID + '  playlistID: ' + playlistID);
+    AddSongToPlaylist(playlistID, songID, token).then((response) => {
+      if (response.isSuccess) {
+        // console.log('끼얏호');
+        // updatePlaylistTrack(playlistID);
+      }
+    });
+  };
+
   //여기부터 드롭다운
+  const handleSongClick = (index) => {
+    setSelectedItem(index);
+    // console.log('songlist[index].id: ' + songlist[index].id);
+    setSelectedSongId(topSongs[index].songId);
+  };
+
   const handleMySongOptionClick = (option, index) => {
     setDropdownIndex(null);
-    if (option === 'Add') {
-      //   copyToClipboard(currentSong.media);
+    if (option === 'addToPlaylist') {
+      openAddSongModal(topSongs[index].songId);
     }
     if (option === 'favorite') {
       //   openRenameMySongModal();
@@ -167,6 +203,16 @@ function Social() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+  }, []);
+
+  useEffect(() => {
+    GetAllPlaylist(token).then((response) => {
+      console.log(response.isSuccess);
+      if (response.isSuccess) {
+        // console.log(response.result);
+        setPlaylist(response.result);
+      }
+    });
   }, []);
 
   return (
@@ -213,27 +259,30 @@ function Social() {
             )}
             {searchResult && (
               <SearchResultWrapper>
-              {searchResult.map((song, index) => (
-                  <ContentWrapper key={index} onClick={() => handleRandomMusicClick(song.id)}>
-                  <RankContent>
+                {searchResult.map((song, index) => (
+                  <ContentWrapper
+                    key={index}
+                    onClick={() => handleRandomMusicClick(song.id)}
+                  >
+                    <RankContent>
                       <img
-                      style={{
+                        style={{
                           width: '78px',
                           height: '78px',
                           borderRadius: '20px',
-                      }}
-                      src={song.thumbnail}
-                      alt={`Thumbl ${index + 1}`}
+                        }}
+                        src={song.thumbnail}
+                        alt={`Thumbl ${index + 1}`}
                       />
                       <div style={{ marginLeft: '10px' }}>
-                      <Musictitle>{song.title}</Musictitle>
-                      <MusicArtist>{song.userName}</MusicArtist>
+                        <Musictitle>{song.title}</Musictitle>
+                        <MusicArtist>{song.userName}</MusicArtist>
                       </div>
-                  </RankContent>
+                    </RankContent>
                   </ContentWrapper>
-              ))}
+                ))}
               </SearchResultWrapper>
-          )}
+            )}
           </SearchField>
           <TopField>
             <ContentTitle>TopRank</ContentTitle>
@@ -270,7 +319,8 @@ function Social() {
                         cursor: 'pointer',
                       }}
                       onClick={(e) => {
-                        // setCurrentSong(songlist[index]);
+                        handleSongClick(index);
+                        // setCurrentSong(song[index].songId);
                         e.stopPropagation();
                         toggleDropdown(index);
                       }}
@@ -281,14 +331,14 @@ function Social() {
                       <DropdownMenu ref={dropdownRef}>
                         <DropdownItem
                           onClick={() => {
-                            handleMySongOptionClick('Share', index);
+                            handleMySongOptionClick('addToPlaylist', index);
                           }}
                         >
                           Add to Playlist
                         </DropdownItem>
                         <DropdownItem
                           onClick={() => {
-                            handleMySongOptionClick('Rename', index);
+                            handleMySongOptionClick('favorite', index);
                           }}
                         >
                           favorite
@@ -361,6 +411,19 @@ function Social() {
             </PopularContentWrapper>
           </PopularField>
         </MainField>
+        {isAddSongModalOpen && (
+          <AddSongModal
+            datalist={playlist}
+            onClose={closeAddSongModal}
+            onAddSong={handleAddSongToPlaylist}
+            isForSong={true}
+            srcID={
+              // isAddSongModalForSong ? selectedSongId : playlistTrack.playlist_id
+              selectedSongId
+            }
+            token={token}
+          />
+        )}
       </FieldWrapper>
     </ThemeProvider>
   );
