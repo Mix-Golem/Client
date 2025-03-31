@@ -36,7 +36,8 @@ function Create() {
   };
 
   const handleCloseModal = () => {
-    setIsLoginModalOpen(false);
+    // setIsLoginModalOpen(false);
+    window.location.href = '/';
   };
 
   const handleNoLogin = () => {

@@ -62,15 +62,16 @@ const LibraryComponent = ({
     // console.log('selectedSongId: ' + selectedSongId);
     // setSelectedLyrics(songlist[index].lyrics);
     // 차후 api 수정에 따라 변경 가능
-    updateSelectedLyrics(songlist[index].lyrics[0].content); // 여기 할거임
+    updateSelectedLyrics(songlist[index].lyrics[0].content);
   };
 
   const handleMenuClick = (screen) => {
+    SetSelectedPlaylist(null);
+    console.log('selectedPlaylist : ' + SelectedPlaylist);
     setActiveScreen(screen);
     setSelectedItem(null);
     // setSelectedLyrics(null);
     updateSelectedLyrics(null);
-    SetSelectedPlaylist(null);
   };
 
   const toggleDropdown = (index) => {
