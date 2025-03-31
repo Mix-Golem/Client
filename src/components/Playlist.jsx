@@ -12,6 +12,7 @@ function Playlist({
   setTrack,
   track,
   setMusicNumber,
+  musicNumber
 }) {
   const [select, setSelect] = useState(-1);
   const [playlist, setPlaylist] = useState([]);
@@ -34,37 +35,61 @@ function Playlist({
   //     fetchPlaylists(); // 컴포넌트가 마운트될 때 데이터 호출
   //   }, []);
 
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      const token = tokens;
+  // useEffect(() => {
+  //   const fetchPlaylists = async () => {
+  //     const token = tokens;
 
+  //     try {
+  //       const response = await Axios.get(`/music/playlist/${playlistId}`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       // .then((response) => {
+  //       //   console.log(response);
+  //       // })
+  //       setPlaylist(response.data.result);
+  //       setSongs(response.data.result.songs || []);
+        
+  //       const songIds = response.data.result.songs.map(song => song.song_id);
+  //       setTrack(songIds || []); // 전체 트랙 리스트를 설정
+  //       // 데이터를 상태에 저장
+  //       // setLoading(false);
+  //       return({
+
+  //       }
+  //       )
+  //     } catch (err) {
+  //       // setError(err.message);
+  //       // setLoading(false);
+  //     }
+  //   };
+  //   fetchPlaylists();
+    
+  // }, [playlistId]);
+
+  useEffect(() => {
+    if (!playlistId || playlistId === -1) return; // 유효하지 않으면 무시
+  
+    const fetchPlaylists = async () => {
       try {
         const response = await Axios.get(`/music/playlist/${playlistId}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokens}`,
           },
         });
-        // .then((response) => {
-        //   console.log(response);
-        // })
-        setPlaylist(response.data.result);
-        setSongs(response.data.result.songs || []);
-        
-        const songIds = response.data.result.songs.map(song => song.song_id);
-        setTrack(songIds || []); // 전체 트랙 리스트를 설정
-        // 데이터를 상태에 저장
-        // setLoading(false);
-        return({
-
-        }
-        )
+  
+        const data = response.data.result;
+        setPlaylist(data);
+        setSongs(data.songs || []);
+        const songIds = data.songs.map(song => song.song_id);
+        setTrack(songIds || []);
       } catch (err) {
-        // setError(err.message);
-        // setLoading(false);
+        console.error("플레이리스트 불러오기 실패:", err);
       }
     };
+  
     fetchPlaylists();
-    
   }, [playlistId]);
 
   const handleListClick = (songId) => {
@@ -81,7 +106,7 @@ function Playlist({
           songs.map((song, index) => (
             <Content
               key={song.song_id}
-              isSelected={index === select} // 선택된 항목에 스타일 적용
+              isSelected={musicNumber === song.song_id} // 선택된 항목에 스타일 적용
               as='button'
               onClick={() => {
                 setSelect(index);
@@ -90,7 +115,7 @@ function Playlist({
             >
               <Line
                 key={song.song_id}
-                isSelected={index === select} // 선택된 항목에 스타일 적용
+                isSelected={musicNumber === song.song_id} // 선택된 항목에 스타일 적용
                 // as="button"
                 onClick={() => setSelect(index)}
               />
@@ -107,7 +132,7 @@ function Playlist({
               <MusicContent>
                 <MusicTitle
                   key={song.song_Id}
-                  isSelected={index === select} // 선택된 항목에 스타일 적용
+                  isSelected={musicNumber === song.song_id} // 선택된 항목에 스타일 적용
                   // as="button"
                   onClick={() => setSelect(index)}
                 >
