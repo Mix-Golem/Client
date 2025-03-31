@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import { Theme } from '../../styles/Theme';
 import LogoImage from '../../img/Logo.svg';
 
-
-const LoginModal = ({ onClose, onLogin }) => {
-  const handleClose=()=>{
+const LoginModal = ({ onClose, onGoLogin }) => {
+  const handleClose = () => {
     onClose();
     window.location.href = '/';
-  }
+  };
+
   return (
     <ModalOverlay>
       <ModalContent>
