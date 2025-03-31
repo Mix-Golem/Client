@@ -83,6 +83,10 @@ function Home() {
   }, [location.state]);
 
   useEffect(() => {
+    window.location.reload;
+  },[musicNumber])
+
+  useEffect(() => {
     const handleBeforeUnload = () => {
       // 새로고침 직전에 localStorage에서 track과 musicNumber를 삭제
       localStorage.removeItem('track');

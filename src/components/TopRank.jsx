@@ -23,6 +23,7 @@ function TopRank({ setisPlay, setTrack, setMusicNumber, track, musicNumber }) {
           setTodaySongs(todayResponse.data.result.todaysongs); // 투데이 랭크 데이터 저장
           setLoading(false); // 로딩 상태 업데이트
           console.log(topResponse);
+          console.log(todayResponse);
         } catch (err) {
           console.error('Error fetching rank data:', err);
         }
@@ -87,23 +88,25 @@ function TopRank({ setisPlay, setTrack, setMusicNumber, track, musicNumber }) {
       </RankContentWrapper>
         <Line/>
         <Ranktitle style={{marginTop:"15px", marginBottom:"20px"}}>Today</Ranktitle>
-        <ContentWrapper style={{marginLeft:"30px"}}>
-        <RankContent onClick={() => handleTodayRankClick(todaySongs[0]?.songId)}>
+        { todaySongs.slice(0, 1).map((song, index) => (
+        <ContentWrapper key={index} onClick={() => handleTodayRankClick(song.songId)} style={{marginLeft:"30px"}}>
+        <RankContent>
           <img
             style={{
               width: '78px',
               height: '78px',
               borderRadius: '20px',
             }}
-            src={todaySongs[0]?.thumbnail}
+            src={song.thumbnail}
             alt='Today 1st'
           />
           <div style={{ marginLeft: '10px' }}>
-            <Musictitle>{todaySongs[0]?.title}</Musictitle>
-            <MusicArtist>{todaySongs[0]?.userName}</MusicArtist>
+            <Musictitle>{song.title}</Musictitle>
+            <MusicArtist>{song.userName}</MusicArtist>
           </div>
         </RankContent>
         </ContentWrapper>
+      ))}
     </FieldWrapper>
   )
 }
