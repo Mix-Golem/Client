@@ -205,7 +205,7 @@ function Social() {
   //   } catch (err) {
   //     console.error('Error fetching popular users:', err);
   //   }
-  // }; // 이거 이동시키기기
+  // };
 
   const initFollowStates = (popularUsers, followList) => {
     const followedIdSet = new Set(followList.map((user) => user.following_id));
@@ -501,6 +501,7 @@ function Social() {
                           onClick={() => {
                             handleToprankOptionClick('favorite', index);
                           }}
+                          $favorite
                         >
                           favorite
                         </DropdownItem>
@@ -859,7 +860,7 @@ const DropdownItem = styled.div`
   }
 
   ${(props) =>
-    props.delete &&
+    props.$favorite &&
     `
     color: ${Theme.colors.red};
   `}
