@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import { Theme } from '../../styles/Theme';
 import LogoImage from '../../img/Logo.svg';
 
+
 const LoginModal = ({ onClose, onLogin }) => {
   const handleClose=()=>{
     onClose();
     window.location.href = '/';
   }
-  
   return (
     <ModalOverlay>
       <ModalContent>
@@ -17,7 +17,7 @@ const LoginModal = ({ onClose, onLogin }) => {
           <img src={LogoImage} alt='Logo' />
         </LogoWrapper>
         <Message>로그인해야 이용할 수 있습니다</Message>
-        <LoginButton onClick={onLogin}>Login</LoginButton>
+        <LoginButton onClick={onGoLogin}>Login</LoginButton>
       </ModalContent>
     </ModalOverlay>
   );
@@ -87,7 +87,8 @@ const LoginButton = styled.button`
   border: none;
   border-radius: 8px;
   color: ${Theme.colors.white};
-  font-size: 16px;
+  ${Theme.fonts.playlistTitle};
+  font-size: 20px;
   cursor: pointer;
 
   &:hover {

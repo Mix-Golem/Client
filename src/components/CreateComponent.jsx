@@ -1,5 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { helix } from 'ldrs';
+
 import { useNavigate } from 'react-router-dom';
 import { Theme } from '../styles/Theme';
 import Cookies from 'js-cookie';
@@ -7,7 +9,7 @@ import Cookies from 'js-cookie';
 import GetMySongByID from '../api/music/GetMySongByID';
 import TogglePublic from '../api/music/TogglePublic';
 
-const CreateComponent = ({ history, selectedSong }) => {
+const CreateComponent = ({ history, selectedSong, isLoading }) => {
   const [selectedSongInfo, setSelectedSongInfo] = useState({
     id: '',
     userId: '',
@@ -31,10 +33,16 @@ const CreateComponent = ({ history, selectedSong }) => {
   const [isPublic, setIsPublic] = useState(selectedSongInfo.public);
   const navigate = useNavigate();
   const token = Cookies.get('token');
+  helix.register();
 
-  // Toggle between public and private
+  // let loadingState = false;
+  const [loadingState, setLoadingState] = useState(false);
+  useEffect(() => {
+    setLoadingState(isLoading);
+  }, [isLoading]);
+
   const handleTogglePublic = () => {
-    setIsPublic((prevState) => !prevState); // Toggle state
+    setIsPublic((prevState) => !prevState);
     setSelectedSongInfo((prevInfo) => ({
       ...prevInfo,
       public: !prevInfo.public,
@@ -46,6 +54,11 @@ const CreateComponent = ({ history, selectedSong }) => {
     if (selectedSong !== null) {
       GetMySongByID(history[selectedSong].id, token).then((response) => {
         if (response.isSuccess) {
+          response.result.lyrics[0].content =
+            response.result.lyrics[0].content.replace(/\[/g, (offset) => {
+              return offset === 0 ? '[' : '\n[';
+            });
+
           setSelectedSongInfo(response.result);
         }
       });
@@ -70,27 +83,68 @@ const CreateComponent = ({ history, selectedSong }) => {
   return (
     <ComponentContainer>
       <AlbumContainer>
-        {selectedSongInfo.id !== '' && (
+        {!selectedSongInfo?.id ? (
+          // CASE 1: No song & Loading
+          loadingState ? (
+            <AlbumBlankFrame>
+              <l-helix size='70' speed='1.5' color='black'></l-helix>
+            </AlbumBlankFrame>
+          ) : (
+            // CASE 2: No song & No loading
+            <AlbumBlankFrame />
+          )
+        ) : (
+          // CASE 3 & 4: Song
           <>
-            <img
-              onDoubleClick={() => {
-                handleSongDoubleClick(selectedSongInfo.id);
-              }}
-              src={selectedSongInfo.thumbnail}
-              alt='Song'
-            />
-
-            <AlbumInfo>
-              <p>{selectedSongInfo.title}</p>
-              <p>{selectedSongInfo.artist}</p>
-              <PublicBtn
-                isPublic={isPublic} // Pass state to control color
-                onClick={handleTogglePublic} // Handle button click
-              >
-                {isPublic ? 'Private' : 'Public'}
-                {/* Display Public or Private */}
-              </PublicBtn>
-            </AlbumInfo>
+            {loadingState ? (
+              // CASE 3: Song & Loading
+              <AlbumFrame>
+                <AlbumImgFrame>
+                  <img
+                    onDoubleClick={() => {
+                      handleSongDoubleClick(selectedSongInfo.id);
+                    }}
+                    src={selectedSongInfo.thumbnail}
+                    alt='Song'
+                  ></img>
+                  <AlbumLoadingBox>
+                    <l-helix size='30' speed='1.5' color='black'></l-helix>
+                  </AlbumLoadingBox>
+                </AlbumImgFrame>
+                <AlbumInfo>
+                  <p title={selectedSongInfo.title}>{selectedSongInfo.title}</p>
+                  <p title={selectedSongInfo.artist}>
+                    {selectedSongInfo.artist}
+                  </p>
+                  <PublicBtn $isPublic={isPublic} onClick={handleTogglePublic}>
+                    {isPublic ? 'Private' : 'Public'}
+                  </PublicBtn>
+                </AlbumInfo>
+              </AlbumFrame>
+            ) : (
+              // CASE 4: Song & No loading
+              <AlbumFrame>
+                <AlbumImgFrame>
+                  <img
+                    onDoubleClick={() => {
+                      handleSongDoubleClick(selectedSongInfo.id);
+                    }}
+                    src={selectedSongInfo.thumbnail}
+                    alt='Song'
+                  />
+                </AlbumImgFrame>
+                <AlbumInfo>
+                  <p title={selectedSongInfo.title}>{selectedSongInfo.title}</p>
+                  <p title={selectedSongInfo.artist}>
+                    {selectedSongInfo.artist}
+                  </p>
+                  <PublicBtn $isPublic={isPublic} onClick={handleTogglePublic}>
+                    {isPublic ? 'Private' : 'Public'}
+                    {/* Display Public or Private */}
+                  </PublicBtn>
+                </AlbumInfo>
+              </AlbumFrame>
+            )}
           </>
         )}
       </AlbumContainer>
@@ -104,8 +158,8 @@ const CreateComponent = ({ history, selectedSong }) => {
         <RightColumn>
           <SectionTitle>Prompt</SectionTitle>
           <SectionText>{selectedSongInfo.prompt}</SectionText>
-          <SectionTitle>About</SectionTitle>
-          <SectionText>{selectedSongInfo.about}</SectionText>
+          {/* <SectionTitle>About</SectionTitle>
+          <SectionText>{selectedSongInfo.about}</SectionText> */}
         </RightColumn>
       </ContentContainer>
     </ComponentContainer>
@@ -136,34 +190,84 @@ const AlbumContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  flex-direction: row;
   width: 100%;
   height: 200px;
   background: ${Theme.colors.black};
   border-style: none;
   padding: 10px;
   gap: 10px;
+`;
+
+const AlbumFrame = styled.div`
+  position: relative;
+  display: flex;
+  margin-left: 52px;
+  /* width: 160px; */
+  height: 160px;
+  border-radius: 20px;
+  /* background-color: white; */
+`;
+
+const AlbumImgFrame = styled.div`
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 20px;
 
   img {
-    margin-left: 52px;
-    width: 160px;
-    height: 160px;
+    background-color: white;
+    width: 100%;
+    height: 100%;
     border-radius: 20px;
-    object-fit: fill;
+    object-fit: cover;
     cursor: pointer;
   }
+`;
+
+const AlbumBlankFrame = styled.div`
+  margin-left: 52px;
+  background-color: white;
+  width: 160px;
+  height: 160px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: fill;
+`;
+
+const AlbumLoadingBox = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 살짝 그림자 추가 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const AlbumInfo = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: left;
+  justify-content: center;
+  align-items: flex-start;
   margin-left: 18px;
 
   ${Theme.fonts.title};
   font-weight: 800;
+  width: 480px;
 
   p {
     text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 480px;
 
     &:nth-child(1) {
       margin-top: 15px;
@@ -186,8 +290,8 @@ const PublicBtn = styled.button`
   margin-top: 20px;
   width: 87px;
   height: 25px;
-  background: ${({ isPublic }) =>
-    isPublic ? Theme.colors.red : Theme.colors.gray};
+  background: ${({ $isPublic }) =>
+    $isPublic ? Theme.colors.red : Theme.colors.gray};
   border: none;
   border-radius: 20px;
   justify-content: center;
