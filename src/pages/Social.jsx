@@ -15,6 +15,9 @@ import Profile from '../components/Profile';
 import AddSongModal from '../components/modals/AddSong';
 import GetAllPlaylist from '../api/music/GetAllPlaylist.js';
 import AddSongToPlaylist from '../api/music/AddSongToPlaylist';
+import GetFollowList from '../api/social/GetFollowList.js';
+import Follow from '../api/social/Follow';
+import Unfollow from '../api/social/Unfollow';
 
 const token = Cookies.get('token');
 
@@ -35,6 +38,9 @@ function Social() {
   // const [currentSong, setCurrentSong] = useState('');
   const [selectedSongId, setSelectedSongId] = useState(null);
   const [isAddSongModalOpen, setIsAddSongModalOpen] = useState(false);
+  const [followStates, setFollowStates] = useState({}); // { [userId]: true/false }
+  const [disabledButtons, setDisabledButtons] = useState({}); // { [userId]: true/false }
+  const [hoverUserId, setHoverUserId] = useState(null);
 
   const dropdownRef = useRef(null);
 
@@ -45,7 +51,58 @@ function Social() {
       const topResponse = await Axios.get('/social/rank/top'); // 탑 랭크 호출
       const todayResponse = await Axios.get('/social/rank/today'); // 투데이 랭크 호출
 
-      setTopSongs(topResponse.data.result.topsongs); // 탑 랭크 데이터 저장
+      // setTopSongs(topResponse.data.result.topsongs); // 탑 랭크 데이터 저장 // 나중에 돌려놓을 것
+      setTopSongs([
+        {
+          songId: 1,
+          user_id: 1,
+          userName: '장원영',
+          title: '제목',
+          thumbnail: 'base64기반 코드',
+        },
+        {
+          songId: 1,
+          user_id: 2,
+          userName: '김뚱진',
+          title: '수정할 제목',
+          thumbnail: 'base64data',
+        },
+        {
+          songId: 1,
+          user_id: 2,
+          userName: '김뚱진',
+          title: 'Hit Song 2',
+          thumbnail: 'base64data',
+        },
+        {
+          songId: 1,
+          user_id: 1,
+          userName: '장원영',
+          title: 'Song Title 1',
+          thumbnail: 'http://example.com/song1_thumbnail.jpg',
+        },
+        {
+          songId: 1,
+          user_id: 2,
+          userName: '김뚱진',
+          title: 'Song Title 2',
+          thumbnail: 'http://example.com/song2_thumbnail.jpg',
+        },
+        {
+          songId: 1,
+          user_id: 3,
+          userName: '김철수',
+          title: 'Song Title 3',
+          thumbnail: 'http://example.com/song3_thumbnail.jpg',
+        },
+        {
+          songId: 1,
+          user_id: 1,
+          userName: '장원영',
+          title: 'Song Title 4',
+          thumbnail: 'http://example.com/song4_thumbnail.jpg',
+        },
+      ]);
       setTodaySongs(todayResponse.data.result.todaysongs); // 투데이 랭크 데이터 저장
       setLoading(false); // 로딩 상태 업데이트
       console.log(topResponse);
@@ -140,19 +197,121 @@ function Social() {
   };
 
   // popular API 호출 함수
-  const fetchPopularUsers = async () => {
-    try {
-      const response = await Axios.get('/social/popular'); // 인기 유저 랭크 API 호출
-      setPopularUsers(response.data.result); // 응답 데이터의 결과 저장
-      setLoading(false); // 로딩 상태 업데이트
-    } catch (err) {
-      console.error('Error fetching popular users:', err);
-    }
+  // const fetchPopularUsers = async () => {
+  //   try {
+  //     const response = await Axios.get('/social/popular'); // 인기 유저 랭크 API 호출
+  //     setPopularUsers(response.data.result); // 응답 데이터의 결과 저장
+  //     setLoading(false); // 로딩 상태 업데이트
+  //   } catch (err) {
+  //     console.error('Error fetching popular users:', err);
+  //   }
+  // }; // 이거 이동시키기기
+
+  const initFollowStates = (popularUsers, followList) => {
+    const followedIdSet = new Set(followList.map((user) => user.following_id));
+    const newFollowStates = {};
+
+    popularUsers.forEach((user) => {
+      newFollowStates[user.userId] = followedIdSet.has(user.userId);
+    });
+
+    console.log('최종 생성된 follow state:', newFollowStates);
+    setFollowStates(newFollowStates);
   };
 
+  // useEffect(() => {
+  //   fetchData(); // 컴포넌트가 마운트될 때 데이터 호출
+  // }, []);
+
   useEffect(() => {
-    fetchPopularUsers(); // 컴포넌트가 마운트될 때 데이터 호출
+    const fetchData = async () => {
+      try {
+        const [popularRes, followListRes] = await Promise.all([
+          Axios.get('/social/popular'), // 인기 유저 목록
+          GetFollowList(token), // 내가 팔로우한 유저 목록
+        ]);
+
+        // console.log('popularRes:', popularRes.data.result);
+        // console.log('followListRes:', followListRes.result.followingList);
+
+        setPopularUsers(popularRes.data.result);
+        const followList = followListRes.result.followingList;
+
+        // followStates 초기화
+        initFollowStates(popularRes.data.result, followList);
+      } catch (error) {
+        console.error('데이터를 가져오는 중 오류 발생:', error);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchFollowStates = async () => {
+  //     try {
+  //       const states = {};
+
+  //       // 모든 follow 상태를 병렬로 요청
+  //       await Promise.all(
+  //         popularUsers.map(async (user) => {
+  //           const res = await axios.get(`/api/follow/status/${user.userId}`);
+  //           // 예: { isFollowed: true }
+  //           states[user.userId] = res.data.isFollowed;
+  //         })
+  //       );
+
+  //       setFollowStates(states);
+  //     } catch (error) {
+  //       console.error('팔로우 상태 요청 중 에러 발생:', error);
+  //     }
+  //   };
+
+  //   if (popularUsers.length > 0) {
+  //     fetchFollowStates();
+  //   }
+  // }, [popularUsers]);
+
+  // follow / unfollow 관련
+  const handleFollowToggle = async (userId) => {
+    if (disabledButtons[userId]) return;
+
+    // 버튼 비활성화 1초
+    setDisabledButtons((prev) => ({
+      ...prev,
+      [userId]: true,
+    }));
+
+    setTimeout(() => {
+      setDisabledButtons((prev) => ({
+        ...prev,
+        [userId]: false,
+      }));
+    }, 1000);
+
+    // 현재 follow 상태 확인 후 API 호출
+    if (followStates[userId]) {
+      const response = await Unfollow(userId, token);
+      if (response.success) {
+        console.log(response.message);
+      } else {
+        console.error(response.message);
+      }
+    } else {
+      const response = await Follow(userId, token);
+      if (response.success) {
+        console.log(response.message);
+      } else {
+        console.error(response.message);
+      }
+    }
+
+    // 상태 토글
+    setFollowStates((prev) => ({
+      ...prev,
+      [userId]: !prev[userId],
+    }));
+  };
 
   // 플레이리스트에 곡 추가하기
   const openAddSongModal = (srcID) => {
@@ -174,12 +333,11 @@ function Social() {
 
   //여기부터 드롭다운
   const handleSongClick = (index) => {
-    setSelectedItem(index);
     // console.log('songlist[index].id: ' + songlist[index].id);
     setSelectedSongId(topSongs[index].songId);
   };
 
-  const handleMySongOptionClick = (option, index) => {
+  const handleToprankOptionClick = (option, index) => {
     setDropdownIndex(null);
     if (option === 'addToPlaylist') {
       openAddSongModal(topSongs[index].songId);
@@ -190,6 +348,8 @@ function Social() {
   };
   const toggleDropdown = (index) => {
     setDropdownIndex(dropdownIndex === index ? null : index);
+    console.log('현재 index:', index);
+    console.log('dropdownIndex:', dropdownIndex);
   };
 
   const handleClickOutside = (event) => {
@@ -317,11 +477,12 @@ function Social() {
                         right: 0,
                         fontSize: '32px',
                         cursor: 'pointer',
+                        zIndex: '0',
                       }}
                       onClick={(e) => {
+                        e.stopPropagation();
                         handleSongClick(index);
                         // setCurrentSong(song[index].songId);
-                        e.stopPropagation();
                         toggleDropdown(index);
                       }}
                     >
@@ -331,14 +492,14 @@ function Social() {
                       <DropdownMenu ref={dropdownRef}>
                         <DropdownItem
                           onClick={() => {
-                            handleMySongOptionClick('addToPlaylist', index);
+                            handleToprankOptionClick('addToPlaylist', index);
                           }}
                         >
                           Add to Playlist
                         </DropdownItem>
                         <DropdownItem
                           onClick={() => {
-                            handleMySongOptionClick('favorite', index);
+                            handleToprankOptionClick('favorite', index);
                           }}
                         >
                           favorite
@@ -403,7 +564,36 @@ function Social() {
                   <PopularContent>
                     <div style={{ marginLeft: '10px' }}>
                       <UserName>{user.userName}</UserName>
-                      <UserMessage>안녕하세요</UserMessage>
+
+                      <UserMessage
+                        onMouseEnter={() => setHoverUserId(user.userId)}
+                        onMouseLeave={() => setHoverUserId(null)}
+                      >
+                        {hoverUserId === user.userId ? (
+                          <button
+                            disabled={disabledButtons[user.userId]}
+                            onClick={() => handleFollowToggle(user.userId)}
+                            style={{
+                              width: '98px',
+                              height: '47px',
+                              padding: '5px 15px',
+                              borderRadius: '10px',
+                              border: followStates[user.userId]
+                                ? '1px solid white'
+                                : 'none',
+                              backgroundColor: followStates[user.userId]
+                                ? 'transparent'
+                                : Theme.colors.borderGray,
+                              color: 'white',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {followStates[user.userId] ? 'Unfollow' : 'Follow'}
+                          </button>
+                        ) : (
+                          '안녕하세요'
+                        )}
+                      </UserMessage>
                     </div>
                   </PopularContent>
                 </PopularWrapper>
