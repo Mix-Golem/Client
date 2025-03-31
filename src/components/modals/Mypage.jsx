@@ -1,10 +1,11 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Axios } from '../../api/Axios.js';
 import styled, { ThemeProvider } from 'styled-components';
 import profileImage from '../../img/profile.svg';
 import stoneImage from '../../img/stone.svg';
 import { Theme } from '../../styles/Theme.js';
+import Cookies from 'js-cookie';
 
 import noprof from '../../img/nonprofile.png';
 
@@ -13,6 +14,7 @@ const Mypage = ({ show, onClose, onBack, tokens }) => {
     const [userInfo, setUserInfo] = useState({});
     const [credit, setCredit] = useState(0);
     const [profile, setProfile] = useState(noprof);
+    const fileInputRef = React.useRef();
 
     useEffect(() => {
       const fetchUserInfo = async () => {
@@ -45,9 +47,46 @@ const Mypage = ({ show, onClose, onBack, tokens }) => {
   
       fetchUserInfo();
     }, []);
+
+
+    const handleProfileClick = () => {
+      fileInputRef.current.click();
+    };
+  
+    const handleFileChange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+  
+      const formData = new FormData();
+      formData.append('image', file);
+  
+      try {
+        const response = await Axios.post('/users/info/set-profile',{
+          image: file,
+        }, {
+          headers: {
+            Authorization: `Bearer ${tokens}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+  
+        const updated = response.data.result;
+        setUserInfo(updated);
+        setProfile(updated.profile);
+        alert("프로필 이미지가 변경되었습니다.");
+      } catch (error) {
+        console.error("프로필 이미지 변경 실패:", error);
+        alert("프로필 이미지 변경에 실패했습니다.");
+      }
+    };
     
   if (!show) {
     return null;
+  }
+
+  function handlelogout(){
+    Cookies.remove("token");
+    window.location.reload;
   }
 
   return (
@@ -57,11 +96,23 @@ const Mypage = ({ show, onClose, onBack, tokens }) => {
           <CloseButton onClick={onClose}>X</CloseButton>
           <BackButton onClick={onBack}>&lt; Back</BackButton>
           <ProfileContainer>
-            <ProfileImage src={profile} alt='Profile' />
+          <ProfileImage
+              src={userInfo.profile || noprof}
+              alt="Profile"
+              onClick={handleProfileClick}
+              style={{ cursor: 'pointer' }}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
             <ProfileDetails>
               <Title>{userInfo.name}</Title>
-              <Subtitle>&quot;샤코, 오직 샤코&quot;</Subtitle>
-              <ChangeButton>Change</ChangeButton>
+              <Subtitle>&quot;{userInfo.introduce || "modify subtitle"}&quot;</Subtitle>
+              <ChangeButton onClick={handlelogout}>Logout</ChangeButton>
             </ProfileDetails>
           </ProfileContainer>
           <Divider />

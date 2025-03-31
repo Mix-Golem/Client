@@ -54,12 +54,17 @@ function Playlist({
         setTrack(songIds || []); // 전체 트랙 리스트를 설정
         // 데이터를 상태에 저장
         // setLoading(false);
+        return({
+
+        }
+        )
       } catch (err) {
         // setError(err.message);
         // setLoading(false);
       }
     };
     fetchPlaylists();
+    
   }, [playlistId]);
 
   const handleListClick = (songId) => {
