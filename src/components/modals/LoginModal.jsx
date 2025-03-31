@@ -4,10 +4,15 @@ import { Theme } from '../../styles/Theme';
 import LogoImage from '../../img/Logo.svg';
 
 const LoginModal = ({ onClose, onGoLogin }) => {
+  const handleClose = () => {
+    onClose();
+    window.location.href = '/';
+  };
+
   return (
     <ModalOverlay>
       <ModalContent>
-        <CloseButton onClick={onClose}>×</CloseButton>
+        <CloseButton onClick={handleClose}>×</CloseButton>
         <LogoWrapper>
           <img src={LogoImage} alt='Logo' />
         </LogoWrapper>
