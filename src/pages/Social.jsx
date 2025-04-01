@@ -18,6 +18,9 @@ import AddSongToPlaylist from '../api/music/AddSongToPlaylist';
 import GetFollowList from '../api/social/GetFollowList.js';
 import Follow from '../api/social/Follow';
 import Unfollow from '../api/social/Unfollow';
+import PostLike from '../api/music/PostLike.js';
+import DeleteLike from '../api/music/DeleteLike.js';
+import CheckLike from '../api/music/CheckLike.js';
 
 const token = Cookies.get('token');
 
@@ -41,6 +44,7 @@ function Social() {
   const [followStates, setFollowStates] = useState({}); // { [userId]: true/false }
   const [disabledButtons, setDisabledButtons] = useState({}); // { [userId]: true/false }
   const [hoverUserId, setHoverUserId] = useState(null);
+  const [likedMap, setLikedMap] = useState({});
 
   const dropdownRef = useRef(null);
 
@@ -51,61 +55,11 @@ function Social() {
       const topResponse = await Axios.get('/social/rank/top'); // 탑 랭크 호출
       const todayResponse = await Axios.get('/social/rank/today'); // 투데이 랭크 호출
 
-      // setTopSongs(topResponse.data.result.topsongs); // 탑 랭크 데이터 저장 // 나중에 돌려놓을 것
-      setTopSongs([
-        {
-          songId: 1,
-          user_id: 1,
-          userName: '장원영',
-          title: '제목',
-          thumbnail: 'base64기반 코드',
-        },
-        {
-          songId: 1,
-          user_id: 2,
-          userName: '김뚱진',
-          title: '수정할 제목',
-          thumbnail: 'base64data',
-        },
-        {
-          songId: 1,
-          user_id: 2,
-          userName: '김뚱진',
-          title: 'Hit Song 2',
-          thumbnail: 'base64data',
-        },
-        {
-          songId: 1,
-          user_id: 1,
-          userName: '장원영',
-          title: 'Song Title 1',
-          thumbnail: 'http://example.com/song1_thumbnail.jpg',
-        },
-        {
-          songId: 1,
-          user_id: 2,
-          userName: '김뚱진',
-          title: 'Song Title 2',
-          thumbnail: 'http://example.com/song2_thumbnail.jpg',
-        },
-        {
-          songId: 1,
-          user_id: 3,
-          userName: '김철수',
-          title: 'Song Title 3',
-          thumbnail: 'http://example.com/song3_thumbnail.jpg',
-        },
-        {
-          songId: 1,
-          user_id: 1,
-          userName: '장원영',
-          title: 'Song Title 4',
-          thumbnail: 'http://example.com/song4_thumbnail.jpg',
-        },
-      ]);
+      setTopSongs(topResponse.data.result.topsongs); // 탑 랭크 데이터 저장
       setTodaySongs(todayResponse.data.result.todaysongs); // 투데이 랭크 데이터 저장
       setLoading(false); // 로딩 상태 업데이트
-      console.log(topResponse);
+      // console.log(topResponse);
+      console.log('topSongs:', topSongs);
     } catch (err) {
       console.error('Error fetching rank data:', err);
     }
@@ -196,17 +150,50 @@ function Social() {
     }
   };
 
-  // popular API 호출 함수
-  // const fetchPopularUsers = async () => {
-  //   try {
-  //     const response = await Axios.get('/social/popular'); // 인기 유저 랭크 API 호출
-  //     setPopularUsers(response.data.result); // 응답 데이터의 결과 저장
-  //     setLoading(false); // 로딩 상태 업데이트
-  //   } catch (err) {
-  //     console.error('Error fetching popular users:', err);
-  //   }
-  // };
+  // 좋아요(favorite) 관련
+  const handleFavoriteClick = async (songId) => {
+    const isLiked = likedMap[songId];
 
+    if (isLiked) {
+      await PostLike(songId, token);
+    } else {
+      await DeleteLike(songId, token);
+    }
+
+    setLikedMap((prev) => ({
+      ...prev,
+      [songId]: !isLiked,
+    }));
+  };
+
+  const checkLikedStatus = async (songId) => {
+    const likedRes = await CheckLike(songId, token);
+    console.log('likedRes:', likedRes);
+    return likedRes; // false면 이미 좋아요 누른 상태태
+  };
+
+  useEffect(() => {
+    const fetchLikedStatus = async () => {
+      const newMap = {};
+
+      await Promise.all(
+        topSongs.map(async (song) => {
+          const isLiked = await checkLikedStatus(song.songId, token);
+          newMap[song.songId] = isLiked;
+        })
+      );
+      // console.log('newMap:', newMap);
+      setLikedMap(newMap);
+      // console.log('likedMap:', likedMap);
+    };
+
+    if (topSongs.length > 0) {
+      fetchLikedStatus();
+      // console.log('topsongs:', topSongs);
+    }
+  }, [topSongs]);
+
+  // follow / unfollow 관련
   const initFollowStates = (popularUsers, followList) => {
     const followedIdSet = new Set(followList.map((user) => user.following_id));
     const newFollowStates = {};
@@ -218,10 +205,6 @@ function Social() {
     console.log('최종 생성된 follow state:', newFollowStates);
     setFollowStates(newFollowStates);
   };
-
-  // useEffect(() => {
-  //   fetchData(); // 컴포넌트가 마운트될 때 데이터 호출
-  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -247,32 +230,6 @@ function Social() {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchFollowStates = async () => {
-  //     try {
-  //       const states = {};
-
-  //       // 모든 follow 상태를 병렬로 요청
-  //       await Promise.all(
-  //         popularUsers.map(async (user) => {
-  //           const res = await axios.get(`/api/follow/status/${user.userId}`);
-  //           // 예: { isFollowed: true }
-  //           states[user.userId] = res.data.isFollowed;
-  //         })
-  //       );
-
-  //       setFollowStates(states);
-  //     } catch (error) {
-  //       console.error('팔로우 상태 요청 중 에러 발생:', error);
-  //     }
-  //   };
-
-  //   if (popularUsers.length > 0) {
-  //     fetchFollowStates();
-  //   }
-  // }, [popularUsers]);
-
-  // follow / unfollow 관련
   const handleFollowToggle = async (userId) => {
     if (disabledButtons[userId]) return;
 
@@ -375,6 +332,14 @@ function Social() {
     });
   }, []);
 
+  // 테스트 데이터
+  // useEffect(() => {
+  //   PostLike(24, token);
+  //   PostLike(38, token);
+  //   PostLike(48, token);
+  //   PostLike(56, token);
+  // }, []);
+
   return (
     <ThemeProvider theme={Theme}>
       <GlobalStyle />
@@ -453,6 +418,7 @@ function Social() {
                   onClick={() => handleTopRankClick(song.songId)}
                 >
                   <Number>{index + 1}.</Number>
+
                   <RankContent>
                     <img
                       style={{
@@ -461,52 +427,41 @@ function Social() {
                         borderRadius: '20px',
                       }}
                       src={song.thumbnail}
-                      alt={`Thumbl ${index + 1}`}
+                      alt={`Thumb ${index + 1}`}
                     />
+
                     <div style={{ marginLeft: '20px' }}>
                       <Musictitle>{song.title}</Musictitle>
                       <MusicArtist>{song.userName}</MusicArtist>
                     </div>
-                    <div
-                      style={{
-                        width: '50px',
-                        height: '50px',
-                        color: 'white',
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        fontSize: '32px',
-                        cursor: 'pointer',
-                        zIndex: '0',
-                      }}
+
+                    <DropdownWrapper
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleSongClick(index);
-                        // setCurrentSong(song[index].songId);
-                        toggleDropdown(index);
+                        e.stopPropagation(); // ContentWrapper로 전파 방지
                       }}
                     >
-                      •••
-                    </div>
-                    {dropdownIndex === index && (
-                      <DropdownMenu ref={dropdownRef}>
-                        <DropdownItem
-                          onClick={() => {
-                            handleToprankOptionClick('addToPlaylist', index);
-                          }}
-                        >
-                          Add to Playlist
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => {
-                            handleToprankOptionClick('favorite', index);
-                          }}
-                          $favorite
-                        >
-                          favorite
-                        </DropdownItem>
-                      </DropdownMenu>
-                    )}
+                      <DropdownToggle onClick={() => toggleDropdown(index)}>
+                        •••
+                      </DropdownToggle>
+
+                      {dropdownIndex === index && (
+                        <DropdownMenu ref={dropdownRef}>
+                          <DropdownItem
+                            onClick={() =>
+                              handleToprankOptionClick('addToPlaylist', index)
+                            }
+                          >
+                            Add to Playlist
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => handleFavoriteClick(song.songId)}
+                            $favorite={likedMap[song.songId] === false}
+                          >
+                            Favorite
+                          </DropdownItem>
+                        </DropdownMenu>
+                      )}
+                    </DropdownWrapper>
                   </RankContent>
                 </ContentWrapper>
               ))}
@@ -535,14 +490,14 @@ function Social() {
                       <Musictitle>{song.title}</Musictitle>
                       <MusicArtist>{song.userName}</MusicArtist>
                     </div>
-                    <div
+                    {/* <div
                       style={{
                         justifyContent: 'right',
                         width: '20px',
                         height: '20px',
                         backgroundColor: 'white',
                       }}
-                    ></div>
+                    ></div> */}
                   </RankContent>
                 </ContentWrapper>
               ))}
@@ -784,6 +739,28 @@ const MusicArtist = styled.div`
   font-size: 20px;
 `;
 
+const DropdownWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const DropdownToggle = styled.div`
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+
+  &:hover {
+    color: ${Theme.colors.gray};
+  }
+`;
+
 const PopularField = styled.div`
   width: 250px;
   height: 870px;
@@ -839,7 +816,7 @@ const DropdownMenu = styled.div`
   position: absolute;
   top: 40px;
   right: 0;
-  background: ${Theme.colors.black};
+  background: ${Theme.colors.darkGray};
   border-radius: 10px;
   padding: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -852,16 +829,12 @@ const DropdownItem = styled.div`
   padding: 10px 20px;
   cursor: pointer;
   ${Theme.fonts.dropdownItem}
-  color: ${Theme.colors.white};
+  /* color: ${Theme.colors.white}; */
   border-radius: 10px;
 
   &:hover {
     background: ${Theme.colors.gray};
   }
 
-  ${(props) =>
-    props.$favorite &&
-    `
-    color: ${Theme.colors.red};
-  `}
+  color: ${({ $favorite }) => ($favorite ? 'red' : 'white')};
 `;
