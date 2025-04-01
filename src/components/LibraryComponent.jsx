@@ -66,11 +66,11 @@ const LibraryComponent = ({
   };
 
   const handleMenuClick = (screen) => {
+    SetSelectedPlaylist(null);
     setActiveScreen(screen);
     setSelectedItem(null);
     // setSelectedLyrics(null);
     updateSelectedLyrics(null);
-    SetSelectedPlaylist(null);
   };
 
   const toggleDropdown = (index) => {
@@ -211,8 +211,9 @@ const LibraryComponent = ({
     DeleteSongInPlaylist(playlistID, songID, token).then((response) => {
       GetPlaylistByID(playlistID, token).then((response) => {
         if (response.isSuccess) {
-          handleMenuClick('Playlist');
+          setPlaylistTrack(response.result);
           updatePlaylist();
+          // handleMenuClick('Playlist');
         }
       });
     });
@@ -853,7 +854,7 @@ const DropdownMenu = styled.div`
   position: absolute;
   top: 40px;
   right: 0;
-  background: ${Theme.colors.black};
+  background: ${Theme.colors.darkGray};
   border-radius: 10px;
   padding: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);

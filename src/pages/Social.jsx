@@ -54,49 +54,49 @@ function Social() {
       // setTopSongs(topResponse.data.result.topsongs); // 탑 랭크 데이터 저장 // 나중에 돌려놓을 것
       setTopSongs([
         {
-          songId: 1,
+          songId: 53,
           user_id: 1,
           userName: '장원영',
           title: '제목',
           thumbnail: 'base64기반 코드',
         },
         {
-          songId: 1,
+          songId: 53,
           user_id: 2,
           userName: '김뚱진',
           title: '수정할 제목',
           thumbnail: 'base64data',
         },
         {
-          songId: 1,
+          songId: 53,
           user_id: 2,
           userName: '김뚱진',
           title: 'Hit Song 2',
           thumbnail: 'base64data',
         },
         {
-          songId: 1,
+          songId: 53,
           user_id: 1,
           userName: '장원영',
           title: 'Song Title 1',
           thumbnail: 'http://example.com/song1_thumbnail.jpg',
         },
         {
-          songId: 1,
+          songId: 53,
           user_id: 2,
           userName: '김뚱진',
           title: 'Song Title 2',
           thumbnail: 'http://example.com/song2_thumbnail.jpg',
         },
         {
-          songId: 1,
+          songId: 53,
           user_id: 3,
           userName: '김철수',
           title: 'Song Title 3',
           thumbnail: 'http://example.com/song3_thumbnail.jpg',
         },
         {
-          songId: 1,
+          songId: 53,
           user_id: 1,
           userName: '장원영',
           title: 'Song Title 4',
@@ -453,6 +453,7 @@ function Social() {
                   onClick={() => handleTopRankClick(song.songId)}
                 >
                   <Number>{index + 1}.</Number>
+
                   <RankContent>
                     <img
                       style={{
@@ -461,52 +462,43 @@ function Social() {
                         borderRadius: '20px',
                       }}
                       src={song.thumbnail}
-                      alt={`Thumbl ${index + 1}`}
+                      alt={`Thumb ${index + 1}`}
                     />
+
                     <div style={{ marginLeft: '20px' }}>
                       <Musictitle>{song.title}</Musictitle>
                       <MusicArtist>{song.userName}</MusicArtist>
                     </div>
-                    <div
-                      style={{
-                        width: '50px',
-                        height: '50px',
-                        color: 'white',
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        fontSize: '32px',
-                        cursor: 'pointer',
-                        zIndex: '0',
-                      }}
+
+                    <DropdownWrapper
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleSongClick(index);
-                        // setCurrentSong(song[index].songId);
-                        toggleDropdown(index);
+                        e.stopPropagation(); // ContentWrapper로 전파 방지
                       }}
                     >
-                      •••
-                    </div>
-                    {dropdownIndex === index && (
-                      <DropdownMenu ref={dropdownRef}>
-                        <DropdownItem
-                          onClick={() => {
-                            handleToprankOptionClick('addToPlaylist', index);
-                          }}
-                        >
-                          Add to Playlist
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => {
-                            handleToprankOptionClick('favorite', index);
-                          }}
-                          $favorite
-                        >
-                          favorite
-                        </DropdownItem>
-                      </DropdownMenu>
-                    )}
+                      <DropdownToggle onClick={() => toggleDropdown(index)}>
+                        •••
+                      </DropdownToggle>
+
+                      {dropdownIndex === index && (
+                        <DropdownMenu ref={dropdownRef}>
+                          <DropdownItem
+                            onClick={() =>
+                              handleToprankOptionClick('addToPlaylist', index)
+                            }
+                          >
+                            Add to Playlist
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() =>
+                              handleToprankOptionClick('favorite', index)
+                            }
+                            $favorite
+                          >
+                            favorite
+                          </DropdownItem>
+                        </DropdownMenu>
+                      )}
+                    </DropdownWrapper>
                   </RankContent>
                 </ContentWrapper>
               ))}
@@ -784,6 +776,28 @@ const MusicArtist = styled.div`
   font-size: 20px;
 `;
 
+const DropdownWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const DropdownToggle = styled.div`
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+
+  &:hover {
+    color: ${Theme.colors.gray};
+  }
+`;
+
 const PopularField = styled.div`
   width: 250px;
   height: 870px;
@@ -839,7 +853,7 @@ const DropdownMenu = styled.div`
   position: absolute;
   top: 40px;
   right: 0;
-  background: ${Theme.colors.black};
+  background: ${Theme.colors.darkGray};
   border-radius: 10px;
   padding: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
