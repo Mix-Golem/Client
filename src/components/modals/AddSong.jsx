@@ -4,6 +4,7 @@ import { Theme } from '../../styles/Theme';
 
 import GetPlaylistByID from '../../api/music/GetPlaylistByID';
 import Plus from '../../img/Plus.svg';
+import Icon_MyPlayList from '../../img/playlist.svg';
 
 const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID, token }) => {
   let currentSrcID;
@@ -91,7 +92,10 @@ const AddSong = ({ datalist, onClose, onAddSong, isForSong, srcID, token }) => {
             <>
               {currentDatalist.map((item, index) => (
                 <SongItem key={index}>
-                  <img src={item.thumbnail} alt='Song' />
+                  <img
+                    src={item.first_song_thumbnail || Icon_MyPlayList}
+                    alt='Song'
+                  />
                   <SongInfo>
                     <p>{item.playlist_title}</p>
                   </SongInfo>
@@ -223,7 +227,7 @@ const SongItem = styled.div`
 
 const SongInfo = styled.div`
   flex-grow: 1;
-  margin-left: 10px;
+  margin-left: 20px;
 
   p {
     text-align: left;
