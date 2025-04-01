@@ -53,44 +53,44 @@ function Create() {
     }
 
     setIsLoading(true);
-    // CreateSong(inputValue, token)
-    //   .then((response) => {
-    //     console.log(response);
-    //     if (response.isSuccess) {
-    //       console.log('Song created successfully:', response.result);
-    //       const songInfo = {
-    //         title: response.result.title,
-    //         about: '곡 소개',
-    //         prompt: response.result.prompt,
-    //         media: response.result.audio,
-    //         genre: response.result.tags,
-    //         thumbnail: response.result.image,
-    //         lyrics: [
-    //           {
-    //             startTime: '시작시간',
-    //             endTime: '종료시간',
-    //             content: response.result.lyric,
-    //           },
-    //         ],
-    //       };
-    //       SaveSong(songInfo, token).then((response) => {
-    //         console.log('Song creation success');
-    //         GetHistory(token).then((response) => {
-    //           // console.log(response.result);
-    //           if (response.isSuccess) {
-    //             setHistory(response.result);
-    //           }
-    //         });
-    //       });
-    //     } else {
-    //       console.error('Song creation failed:', response.message);
-    //     }
-    //     setIsLoading(false);
-    //   })
-    //   .catch((error) => {
-    //     console.error('An error occurred:', error);
-    //     setIsLoading(false);
-    //   });
+    CreateSong(inputValue, token)
+      .then((response) => {
+        console.log(response);
+        if (response.isSuccess) {
+          console.log('Song created successfully:', response.result);
+          const songInfo = {
+            title: response.result.title,
+            about: '곡 소개',
+            prompt: response.result.prompt,
+            media: response.result.audio,
+            genre: response.result.tags,
+            thumbnail: response.result.image,
+            lyrics: [
+              {
+                startTime: '시작시간',
+                endTime: '종료시간',
+                content: response.result.lyric,
+              },
+            ],
+          };
+          SaveSong(songInfo, token).then((response) => {
+            console.log('Song creation success');
+            GetHistory(token).then((response) => {
+              // console.log(response.result);
+              if (response.isSuccess) {
+                setHistory(response.result);
+              }
+            });
+          });
+        } else {
+          console.error('Song creation failed:', response.message);
+        }
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('An error occurred:', error);
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
